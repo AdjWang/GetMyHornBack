@@ -48,13 +48,15 @@ class Unicorn extends EngineObject {
   #updateInput() {
     const leftDown = keyIsDown(INPUT_KEY_LEFT);
     const rightDown = keyIsDown(INPUT_KEY_RIGHT);
+    const left = leftDown ? 1 : 0;
+    const right = rightDown ? 1 : 0;
     if (keyWasPressed(INPUT_KEY_LEFT)) {
       this.#lastMoveX = -1;
     }
     if (keyWasPressed(INPUT_KEY_RIGHT)) {
       this.#lastMoveX = 1;
     }
-    this.#moveX = rightDown && leftDown ? this.#lastMoveX : rightDown - leftDown;
+    this.#moveX = rightDown && leftDown ? this.#lastMoveX : right - left;
 
     const jumpPressed = keyWasPressed(INPUT_KEY_UP) || keyWasPressed(INPUT_KEY_JUMP);
     const grounded = !!this.groundObject;
