@@ -24,6 +24,7 @@
   "homepage": "https://github.com/AdjWang/RainbowDefense",
   "scripts": {
     "start": "npx http-server -p 8000 src",
+    "buildres": "node src/convertAseprite.mjs",
     "build": "node src/build.mjs",
     "build:engine": "node src/engine/engineBuild.mjs"
   },

@@ -58,11 +58,10 @@ const UNICORN_ANIM_RUN_SPEED = 8;  // frame/sec
 class Unicorn extends EngineObject {
   constructor(pos) {
     const colliderSize = vec2(0.9, 0.9);
-    const frameSize = vec2(UNICORN_WIDTH, UNICORN_HEIGHT);
     super(pos, colliderSize);
-    this._frameInfoHead = tile(0, frameSize, 1);
-    this._frameInfoBody = tile(0, frameSize, 2);
-    this._frameInfoBag = tile(0, frameSize, 3);
+    this._frameInfoHead = unicornResource.head;
+    this._frameInfoBody = unicornResource.body;
+    this._frameInfoBag = unicornResource.bag;
     this._moveX = 0;
     this._moveY = 0;
     this._lastMoveX = 1;
@@ -283,9 +282,9 @@ class Unicorn extends EngineObject {
     const drawSizeStretch = vec2(drawSize.x, drawSize.y * runScaleY * this._getJumpScaleY());
     const scaleAnchorOffset = vec2(0, (drawSizeStretch.y - drawSize.y) / 2);
     const drawPos = this.pos.add(scaleAnchorOffset);
-    drawTile(headPos.add(scaleAnchorOffset).add(drawOffset), drawSizeStretch, this._frameInfoHead, undefined, runRotate, this.mirror);
-    drawTile(drawPos.add(drawOffset), drawSizeStretch, this._frameInfoBody.frame(this._runFrame), undefined, runRotate, this.mirror);
-    drawTile(drawPos.add(drawOffset), drawSize, this._frameInfoBag, undefined, runRotate, this.mirror);
+    drawAsepriteFrame(this._frameInfoHead[this._runFrame], headPos.add(scaleAnchorOffset).add(drawOffset), runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
+    drawAsepriteFrame(this._frameInfoBody[this._runFrame], drawPos.add(drawOffset), runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
+    drawAsepriteFrame(this._frameInfoBag[this._runFrame], drawPos.add(drawOffset), 1, undefined, runRotate, this.mirror);
   }
 
 }

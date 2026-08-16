@@ -71,15 +71,15 @@ const sourceFiles =
     // game files
     'global.js',
     'gameObject.js',
+    'assets/unicorn/unicornResource.js',
+    'resourceLoader.js',
     'unicorn.js',
     'main.js',
 ];
 const dataFiles =
 [
     'assets/tileset/color.png',
-    'assets/unicorn/head.png',
-    'assets/unicorn/body.png',
-    'assets/unicorn/bag.png',
+    'assets/unicorn/unicorn.png',
 ];
 
 console.log(`Building ${PROGRAM_NAME}...`);
@@ -90,6 +90,8 @@ process.chdir(__dirname);
 
 try
 {
+    execSync('node convertAseprite.mjs', {stdio: 'inherit'});
+
     // remove old files and setup build folder
     fs.rmSync(BUILD_FOLDER, { recursive: true, force: true });
     fs.rmSync(`${PROGRAM_NAME}.zip`, { force: true });

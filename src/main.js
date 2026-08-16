@@ -12,6 +12,7 @@ const sound_click = new Sound([1, .5]);
 
 // game variables
 let particleEmitter;
+let unicornResource;
 
 // WebGL can be removed to save ~963 bytes - see "Disabling WebGL" in README.md
 
@@ -71,8 +72,6 @@ function gameInit() {
     tileLayer.tileInfo = tile(0, 16, 0, 0);
     tileLayer.redraw();
 
-    player = new Unicorn(vec2(10, 5));
-
     // setup camera
     cameraPos = vec2(16, 8);
     // cameraPos = vec2();
@@ -80,6 +79,9 @@ function gameInit() {
 
     // enable gravity
     gravity.y = -0.01;
+
+    unicornResource = createAsepriteResource(unicornAsepriteData, 1);
+    player = new Unicorn(vec2(10, 5));
 
     // create particle emitter
     particleEmitter = new ParticleEmitter(
@@ -136,7 +138,5 @@ function gameRenderPost() {
 engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost,
     [
         'assets/tileset/color.png',
-        'assets/unicorn/head.png',
-        'assets/unicorn/body.png',
-        'assets/unicorn/bag.png',
+        'assets/unicorn/unicorn.png',
     ]);
