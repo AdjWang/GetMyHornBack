@@ -121,9 +121,7 @@ class Unicorn extends EngineObject {
     this.velocity.x = this.velocity.x * (1.0 - damping) + this._moveX * impulse;
     this.velocity.x = clamp(this.velocity.x, -UNICORN_MAX_SPEED_X, UNICORN_MAX_SPEED_X);
     if (jumpPressed && (grounded || this._coyoteTimer.active())) {
-      this.velocity.y = UNICORN_JUMP_INITIAL_SPEED;
-      this._jumpNeedsCornerRestore = true;
-      this._coyoteTimer.unset();
+      this._startJump(false);
     }
     else if (jumpPressed) {
       this._jumpBufferTimer.set(UNICORN_JUMP_BUFFER_TIME);
@@ -219,10 +217,7 @@ class Unicorn extends EngineObject {
           const restoreJump = verticalMoveDirection > 0 && this.velocity.y <= 0 &&
             (this._jumpBufferTimer.active() || this._jumpNeedsCornerRestore);
           if (restoreJump) {
-            this.velocity.y = UNICORN_JUMP_INITIAL_SPEED;
-            this._jumpBufferTimer.unset();
-            this._jumpNeedsCornerRestore = false;
-            this._coyoteTimer.unset();
+            this._startJump(false);
           }
           return;
         }
@@ -243,9 +238,15 @@ class Unicorn extends EngineObject {
     if (!this._jumpBufferTimer.active() || !this.groundObject) {
       return;
     }
+    this._startJump(true);
+  }
+
+  _startJump(clearGroundObject) {
     this.velocity.y = UNICORN_JUMP_INITIAL_SPEED;
     this._jumpNeedsCornerRestore = true;
-    this.groundObject = 0;
+    if (clearGroundObject) {
+      this.groundObject = 0;
+    }
     this._jumpBufferTimer.unset();
     this._coyoteTimer.unset();
   }
