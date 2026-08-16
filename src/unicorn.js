@@ -5,7 +5,7 @@ const UNICORN_WIDTH = 21;  // pixels
 const UNICORN_HEIGHT = 24;  // pixels
 
 // Motion.
-const UNICORN_MAX_SPEED_X = 0.30;
+const UNICORN_MAX_SPEED_X = 0.22;
 const UNICORN_AIR_IMPULSE = 0.04;
 const UNICORN_GROUND_IMPULSE = 0.08;
 const UNICORN_AIR_DAMPING = 0.15;
@@ -168,12 +168,13 @@ class Unicorn extends EngineObject {
       this.#lastMoveX * UNICORN_RUN_ROTATE_ANGLE : 0;
     const runScaleY = this.#animState == this.#ANIM_STATE_RUN ?
       1 + runCycle * UNICORN_RUN_SCALE_Y_AMPLIFY : 1;
+    const drawOffset = vec2(UNICORN_DRAW_OFFSET.x * (this.mirror ? -1.0 : 1.0), UNICORN_DRAW_OFFSET.y);
     const drawSize = vec2(UNICORN_WIDTH / TILE_SIZE, UNICORN_HEIGHT / TILE_SIZE);
     const drawSizeStretch = vec2(drawSize.x, drawSize.y * runScaleY * this.#getJumpScaleY());
     const scaleAnchorOffset = vec2(0, (drawSizeStretch.y - drawSize.y) / 2);
     const drawPos = this.pos.add(scaleAnchorOffset);
-    drawTile(headPos.add(scaleAnchorOffset).add(UNICORN_DRAW_OFFSET), drawSizeStretch, this.#frameInfoHead, undefined, runRotate, this.mirror);
-    drawTile(drawPos.add(UNICORN_DRAW_OFFSET), drawSizeStretch, this.#frameInfoBody.frame(this.#runFrame), undefined, runRotate, this.mirror);
-    drawTile(drawPos.add(UNICORN_DRAW_OFFSET), drawSize, this.#frameInfoBag, undefined, runRotate, this.mirror);
+    drawTile(headPos.add(scaleAnchorOffset).add(drawOffset), drawSizeStretch, this.#frameInfoHead, undefined, runRotate, this.mirror);
+    drawTile(drawPos.add(drawOffset), drawSizeStretch, this.#frameInfoBody.frame(this.#runFrame), undefined, runRotate, this.mirror);
+    drawTile(drawPos.add(drawOffset), drawSize, this.#frameInfoBag, undefined, runRotate, this.mirror);
   }
 }
