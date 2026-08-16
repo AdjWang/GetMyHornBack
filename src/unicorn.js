@@ -11,6 +11,9 @@ const UNICORN_GROUND_IMPULSE = 0.08;
 const UNICORN_AIR_DAMPING = 0.15;
 const UNICORN_GROUND_DAMPING = 0.3;
 const UNICORN_JUMP_INITIAL_SPEED = 0.27;
+// Tricks.
+// https://www.maddymakesgames.com/articles/celeste_and_forgiveness/index.html
+const UNICORN_JUMP_BUFFER_TIME = 0.12;
 
 // Animation.
 // Head bob animation.
@@ -48,6 +51,7 @@ class Unicorn extends EngineObject {
   #moveX = 0;
   #lastMoveX = 1;
   #wasGrounded = false;
+  #jumpBufferTimer = new Timer;
 
   // Animation.
   #animState = this.#ANIM_STATE_IDLE;
@@ -70,6 +74,7 @@ class Unicorn extends EngineObject {
     // Update motion before updating physic.
     this.#updateMotion();
     super.update();
+    this.#updateBufferedJump();
     this.#updateAnim();
   }
 
@@ -96,9 +101,21 @@ class Unicorn extends EngineObject {
     if (jumpPressed && grounded) {
       this.velocity.y = UNICORN_JUMP_INITIAL_SPEED;
     }
+    else if (jumpPressed) {
+      this.#jumpBufferTimer.set(UNICORN_JUMP_BUFFER_TIME);
+    }
     if (this.#moveX) {
       this.mirror = this.#moveX > 0;
     }
+  }
+
+  #updateBufferedJump() {
+    if (!this.#jumpBufferTimer.active() || !this.groundObject) {
+      return;
+    }
+    this.velocity.y = UNICORN_JUMP_INITIAL_SPEED;
+    this.groundObject = 0;
+    this.#jumpBufferTimer.unset();
   }
 
   #updateAnim() {
