@@ -16,6 +16,7 @@ const UNICORN_JUMP_RELEASE_DAMPING = 0.5;
 // Tricks.
 // https://www.maddymakesgames.com/articles/celeste_and_forgiveness/index.html
 const UNICORN_JUMP_BUFFER_TIME = 0.12;
+const UNICORN_COYOTE_TIME = 0.10;
 
 // Animation.
 const UNICORN_DRAW_OFFSET = vec2(0.1, 0.3)
@@ -55,6 +56,7 @@ class Unicorn extends EngineObject {
   #lastMoveX = 1;
   #wasGrounded = false;
   #jumpBufferTimer = new Timer;
+  #coyoteTimer = new Timer;
 
   // Animation.
   #animState = this.#ANIM_STATE_IDLE;
@@ -95,16 +97,19 @@ class Unicorn extends EngineObject {
     }
     this.#moveX = rightDown && leftDown ? this.#lastMoveX : right - left;
 
-    const jumpPressed = keyWasPressed(INPUT_KEY_UP) || keyWasPressed(INPUT_KEY_JUMP);
-    const jumpReleased = keyWasReleased(INPUT_KEY_UP) || keyWasReleased(INPUT_KEY_JUMP);
+    const jumpPressed = keyWasPressed(INPUT_KEY_UP);
+    const jumpReleased = keyWasReleased(INPUT_KEY_UP);
     const grounded = !!this.groundObject;
-
+    if (grounded) {
+      this.#coyoteTimer.set(UNICORN_COYOTE_TIME);
+    }
     const impulse = grounded ? UNICORN_GROUND_IMPULSE : UNICORN_AIR_IMPULSE;
     const damping = grounded ? UNICORN_GROUND_DAMPING : UNICORN_AIR_DAMPING;
     this.velocity.x = this.velocity.x * (1.0 - damping) + this.#moveX * impulse;
     this.velocity.x = clamp(this.velocity.x, -UNICORN_MAX_SPEED_X, UNICORN_MAX_SPEED_X);
-    if (jumpPressed && grounded) {
+    if (jumpPressed && (grounded || this.#coyoteTimer.active())) {
       this.velocity.y = UNICORN_JUMP_INITIAL_SPEED;
+      this.#coyoteTimer.unset();
     }
     else if (jumpPressed) {
       this.#jumpBufferTimer.set(UNICORN_JUMP_BUFFER_TIME);
@@ -127,6 +132,7 @@ class Unicorn extends EngineObject {
     this.velocity.y = UNICORN_JUMP_INITIAL_SPEED;
     this.groundObject = 0;
     this.#jumpBufferTimer.unset();
+    this.#coyoteTimer.unset();
   }
 
   #updateAnim() {
