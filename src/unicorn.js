@@ -2,8 +2,12 @@
 
 const UNICORN_WIDTH = 21;  // pixels
 const UNICORN_HEIGHT = 24;  // pixels
-const UNICORN_RUN_SPEED = .08;
-const UNICORN_JUMP_INITIAL_SPEED = .22;
+const UNICORN_MAX_SPEED_X = 0.30;
+const UNICORN_AIR_IMPULSE = 0.04;
+const UNICORN_GROUND_IMPULSE = 0.08;
+const UNICORN_AIR_DAMPING = 0.15;
+const UNICORN_GROUND_DAMPING = 0.3;
+const UNICORN_JUMP_INITIAL_SPEED = 0.22;
 
 class Unicorn extends EngineObject {
   #ANIM_STATE_IDLE = 0;
@@ -28,13 +32,15 @@ class Unicorn extends EngineObject {
     super(pos, size);
     this.#frameInfoHead = tile(0, vec2(UNICORN_WIDTH, UNICORN_HEIGHT), 1);
     this.#frameInfoBody = tile(0, vec2(UNICORN_WIDTH, UNICORN_HEIGHT), 2);
-    this.#frameInfoBag =  tile(0, vec2(UNICORN_WIDTH, UNICORN_HEIGHT), 3);
+    this.#frameInfoBag = tile(0, vec2(UNICORN_WIDTH, UNICORN_HEIGHT), 3);
+    this.damping = 1;
+    this.friction = 1;
     this.setCollision();
   }
 
   update() {
-    super.update();
     this.#updateInput();
+    super.update();
     this.#updateAnim();
   }
 
@@ -43,7 +49,10 @@ class Unicorn extends EngineObject {
     const jumpPressed = keyWasPressed(INPUT_KEY_UP) || keyWasPressed(INPUT_KEY_JUMP);
     const grounded = !!this.groundObject;
 
-    this.velocity.x = this.#moveX * UNICORN_RUN_SPEED;
+    const impulse = grounded ? UNICORN_GROUND_IMPULSE : UNICORN_AIR_IMPULSE;
+    const damping = grounded ? UNICORN_GROUND_DAMPING : UNICORN_AIR_DAMPING;
+    this.velocity.x = this.velocity.x * (1.0 - damping) + this.#moveX * impulse;
+    this.velocity.x = clamp(this.velocity.x, -UNICORN_MAX_SPEED_X, UNICORN_MAX_SPEED_X);
     if (jumpPressed && grounded) {
       this.velocity.y = UNICORN_JUMP_INITIAL_SPEED;
     }
@@ -58,7 +67,7 @@ class Unicorn extends EngineObject {
       return;
     }
 
-    this.#animState = this.#moveX ? this.#ANIM_STATE_RUN : this.#ANIM_STATE_IDLE;
+    this.#animState = abs(this.velocity.x) > .01 ? this.#ANIM_STATE_RUN : this.#ANIM_STATE_IDLE;
     if (this.#animState == this.#ANIM_STATE_IDLE) {
       this.#runFrame = this.#FRAME_INDEX_IDLE;
       return;
