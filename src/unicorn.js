@@ -8,10 +8,14 @@ const UNICORN_GROUND_IMPULSE = 0.08;
 const UNICORN_AIR_DAMPING = 0.15;
 const UNICORN_GROUND_DAMPING = 0.3;
 const UNICORN_JUMP_INITIAL_SPEED = 0.22;
+const UNICORN_IDLE_HEAD_BOB_OFFSET = -0.03;
+const UNICORN_IDLE_HEAD_BOB_AMPLIFY = 0.03;
+const UNICORN_IDLE_HEAD_BOB_SPEED = 8;
 
 class Unicorn extends EngineObject {
   #ANIM_STATE_IDLE = 0;
   #ANIM_STATE_RUN = 1;
+  #ANIM_STATE_JUMP = 2;
 
   #FRAME_INDEX_IDLE = 0;
   #FRAME_INDEX_JUMP = 0;
@@ -75,6 +79,7 @@ class Unicorn extends EngineObject {
 
   #updateAnim() {
     if (!this.groundObject) {
+      this.#animState = this.#ANIM_STATE_JUMP;
       this.#runFrame = this.#FRAME_INDEX_JUMP;
       return;
     }
@@ -96,7 +101,10 @@ class Unicorn extends EngineObject {
   }
 
   render() {
-    drawTile(this.pos, this.size, this.#frameInfoHead, undefined, 0, this.mirror);
+    const headBob = this.#animState == this.#ANIM_STATE_IDLE ?
+      Math.sin(time * UNICORN_IDLE_HEAD_BOB_SPEED) * UNICORN_IDLE_HEAD_BOB_AMPLIFY + UNICORN_IDLE_HEAD_BOB_OFFSET : 0;
+    const headPos = this.pos.add(vec2(0, headBob));
+    drawTile(headPos, this.size, this.#frameInfoHead, undefined, 0, this.mirror);
     drawTile(this.pos, this.size, this.#frameInfoBody.frame(this.#runFrame), undefined, 0, this.mirror);
     drawTile(this.pos, this.size, this.#frameInfoBag, undefined, 0, this.mirror);
   }
