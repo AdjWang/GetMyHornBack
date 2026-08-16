@@ -17,7 +17,6 @@ const UNICORN_JUMP_RELEASE_DAMPING = 0.5;
 // https://www.maddymakesgames.com/articles/celeste_and_forgiveness/index.html
 const UNICORN_JUMP_BUFFER_TIME = 0.12;
 const UNICORN_COYOTE_TIME = 0.10;
-const UNICORN_JUMP_CORNER_RESTORE_TIME = 0.08;
 const UNICORN_JUMP_PEAK_GRAVITY_SCALE = 0.5;
 const UNICORN_JUMP_PEAK_SPEED = 0.02;
 // Correct x axis pos if not aligned.
@@ -70,7 +69,10 @@ class Unicorn extends EngineObject {
     this._wasGrounded = false;
     this._jumpBufferTimer = new Timer;
     this._coyoteTimer = new Timer;
-    this._jumpCornerRestoreTimer = new Timer;
+    // When jump with 0 initial speed with corner correction, the correction
+    // stops object after correcting instead of perform jumping. Use this flag
+    // to restore jump.
+    this._jumpNeedsCornerRestore = false;
     this._animState = UNICORN_ANIM_STATE_IDLE;
     this._runFrame = UNICORN_FRAME_INDEX_IDLE;
     this._runFrameTimer = new Timer(1.0 / UNICORN_ANIM_RUN_SPEED);
@@ -85,6 +87,7 @@ class Unicorn extends EngineObject {
     this._updateMotion();
     this._updateAirCornerCorrection();
     super.update();
+    this._updateJumpCornerRestoreState();
     this._updateBufferedJump();
     this._updateAnim();
   }
@@ -120,7 +123,7 @@ class Unicorn extends EngineObject {
     this.velocity.x = clamp(this.velocity.x, -UNICORN_MAX_SPEED_X, UNICORN_MAX_SPEED_X);
     if (jumpPressed && (grounded || this._coyoteTimer.active())) {
       this.velocity.y = UNICORN_JUMP_INITIAL_SPEED;
-      this._jumpCornerRestoreTimer.set(UNICORN_JUMP_CORNER_RESTORE_TIME);
+      this._jumpNeedsCornerRestore = true;
       this._coyoteTimer.unset();
     }
     else if (jumpPressed) {
@@ -251,11 +254,11 @@ class Unicorn extends EngineObject {
           !tileCollisionTest(correctedNextPos, this.size, this)) {
           this.pos.x = correctedX;
           const restoreJump = verticalMoveDirection > 0 && this.velocity.y <= 0 &&
-            (this._jumpBufferTimer.active() || this._jumpCornerRestoreTimer.active());
+            (this._jumpBufferTimer.active() || this._jumpNeedsCornerRestore);
           if (restoreJump) {
             this.velocity.y = UNICORN_JUMP_INITIAL_SPEED;
             this._jumpBufferTimer.unset();
-            this._jumpCornerRestoreTimer.unset();
+            this._jumpNeedsCornerRestore = false;
             this._coyoteTimer.unset();
           }
           this._debugCornerCorrection('apply vertical correction', {
@@ -271,11 +274,21 @@ class Unicorn extends EngineObject {
     this._debugCornerCorrection('vertical failed');
   }
 
+  _updateJumpCornerRestoreState() {
+    if (!this._jumpNeedsCornerRestore) {
+      return;
+    }
+    if (this.velocity.y != 0 || !keyIsDown(INPUT_KEY_UP)) {
+      this._jumpNeedsCornerRestore = false;
+    }
+  }
+
   _updateBufferedJump() {
     if (!this._jumpBufferTimer.active() || !this.groundObject) {
       return;
     }
     this.velocity.y = UNICORN_JUMP_INITIAL_SPEED;
+    this._jumpNeedsCornerRestore = true;
     this.groundObject = 0;
     this._jumpBufferTimer.unset();
     this._coyoteTimer.unset();
