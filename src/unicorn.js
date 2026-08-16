@@ -10,7 +10,9 @@ const UNICORN_AIR_IMPULSE = 0.04;
 const UNICORN_GROUND_IMPULSE = 0.08;
 const UNICORN_AIR_DAMPING = 0.15;
 const UNICORN_GROUND_DAMPING = 0.3;
-const UNICORN_JUMP_INITIAL_SPEED = 0.3;
+const UNICORN_JUMP_INITIAL_SPEED = 0.33;
+// Reach peak earlier if player release jump button.
+const UNICORN_JUMP_RELEASE_DAMPING = 0.5;
 // Tricks.
 // https://www.maddymakesgames.com/articles/celeste_and_forgiveness/index.html
 const UNICORN_JUMP_BUFFER_TIME = 0.12;
@@ -94,6 +96,7 @@ class Unicorn extends EngineObject {
     this.#moveX = rightDown && leftDown ? this.#lastMoveX : right - left;
 
     const jumpPressed = keyWasPressed(INPUT_KEY_UP) || keyWasPressed(INPUT_KEY_JUMP);
+    const jumpReleased = keyWasReleased(INPUT_KEY_UP) || keyWasReleased(INPUT_KEY_JUMP);
     const grounded = !!this.groundObject;
 
     const impulse = grounded ? UNICORN_GROUND_IMPULSE : UNICORN_AIR_IMPULSE;
@@ -105,6 +108,12 @@ class Unicorn extends EngineObject {
     }
     else if (jumpPressed) {
       this.#jumpBufferTimer.set(UNICORN_JUMP_BUFFER_TIME);
+    }
+    if (jumpReleased && this.velocity.y > 0) {
+      this.velocity.y *= 1.0 - UNICORN_JUMP_RELEASE_DAMPING;
+    }
+    if (jumpReleased) {
+      this.#jumpBufferTimer.unset();
     }
     if (this.#moveX) {
       this.mirror = this.#moveX > 0;
