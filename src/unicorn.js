@@ -27,7 +27,6 @@ const UNICORN_AIR_CORNER_HORIZONTAL_CORRECTION_STEP = 0.05;
 // Correct y axis pos if not aligned.
 const UNICORN_AIR_CORNER_VERTICAL_CORRECTION_MAX = 0.3;
 const UNICORN_AIR_CORNER_VERTICAL_CORRECTION_STEP = 0.03;
-const UNICORN_DEBUG_CORNER_CORRECTION = true;
 
 // Animation.
 const UNICORN_DRAW_OFFSET = vec2(0.1, 0.3);
@@ -155,22 +154,6 @@ class Unicorn extends EngineObject {
     return tileData && this.collideWithTile(tileData, pos);
   }
 
-  _debugCornerCorrection(branch, extra) {
-    if (!UNICORN_DEBUG_CORNER_CORRECTION) {
-      return;
-    }
-    console.log('corner', branch, {
-      frame: frame,
-      posX: this.pos.x,
-      posY: this.pos.y,
-      velocityX: this.velocity.x,
-      velocityY: this.velocity.y,
-      moveX: this._moveX,
-      moveY: this._moveY,
-      extra: extra,
-    });
-  }
-
   _updateMoveCornerCorrection() {
     // Use direction moving or intend to move.
     const horizontalMoveDirection = sign(this.velocity.x) || this._moveX;
@@ -185,13 +168,6 @@ class Unicorn extends EngineObject {
     const bottomY = this.pos.y - this.size.y / 2 + epsilon;
     const topBlocked = this._isTileBlockedAt(vec2(cornerX, topY));
     const bottomBlocked = this._isTileBlockedAt(vec2(cornerX, bottomY));
-    this._debugCornerCorrection('horizontal check', {
-      horizontalMoveDirection: horizontalMoveDirection,
-      horizontalMove: horizontalMove,
-      cornerX: cornerX,
-      topBlocked: topBlocked,
-      bottomBlocked: bottomBlocked,
-    });
     if (!topBlocked && !bottomBlocked || topBlocked && bottomBlocked) {
       return;
     }
@@ -206,16 +182,10 @@ class Unicorn extends EngineObject {
         if (!tileCollisionTest(correctedPos, this.size, this) &&
           !tileCollisionTest(correctedNextPos, this.size, this)) {
           this.pos.y = correctedY;
-          this._debugCornerCorrection('apply horizontal correction', {
-            correctedY: correctedY,
-            offset: offset,
-            verticalDirection: verticalDirection,
-          });
           return;
         }
       }
     }
-    this._debugCornerCorrection('horizontal failed');
   }
 
   _updateJumpCornerCorrection() {
@@ -232,13 +202,6 @@ class Unicorn extends EngineObject {
     const rightX = this.pos.x + this.size.x / 2 - epsilon;
     const leftBlocked = this._isTileBlockedAt(vec2(leftX, cornerY));
     const rightBlocked = this._isTileBlockedAt(vec2(rightX, cornerY));
-    this._debugCornerCorrection('vertical check', {
-      verticalMoveDirection: verticalMoveDirection,
-      verticalMove: verticalMove,
-      cornerY: cornerY,
-      leftBlocked: leftBlocked,
-      rightBlocked: rightBlocked,
-    });
     if (!leftBlocked && !rightBlocked || leftBlocked && rightBlocked) {
       return;
     }
@@ -261,17 +224,10 @@ class Unicorn extends EngineObject {
             this._jumpNeedsCornerRestore = false;
             this._coyoteTimer.unset();
           }
-          this._debugCornerCorrection('apply vertical correction', {
-            correctedX: correctedX,
-            offset: offset,
-            horizontalDirection: horizontalDirection,
-            restoreJump: restoreJump,
-          });
           return;
         }
       }
     }
-    this._debugCornerCorrection('vertical failed');
   }
 
   _updateJumpCornerRestoreState() {
