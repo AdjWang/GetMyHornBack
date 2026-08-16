@@ -7,13 +7,14 @@ const UNICORN_AIR_IMPULSE = 0.04;
 const UNICORN_GROUND_IMPULSE = 0.08;
 const UNICORN_AIR_DAMPING = 0.15;
 const UNICORN_GROUND_DAMPING = 0.3;
-const UNICORN_JUMP_INITIAL_SPEED = 0.22;
+const UNICORN_JUMP_INITIAL_SPEED = 0.27;
 const UNICORN_IDLE_HEAD_BOB_OFFSET = -0.03;
 const UNICORN_IDLE_HEAD_BOB_AMPLIFY = 0.03;
 const UNICORN_IDLE_HEAD_BOB_SPEED = 8;
-const UNICORN_RUN_HEAD_BOB_AMPLIFY = 0.08;
+const UNICORN_RUN_HEAD_BOB_AMPLIFY = 0.06;
 const UNICORN_RUN_HEAD_BOB_SPEED = 16;
 const UNICORN_RUN_ROTATE_ANGLE = 0.22;
+const UNICORN_RUN_SCALE_Y_AMPLIFY = 0.02;
 
 class Unicorn extends EngineObject {
   #ANIM_STATE_IDLE = 0;
@@ -104,15 +105,19 @@ class Unicorn extends EngineObject {
   }
 
   render() {
+    const runCycle = Math.sin(time * UNICORN_RUN_HEAD_BOB_SPEED);
     const headBob = this.#animState == this.#ANIM_STATE_IDLE ?
       Math.sin(time * UNICORN_IDLE_HEAD_BOB_SPEED) * UNICORN_IDLE_HEAD_BOB_AMPLIFY + UNICORN_IDLE_HEAD_BOB_OFFSET :
       this.#animState == this.#ANIM_STATE_RUN ?
-        Math.sin(time * UNICORN_RUN_HEAD_BOB_SPEED) * UNICORN_RUN_HEAD_BOB_AMPLIFY : 0;
+        runCycle * UNICORN_RUN_HEAD_BOB_AMPLIFY : 0;
     const headPos = this.pos.add(vec2(0, headBob));
     const runRotate = this.#animState == this.#ANIM_STATE_RUN ?
       this.#lastMoveX * UNICORN_RUN_ROTATE_ANGLE : 0;
-    drawTile(headPos, this.size, this.#frameInfoHead, undefined, runRotate, this.mirror);
-    drawTile(this.pos, this.size, this.#frameInfoBody.frame(this.#runFrame), undefined, runRotate, this.mirror);
-    drawTile(this.pos, this.size, this.#frameInfoBag, undefined, runRotate, this.mirror);
+    const runScaleY = this.#animState == this.#ANIM_STATE_RUN ?
+      1 + runCycle * UNICORN_RUN_SCALE_Y_AMPLIFY : 1;
+    const drawSize = vec2(this.size.x, this.size.y * runScaleY);
+    drawTile(headPos, drawSize, this.#frameInfoHead, undefined, runRotate, this.mirror);
+    drawTile(this.pos, drawSize, this.#frameInfoBody.frame(this.#runFrame), undefined, runRotate, this.mirror);
+    drawTile(this.pos, drawSize, this.#frameInfoBag, undefined, runRotate, this.mirror);
   }
 }
