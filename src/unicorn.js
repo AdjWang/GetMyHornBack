@@ -17,6 +17,7 @@ const UNICORN_JUMP_RELEASE_DAMPING = 0.5;
 // https://www.maddymakesgames.com/articles/celeste_and_forgiveness/index.html
 const UNICORN_JUMP_BUFFER_TIME = 0.12;
 const UNICORN_COYOTE_TIME = 0.10;
+const UNICORN_JUMP_CORNER_RESTORE_TIME = 0.08;
 const UNICORN_JUMP_PEAK_GRAVITY_SCALE = 0.5;
 const UNICORN_JUMP_PEAK_SPEED = 0.02;
 // Correct x axis pos if not aligned.
@@ -27,6 +28,7 @@ const UNICORN_AIR_CORNER_HORIZONTAL_CORRECTION_STEP = 0.05;
 // Correct y axis pos if not aligned.
 const UNICORN_AIR_CORNER_VERTICAL_CORRECTION_MAX = 0.3;
 const UNICORN_AIR_CORNER_VERTICAL_CORRECTION_STEP = 0.03;
+const UNICORN_DEBUG_CORNER_CORRECTION = true;
 
 // Animation.
 const UNICORN_DRAW_OFFSET = vec2(0.1, 0.3);
@@ -68,6 +70,7 @@ class Unicorn extends EngineObject {
     this._wasGrounded = false;
     this._jumpBufferTimer = new Timer;
     this._coyoteTimer = new Timer;
+    this._jumpCornerRestoreTimer = new Timer;
     this._animState = UNICORN_ANIM_STATE_IDLE;
     this._runFrame = UNICORN_FRAME_INDEX_IDLE;
     this._runFrameTimer = new Timer(1.0 / UNICORN_ANIM_RUN_SPEED);
@@ -117,6 +120,7 @@ class Unicorn extends EngineObject {
     this.velocity.x = clamp(this.velocity.x, -UNICORN_MAX_SPEED_X, UNICORN_MAX_SPEED_X);
     if (jumpPressed && (grounded || this._coyoteTimer.active())) {
       this.velocity.y = UNICORN_JUMP_INITIAL_SPEED;
+      this._jumpCornerRestoreTimer.set(UNICORN_JUMP_CORNER_RESTORE_TIME);
       this._coyoteTimer.unset();
     }
     else if (jumpPressed) {
@@ -148,6 +152,22 @@ class Unicorn extends EngineObject {
     return tileData && this.collideWithTile(tileData, pos);
   }
 
+  _debugCornerCorrection(branch, extra) {
+    if (!UNICORN_DEBUG_CORNER_CORRECTION) {
+      return;
+    }
+    console.log('corner', branch, {
+      frame: frame,
+      posX: this.pos.x,
+      posY: this.pos.y,
+      velocityX: this.velocity.x,
+      velocityY: this.velocity.y,
+      moveX: this._moveX,
+      moveY: this._moveY,
+      extra: extra,
+    });
+  }
+
   _updateMoveCornerCorrection() {
     // Use direction moving or intend to move.
     const horizontalMoveDirection = sign(this.velocity.x) || this._moveX;
@@ -162,6 +182,13 @@ class Unicorn extends EngineObject {
     const bottomY = this.pos.y - this.size.y / 2 + epsilon;
     const topBlocked = this._isTileBlockedAt(vec2(cornerX, topY));
     const bottomBlocked = this._isTileBlockedAt(vec2(cornerX, bottomY));
+    this._debugCornerCorrection('horizontal check', {
+      horizontalMoveDirection: horizontalMoveDirection,
+      horizontalMove: horizontalMove,
+      cornerX: cornerX,
+      topBlocked: topBlocked,
+      bottomBlocked: bottomBlocked,
+    });
     if (!topBlocked && !bottomBlocked || topBlocked && bottomBlocked) {
       return;
     }
@@ -176,10 +203,16 @@ class Unicorn extends EngineObject {
         if (!tileCollisionTest(correctedPos, this.size, this) &&
           !tileCollisionTest(correctedNextPos, this.size, this)) {
           this.pos.y = correctedY;
+          this._debugCornerCorrection('apply horizontal correction', {
+            correctedY: correctedY,
+            offset: offset,
+            verticalDirection: verticalDirection,
+          });
           return;
         }
       }
     }
+    this._debugCornerCorrection('horizontal failed');
   }
 
   _updateJumpCornerCorrection() {
@@ -196,6 +229,13 @@ class Unicorn extends EngineObject {
     const rightX = this.pos.x + this.size.x / 2 - epsilon;
     const leftBlocked = this._isTileBlockedAt(vec2(leftX, cornerY));
     const rightBlocked = this._isTileBlockedAt(vec2(rightX, cornerY));
+    this._debugCornerCorrection('vertical check', {
+      verticalMoveDirection: verticalMoveDirection,
+      verticalMove: verticalMove,
+      cornerY: cornerY,
+      leftBlocked: leftBlocked,
+      rightBlocked: rightBlocked,
+    });
     if (!leftBlocked && !rightBlocked || leftBlocked && rightBlocked) {
       return;
     }
@@ -210,13 +250,25 @@ class Unicorn extends EngineObject {
         if (!tileCollisionTest(correctedPos, this.size, this) &&
           !tileCollisionTest(correctedNextPos, this.size, this)) {
           this.pos.x = correctedX;
-          if (!this.velocity.y) {
+          const restoreJump = verticalMoveDirection > 0 && this.velocity.y <= 0 &&
+            (this._jumpBufferTimer.active() || this._jumpCornerRestoreTimer.active());
+          if (restoreJump) {
             this.velocity.y = UNICORN_JUMP_INITIAL_SPEED;
+            this._jumpBufferTimer.unset();
+            this._jumpCornerRestoreTimer.unset();
+            this._coyoteTimer.unset();
           }
+          this._debugCornerCorrection('apply vertical correction', {
+            correctedX: correctedX,
+            offset: offset,
+            horizontalDirection: horizontalDirection,
+            restoreJump: restoreJump,
+          });
           return;
         }
       }
     }
+    this._debugCornerCorrection('vertical failed');
   }
 
   _updateBufferedJump() {
