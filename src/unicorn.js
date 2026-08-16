@@ -19,6 +19,14 @@ const UNICORN_JUMP_BUFFER_TIME = 0.12;
 const UNICORN_COYOTE_TIME = 0.10;
 const UNICORN_JUMP_PEAK_GRAVITY_SCALE = 0.5;
 const UNICORN_JUMP_PEAK_SPEED = 0.02;
+// Correct x axis pos if not aligned.
+// Movement overall speed is way more faster than jump speed, therefore leave
+// larger breath room for correction.
+const UNICORN_AIR_CORNER_HORIZONTAL_CORRECTION_MAX = 0.5;
+const UNICORN_AIR_CORNER_HORIZONTAL_CORRECTION_STEP = 0.05;
+// Correct y axis pos if not aligned.
+const UNICORN_AIR_CORNER_VERTICAL_CORRECTION_MAX = 0.3;
+const UNICORN_AIR_CORNER_VERTICAL_CORRECTION_STEP = 0.03;
 
 // Animation.
 const UNICORN_DRAW_OFFSET = vec2(0.1, 0.3)
@@ -81,6 +89,7 @@ class Unicorn extends EngineObject {
   update() {
     // Update motion before updating physic.
     this.#updateMotion();
+    this.#updateAirCornerCorrection();
     super.update();
     this.#updateBufferedJump();
     this.#updateAnim();
@@ -127,6 +136,81 @@ class Unicorn extends EngineObject {
       UNICORN_JUMP_PEAK_GRAVITY_SCALE : 1;
     if (this.#moveX) {
       this.mirror = this.#moveX > 0;
+    }
+  }
+
+  #updateAirCornerCorrection() {
+    if (this.groundObject) {
+      return;
+    }
+    this.#updateAirCornerVerticalCorrection();
+    this.#updateAirCornerHorizontalCorrection();
+  }
+
+  #isTileBlockedAt(pos) {
+    const tileData = getTileCollisionData(pos);
+    return tileData && this.collideWithTile(tileData, pos);
+  }
+
+  #updateAirCornerVerticalCorrection() {
+    if (!this.velocity.x) {
+      return;
+    }
+    const epsilon = .001;
+    const horizontalMoveDirection = sign(this.velocity.x);
+    const cornerX = this.pos.x + this.velocity.x + horizontalMoveDirection * this.size.x / 2;
+    const topY = this.pos.y + this.size.y / 2 - epsilon;
+    const bottomY = this.pos.y - this.size.y / 2 + epsilon;
+    const topBlocked = this.#isTileBlockedAt(vec2(cornerX, topY));
+    const bottomBlocked = this.#isTileBlockedAt(vec2(cornerX, bottomY));
+    if (!topBlocked && !bottomBlocked || topBlocked && bottomBlocked) {
+      return;
+    }
+    const verticalCorrectionDirections = topBlocked ? [-1] : [1];
+    for (let offset = UNICORN_AIR_CORNER_VERTICAL_CORRECTION_STEP;
+      offset <= UNICORN_AIR_CORNER_VERTICAL_CORRECTION_MAX;
+      offset += UNICORN_AIR_CORNER_VERTICAL_CORRECTION_STEP) {
+      for (const verticalDirection of verticalCorrectionDirections) {
+        const correctedY = this.pos.y + offset * verticalDirection;
+        const correctedTopY = correctedY + this.size.y / 2 - epsilon;
+        const correctedBottomY = correctedY - this.size.y / 2 + epsilon;
+        if (!this.#isTileBlockedAt(vec2(cornerX, correctedTopY)) &&
+          !this.#isTileBlockedAt(vec2(cornerX, correctedBottomY))) {
+          this.pos.y = correctedY;
+          return;
+        }
+      }
+    }
+  }
+
+  #updateAirCornerHorizontalCorrection() {
+    if (!this.velocity.y) {
+      return;
+    }
+    const epsilon = .001;
+    const verticalMoveDirection = sign(this.velocity.y);
+    const cornerY = this.pos.y + this.velocity.y + verticalMoveDirection * this.size.y / 2;
+    const leftX = this.pos.x - this.size.x / 2 + epsilon;
+    const rightX = this.pos.x + this.size.x / 2 - epsilon;
+    const leftBlocked = this.#isTileBlockedAt(vec2(leftX, cornerY));
+    const rightBlocked = this.#isTileBlockedAt(vec2(rightX, cornerY));
+    if (!leftBlocked && !rightBlocked || leftBlocked && rightBlocked) {
+      return;
+    }
+    const horizontalCorrectionDirections = leftBlocked ? [1] : [-1];
+    for (let offset = UNICORN_AIR_CORNER_HORIZONTAL_CORRECTION_STEP;
+      offset <= UNICORN_AIR_CORNER_HORIZONTAL_CORRECTION_MAX;
+      offset += UNICORN_AIR_CORNER_HORIZONTAL_CORRECTION_STEP) {
+      for (const horizontalDirection of horizontalCorrectionDirections) {
+        const correctedX = this.pos.x + offset * horizontalDirection;
+        const correctedLeftX = correctedX - this.size.x / 2 + epsilon;
+        const correctedRightX = correctedX + this.size.x / 2 - epsilon;
+        if (!this.#isTileBlockedAt(vec2(correctedLeftX, cornerY)) &&
+          !this.#isTileBlockedAt(vec2(correctedRightX, cornerY))) {
+          this.pos.x = correctedX;
+          return;
+        }
+      }
     }
   }
 
