@@ -24,6 +24,7 @@ class Unicorn extends EngineObject {
   #frameInfoBag;
   #animState = this.#ANIM_STATE_IDLE;
   #moveX = 0;
+  #lastMoveX = 1;
   #runFrame = this.#FRAME_INDEX_IDLE;
   #runFrameTimer = new Timer(1.0 / this.#ANIM_RUN_SPEED);
 
@@ -45,7 +46,16 @@ class Unicorn extends EngineObject {
   }
 
   #updateInput() {
-    this.#moveX = keyDirection(INPUT_KEY_UP, INPUT_KEY_DOWN, INPUT_KEY_LEFT, INPUT_KEY_RIGHT).x;
+    const leftDown = keyIsDown(INPUT_KEY_LEFT);
+    const rightDown = keyIsDown(INPUT_KEY_RIGHT);
+    if (keyWasPressed(INPUT_KEY_LEFT)) {
+      this.#lastMoveX = -1;
+    }
+    if (keyWasPressed(INPUT_KEY_RIGHT)) {
+      this.#lastMoveX = 1;
+    }
+    this.#moveX = rightDown && leftDown ? this.#lastMoveX : rightDown - leftDown;
+
     const jumpPressed = keyWasPressed(INPUT_KEY_UP) || keyWasPressed(INPUT_KEY_JUMP);
     const grounded = !!this.groundObject;
 
