@@ -16,6 +16,7 @@ const UNICORN_RUN_HEAD_BOB_SPEED = 16;
 const UNICORN_RUN_ROTATE_ANGLE = 0.22;
 const UNICORN_RUN_SCALE_Y_AMPLIFY = 0.02;
 const UNICORN_JUMP_START_SCALE_TIME = 0.25;
+const UNICORN_JUMP_START_SHRINK_TIME_PERCENT = 0.10;
 const UNICORN_JUMP_START_SHRINK_SCALE_Y = 0.75;
 const UNICORN_JUMP_START_STRETCH_SCALE_Y = 1.35;
 const UNICORN_JUMP_AIR_SCALE_Y = 1.08;
@@ -127,13 +128,15 @@ class Unicorn extends EngineObject {
     }
     if (this.#jumpStartScaleTimer.active()) {
       const p = this.#jumpStartScaleTimer.getPercent();
-      if (p < .35) {
-        return lerp(1, UNICORN_JUMP_START_SHRINK_SCALE_Y, smoothStep(p / .35));
+      if (p < UNICORN_JUMP_START_SHRINK_TIME_PERCENT) {
+        return lerp(1, UNICORN_JUMP_START_SHRINK_SCALE_Y,
+          smoothStep(p / UNICORN_JUMP_START_SHRINK_TIME_PERCENT));
       }
       return lerp(
         UNICORN_JUMP_START_SHRINK_SCALE_Y,
         UNICORN_JUMP_START_STRETCH_SCALE_Y,
-        smoothStep((p - .35) / .65));
+        smoothStep((p - UNICORN_JUMP_START_SHRINK_TIME_PERCENT) /
+          (1 - UNICORN_JUMP_START_SHRINK_TIME_PERCENT)));
     }
     return this.#animState == this.#ANIM_STATE_JUMP ? UNICORN_JUMP_AIR_SCALE_Y : 1;
   }
@@ -150,8 +153,10 @@ class Unicorn extends EngineObject {
     const runScaleY = this.#animState == this.#ANIM_STATE_RUN ?
       1 + runCycle * UNICORN_RUN_SCALE_Y_AMPLIFY : 1;
     const drawSize = vec2(this.size.x, this.size.y * runScaleY * this.#getJumpScaleY());
-    drawTile(headPos, drawSize, this.#frameInfoHead, undefined, runRotate, this.mirror);
-    drawTile(this.pos, drawSize, this.#frameInfoBody.frame(this.#runFrame), undefined, runRotate, this.mirror);
-    drawTile(this.pos, drawSize, this.#frameInfoBag, undefined, runRotate, this.mirror);
+    const scaleAnchorOffset = vec2(0, (drawSize.y - this.size.y) / 2);
+    const drawPos = this.pos.add(scaleAnchorOffset);
+    drawTile(headPos.add(scaleAnchorOffset), drawSize, this.#frameInfoHead, undefined, runRotate, this.mirror);
+    drawTile(drawPos, drawSize, this.#frameInfoBody.frame(this.#runFrame), undefined, runRotate, this.mirror);
+    drawTile(drawPos, drawSize, this.#frameInfoBag, undefined, runRotate, this.mirror);
   }
 }
