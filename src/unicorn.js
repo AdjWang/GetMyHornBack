@@ -10,12 +10,13 @@ const UNICORN_AIR_IMPULSE = 0.04;
 const UNICORN_GROUND_IMPULSE = 0.08;
 const UNICORN_AIR_DAMPING = 0.15;
 const UNICORN_GROUND_DAMPING = 0.3;
-const UNICORN_JUMP_INITIAL_SPEED = 0.27;
+const UNICORN_JUMP_INITIAL_SPEED = 0.3;
 // Tricks.
 // https://www.maddymakesgames.com/articles/celeste_and_forgiveness/index.html
 const UNICORN_JUMP_BUFFER_TIME = 0.12;
 
 // Animation.
+const UNICORN_DRAW_OFFSET = vec2(0.1, 0.3)
 // Head bob animation.
 const UNICORN_IDLE_HEAD_BOB_OFFSET = -0.03;
 const UNICORN_IDLE_HEAD_BOB_AMPLIFY = 0.03;
@@ -60,11 +61,12 @@ class Unicorn extends EngineObject {
   #landScaleTimer = new Timer;
 
   constructor(pos) {
-    const size = vec2(UNICORN_WIDTH / TILE_SIZE, UNICORN_HEIGHT / TILE_SIZE);
-    super(pos, size);
-    this.#frameInfoHead = tile(0, vec2(UNICORN_WIDTH, UNICORN_HEIGHT), 1);
-    this.#frameInfoBody = tile(0, vec2(UNICORN_WIDTH, UNICORN_HEIGHT), 2);
-    this.#frameInfoBag = tile(0, vec2(UNICORN_WIDTH, UNICORN_HEIGHT), 3);
+    const colliderSize = vec2(0.9, 0.9);
+    const frameSize = vec2(UNICORN_WIDTH, UNICORN_HEIGHT);
+    super(pos, colliderSize);
+    this.#frameInfoHead = tile(0, frameSize, 1);
+    this.#frameInfoBody = tile(0, frameSize, 2);
+    this.#frameInfoBag = tile(0, frameSize, 3);
     this.damping = 1;
     this.friction = 1;
     this.setCollision();
@@ -166,12 +168,12 @@ class Unicorn extends EngineObject {
       this.#lastMoveX * UNICORN_RUN_ROTATE_ANGLE : 0;
     const runScaleY = this.#animState == this.#ANIM_STATE_RUN ?
       1 + runCycle * UNICORN_RUN_SCALE_Y_AMPLIFY : 1;
-    const drawSize = this.size;
-    const drawSizeStretch = vec2(this.size.x, this.size.y * runScaleY * this.#getJumpScaleY());
-    const scaleAnchorOffset = vec2(0, (drawSizeStretch.y - this.size.y) / 2);
+    const drawSize = vec2(UNICORN_WIDTH / TILE_SIZE, UNICORN_HEIGHT / TILE_SIZE);
+    const drawSizeStretch = vec2(drawSize.x, drawSize.y * runScaleY * this.#getJumpScaleY());
+    const scaleAnchorOffset = vec2(0, (drawSizeStretch.y - drawSize.y) / 2);
     const drawPos = this.pos.add(scaleAnchorOffset);
-    drawTile(headPos.add(scaleAnchorOffset), drawSizeStretch, this.#frameInfoHead, undefined, runRotate, this.mirror);
-    drawTile(drawPos, drawSizeStretch, this.#frameInfoBody.frame(this.#runFrame), undefined, runRotate, this.mirror);
-    drawTile(drawPos, drawSize, this.#frameInfoBag, undefined, runRotate, this.mirror);
+    drawTile(headPos.add(scaleAnchorOffset).add(UNICORN_DRAW_OFFSET), drawSizeStretch, this.#frameInfoHead, undefined, runRotate, this.mirror);
+    drawTile(drawPos.add(UNICORN_DRAW_OFFSET), drawSizeStretch, this.#frameInfoBody.frame(this.#runFrame), undefined, runRotate, this.mirror);
+    drawTile(drawPos.add(UNICORN_DRAW_OFFSET), drawSize, this.#frameInfoBag, undefined, runRotate, this.mirror);
   }
 }
