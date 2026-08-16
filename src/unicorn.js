@@ -5,7 +5,8 @@ const UNICORN_WIDTH = 21;  // pixels
 const UNICORN_HEIGHT = 24;  // pixels
 
 // Motion.
-const UNICORN_MAX_SPEED_X = 0.22;
+// const UNICORN_MAX_SPEED_X = 0.22;
+const UNICORN_MAX_SPEED_X = 0.10;
 const UNICORN_AIR_IMPULSE = 0.04;
 const UNICORN_GROUND_IMPULSE = 0.08;
 const UNICORN_AIR_DAMPING = 0.15;
@@ -63,6 +64,7 @@ class Unicorn extends EngineObject {
 
   // Motion.
   #moveX = 0;
+  #moveY = 0;
   #lastMoveX = 1;
   #wasGrounded = false;
   #jumpBufferTimer = new Timer;
@@ -98,8 +100,12 @@ class Unicorn extends EngineObject {
   #updateMotion() {
     const leftDown = keyIsDown(INPUT_KEY_LEFT);
     const rightDown = keyIsDown(INPUT_KEY_RIGHT);
+    const upDown = keyIsDown(INPUT_KEY_UP);
+    const downDown = keyIsDown(INPUT_KEY_DOWN);
     const left = leftDown ? 1 : 0;
     const right = rightDown ? 1 : 0;
+    const up = upDown ? 1 : 0;
+    const down = downDown ? 1 : 0;
     if (keyWasPressed(INPUT_KEY_LEFT)) {
       this.#lastMoveX = -1;
     }
@@ -107,10 +113,11 @@ class Unicorn extends EngineObject {
       this.#lastMoveX = 1;
     }
     this.#moveX = rightDown && leftDown ? this.#lastMoveX : right - left;
+    this.#moveY = up - down;
 
     const jumpPressed = keyWasPressed(INPUT_KEY_UP);
     const jumpReleased = keyWasReleased(INPUT_KEY_UP);
-    const jumpHeld = keyIsDown(INPUT_KEY_UP);
+    const jumpHeld = upDown;
     const grounded = !!this.groundObject;
     if (grounded) {
       this.#coyoteTimer.set(UNICORN_COYOTE_TIME);
@@ -143,8 +150,8 @@ class Unicorn extends EngineObject {
     if (this.groundObject) {
       return;
     }
-    this.#updateAirCornerVerticalCorrection();
-    this.#updateAirCornerHorizontalCorrection();
+    this.#updateMoveCornerCorrection();
+    this.#updateJumpCornerCorrection();
   }
 
   #isTileBlockedAt(pos) {
@@ -152,13 +159,16 @@ class Unicorn extends EngineObject {
     return tileData && this.collideWithTile(tileData, pos);
   }
 
-  #updateAirCornerVerticalCorrection() {
-    if (!this.velocity.x) {
+  #updateMoveCornerCorrection() {
+    // Use direction moving or intend to move.
+    const horizontalMoveDirection = sign(this.velocity.x) || this.#moveX;
+    if (!horizontalMoveDirection) {
       return;
     }
     const epsilon = .001;
-    const horizontalMoveDirection = sign(this.velocity.x);
-    const cornerX = this.pos.x + this.velocity.x + horizontalMoveDirection * this.size.x / 2;
+    const horizontalMove = this.velocity.x ||
+      horizontalMoveDirection * UNICORN_AIR_CORNER_VERTICAL_CORRECTION_MAX;
+    const cornerX = this.pos.x + horizontalMove + horizontalMoveDirection * this.size.x / 2;
     const topY = this.pos.y + this.size.y / 2 - epsilon;
     const bottomY = this.pos.y - this.size.y / 2 + epsilon;
     const topBlocked = this.#isTileBlockedAt(vec2(cornerX, topY));
@@ -172,10 +182,10 @@ class Unicorn extends EngineObject {
       offset += UNICORN_AIR_CORNER_VERTICAL_CORRECTION_STEP) {
       for (const verticalDirection of verticalCorrectionDirections) {
         const correctedY = this.pos.y + offset * verticalDirection;
-        const correctedTopY = correctedY + this.size.y / 2 - epsilon;
-        const correctedBottomY = correctedY - this.size.y / 2 + epsilon;
-        if (!this.#isTileBlockedAt(vec2(cornerX, correctedTopY)) &&
-          !this.#isTileBlockedAt(vec2(cornerX, correctedBottomY))) {
+        const correctedPos = vec2(this.pos.x, correctedY);
+        const correctedNextPos = vec2(this.pos.x + horizontalMove, correctedY);
+        if (!tileCollisionTest(correctedPos, this.size, this) &&
+          !tileCollisionTest(correctedNextPos, this.size, this)) {
           this.pos.y = correctedY;
           return;
         }
@@ -183,13 +193,16 @@ class Unicorn extends EngineObject {
     }
   }
 
-  #updateAirCornerHorizontalCorrection() {
-    if (!this.velocity.y) {
+  #updateJumpCornerCorrection() {
+    // Use direction moving or intend to move.
+    const verticalMoveDirection = sign(this.velocity.y) || this.#moveY;
+    if (!verticalMoveDirection) {
       return;
     }
     const epsilon = .001;
-    const verticalMoveDirection = sign(this.velocity.y);
-    const cornerY = this.pos.y + this.velocity.y + verticalMoveDirection * this.size.y / 2;
+    const verticalMove = this.velocity.y ||
+      verticalMoveDirection * UNICORN_AIR_CORNER_HORIZONTAL_CORRECTION_MAX;
+    const cornerY = this.pos.y + verticalMove + verticalMoveDirection * this.size.y / 2;
     const leftX = this.pos.x - this.size.x / 2 + epsilon;
     const rightX = this.pos.x + this.size.x / 2 - epsilon;
     const leftBlocked = this.#isTileBlockedAt(vec2(leftX, cornerY));
@@ -203,11 +216,14 @@ class Unicorn extends EngineObject {
       offset += UNICORN_AIR_CORNER_HORIZONTAL_CORRECTION_STEP) {
       for (const horizontalDirection of horizontalCorrectionDirections) {
         const correctedX = this.pos.x + offset * horizontalDirection;
-        const correctedLeftX = correctedX - this.size.x / 2 + epsilon;
-        const correctedRightX = correctedX + this.size.x / 2 - epsilon;
-        if (!this.#isTileBlockedAt(vec2(correctedLeftX, cornerY)) &&
-          !this.#isTileBlockedAt(vec2(correctedRightX, cornerY))) {
+        const correctedPos = vec2(correctedX, this.pos.y);
+        const correctedNextPos = vec2(correctedX, this.pos.y + verticalMove);
+        if (!tileCollisionTest(correctedPos, this.size, this) &&
+          !tileCollisionTest(correctedNextPos, this.size, this)) {
           this.pos.x = correctedX;
+          if (!this.velocity.y) {
+            this.velocity.y = UNICORN_JUMP_INITIAL_SPEED;
+          }
           return;
         }
       }
