@@ -42,11 +42,8 @@ const level1 = [
 let player;
 
 function gameInit() {
-    // glEnable = false;
-    const worldWidth = 30;
-    const worldHeight = 20;
     // create tile collision and visible tile layer
-    initTileCollision(vec2(worldWidth, worldHeight));
+    initTileCollision(vec2(WORLD_WIDTH, WORLD_HEIGHT));
     const pos = vec2(0, 0);
     const tileLayer = new TileLayer(pos, tileCollisionSize);
 
@@ -59,14 +56,12 @@ function gameInit() {
         for (let x = 0; x < tileCollisionSize.x; x++) {
             let pos = vec2(x, tileCollisionSize.y - y - 1);
             // set tile data
-            const tile_id = level1[y * worldWidth + pos.x];
+            const tile_id = level1[y * WORLD_WIDTH + pos.x];
             if (tile_id == 0) {
                 continue;
             }
             const tileIndex = tile_id - 1;
-            const direction = 0;
-            const mirror = 0;
-            const data = new TileLayerData(tileIndex, direction, mirror);
+            const data = new TileLayerData(tileIndex);
             tileLayer.setData(pos, data);
             setTileCollisionData(pos, 1);
         }
@@ -95,7 +90,7 @@ function gameInit() {
         new Color(0, 0, 0, 0), new Color(0, 0, 0, 0), // colorEndA, colorEndB
         2, .2, .2, .1, .05, // time, sizeStart, sizeEnd, speed, angleSpeed
         .99, 1, 1, PI,      // damping, angleDamping, gravityScale, cone
-        .05, .5, 1, 1       // fadeRate, randomness, collide, additive
+        .05, .5, true, true       // fadeRate, randomness, collide, additive
     );
     particleEmitter.restitution = .3; // bounce when it collides
     particleEmitter.trailScale = 2;  // stretch in direction of motion
@@ -127,8 +122,7 @@ function gameUpdatePost() {
 ///////////////////////////////////////////////////////////////////////////////
 function gameRender() {
     // draw a grey square in the background without using webgl
-    // drawRect(vec2(16,8), vec2(20,14), new Color(.6,.6,.6), 0, 0);
-    drawRect(vec2(16, 8), vec2(32, 16), new Color(.6, .6, .6), 0, 0);
+    drawRect(vec2(16, 8), vec2(32, 16), new Color(.6, .6, .6), 0, /*screenSpace*/ false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

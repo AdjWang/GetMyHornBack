@@ -1,5 +1,8 @@
 'use strict';
 
+const UNICORN_WIDTH = 21;  // pixels
+const UNICORN_HEIGHT = 24;  // pixels
+
 class Unicorn extends EngineObject {
   #FRAME_INDEX_IDLE = 0;
   #FRAME_INDEX_RUN = 1;
@@ -13,11 +16,11 @@ class Unicorn extends EngineObject {
   #runFrameTimer = new Timer(1.0 / this.#ANIM_RUN_SPEED);
 
   constructor(pos) {
-    const size = vec2(21.0/16, 24/16.0);
+    const size = vec2(UNICORN_WIDTH / TILE_SIZE, UNICORN_HEIGHT / TILE_SIZE);
     super(pos, size);
-    this.#playerHead = tile(0, vec2(21, 24), 1);
-    this.#playerBody = tile(0, vec2(21, 24), 2);
-    this.#playerBag =  tile(0, vec2(21, 24), 3);
+    this.#playerHead = tile(0, vec2(UNICORN_WIDTH, UNICORN_HEIGHT), 1);
+    this.#playerBody = tile(0, vec2(UNICORN_WIDTH, UNICORN_HEIGHT), 2);
+    this.#playerBag =  tile(0, vec2(UNICORN_WIDTH, UNICORN_HEIGHT), 3);
     this.setCollision();
   }
 
