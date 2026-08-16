@@ -5,8 +5,7 @@ const UNICORN_WIDTH = 21;  // pixels
 const UNICORN_HEIGHT = 24;  // pixels
 
 // Motion.
-// const UNICORN_MAX_SPEED_X = 0.22;
-const UNICORN_MAX_SPEED_X = 0.10;
+const UNICORN_MAX_SPEED_X = 0.22;
 const UNICORN_AIR_IMPULSE = 0.04;
 const UNICORN_GROUND_IMPULSE = 0.08;
 const UNICORN_AIR_DAMPING = 0.15;
@@ -195,7 +194,7 @@ class Unicorn extends EngineObject {
 
   #updateJumpCornerCorrection() {
     // Use direction moving or intend to move.
-    const verticalMoveDirection = sign(this.velocity.y) || this.#moveY;
+    const verticalMoveDirection = this.velocity.y > 0.0 ? 1 : 0 || this.#moveY;
     if (!verticalMoveDirection) {
       return;
     }
