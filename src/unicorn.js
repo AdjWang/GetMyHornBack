@@ -19,6 +19,7 @@ class Unicorn extends EngineObject {
   #frameInfoBody;
   #frameInfoBag;
   #animState = this.#ANIM_STATE_IDLE;
+  #moveX = 0;
   #runFrame = this.#FRAME_INDEX_IDLE;
   #runFrameTimer = new Timer(1.0 / this.#ANIM_RUN_SPEED);
 
@@ -32,26 +33,32 @@ class Unicorn extends EngineObject {
   }
 
   update() {
-    const moveX = keyDirection(INPUT_KEY_UP, INPUT_KEY_DOWN, INPUT_KEY_LEFT, INPUT_KEY_RIGHT).x;
+    super.update();
+    this.#updateInput();
+    this.#updateAnim();
+  }
+
+  #updateInput() {
+    this.#moveX = keyDirection(INPUT_KEY_UP, INPUT_KEY_DOWN, INPUT_KEY_LEFT, INPUT_KEY_RIGHT).x;
     const jumpPressed = keyWasPressed(INPUT_KEY_UP) || keyWasPressed(INPUT_KEY_JUMP);
     const grounded = !!this.groundObject;
 
-    this.velocity.x = moveX * UNICORN_RUN_SPEED;
+    this.velocity.x = this.#moveX * UNICORN_RUN_SPEED;
     if (jumpPressed && grounded) {
       this.velocity.y = UNICORN_JUMP_INITIAL_SPEED;
     }
-    if (moveX) {
-      this.mirror = moveX > 0;
+    if (this.#moveX) {
+      this.mirror = this.#moveX > 0;
     }
+  }
 
-    super.update();
-
+  #updateAnim() {
     if (!this.groundObject) {
       this.#runFrame = this.#FRAME_INDEX_JUMP;
       return;
     }
 
-    this.#animState = moveX ? this.#ANIM_STATE_RUN : this.#ANIM_STATE_IDLE;
+    this.#animState = this.#moveX ? this.#ANIM_STATE_RUN : this.#ANIM_STATE_IDLE;
     if (this.#animState == this.#ANIM_STATE_IDLE) {
       this.#runFrame = this.#FRAME_INDEX_IDLE;
       return;
