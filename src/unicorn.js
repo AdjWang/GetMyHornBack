@@ -1,20 +1,30 @@
 'use strict';
 
+// Size of single frame.
 const UNICORN_WIDTH = 21;  // pixels
 const UNICORN_HEIGHT = 24;  // pixels
+
+// Motion.
 const UNICORN_MAX_SPEED_X = 0.30;
 const UNICORN_AIR_IMPULSE = 0.04;
 const UNICORN_GROUND_IMPULSE = 0.08;
 const UNICORN_AIR_DAMPING = 0.15;
 const UNICORN_GROUND_DAMPING = 0.3;
 const UNICORN_JUMP_INITIAL_SPEED = 0.27;
+
+// Animation.
+// Head bob animation.
 const UNICORN_IDLE_HEAD_BOB_OFFSET = -0.03;
 const UNICORN_IDLE_HEAD_BOB_AMPLIFY = 0.03;
 const UNICORN_IDLE_HEAD_BOB_SPEED = 8;
+// When running, use zero bob offset.
 const UNICORN_RUN_HEAD_BOB_AMPLIFY = 0.06;
 const UNICORN_RUN_HEAD_BOB_SPEED = 16;
+// Slightly rotate body when running to make it looks weight.
 const UNICORN_RUN_ROTATE_ANGLE = 0.22;
+// Stretch when running to make it looks dynamic.
 const UNICORN_RUN_SCALE_Y_AMPLIFY = 0.02;
+// Stretch when jumping to make it looks dynamic.
 const UNICORN_JUMP_AIR_SCALE_Y = 1.12;
 const UNICORN_LAND_SCALE_TIME = 0.25;
 const UNICORN_LAND_SHRINK_SCALE_Y = 0.86;
@@ -33,10 +43,14 @@ class Unicorn extends EngineObject {
   #frameInfoHead;
   #frameInfoBody;
   #frameInfoBag;
-  #animState = this.#ANIM_STATE_IDLE;
+
+  // Motion.
   #moveX = 0;
   #lastMoveX = 1;
   #wasGrounded = false;
+
+  // Animation.
+  #animState = this.#ANIM_STATE_IDLE;
   #runFrame = this.#FRAME_INDEX_IDLE;
   #runFrameTimer = new Timer(1.0 / this.#ANIM_RUN_SPEED);
   #landScaleTimer = new Timer;
@@ -53,12 +67,13 @@ class Unicorn extends EngineObject {
   }
 
   update() {
-    this.#updateInput();
+    // Update motion before updating physic.
+    this.#updateMotion();
     super.update();
     this.#updateAnim();
   }
 
-  #updateInput() {
+  #updateMotion() {
     const leftDown = keyIsDown(INPUT_KEY_LEFT);
     const rightDown = keyIsDown(INPUT_KEY_RIGHT);
     const left = leftDown ? 1 : 0;
