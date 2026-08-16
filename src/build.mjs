@@ -54,22 +54,25 @@ const ROADROLLER_EXTREME = false;
 const sourceFiles =
 [
     // LittleJS engine files
-    `../../src/engineRelease.js`,
-    `../../src/engineMath.js`,
-    `../../src/engineUtilities.js`,
-    `../../src/engineSettings.js`,
-    `../../src/engineObject.js`,
-    `../../src/engineDraw.js`,
-    `../../src/engineInput.js`,
-    `../../src/engineAudio.js`,
-    `../../src/engineTileLayer.js`,
-    `../../src/engineParticles.js`,
-    `../../src/engineMedals.js`,
-    `../../src/engineWebGL.js`,
-    `../../src/engine.js`,
+    `engine/engineRelease.js`,
+    `engine/engineMath.js`,
+    `engine/engineUtilities.js`,
+    `engine/engineSettings.js`,
+    `engine/engineObject.js`,
+    `engine/engineDraw.js`,
+    `engine/engineInput.js`,
+    `engine/engineAudio.js`,
+    `engine/engineTileLayer.js`,
+    `engine/engineParticles.js`,
+    `engine/engineMedals.js`,
+    `engine/engineWebGL.js`,
+    `engine/engine.js`,
 
     // game files
-    'game.js',
+    'global.js',
+    'gameObject.js',
+    'unicorn.js',
+    'main.js',
 ];
 const dataFiles =
 [

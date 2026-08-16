@@ -1,0 +1,36 @@
+{
+  "name": "RainbowDefense",
+  "version": "0.0.0",
+  "description": "Rainbow defense.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AdjWang/RainbowDefense.git"
+  },
+  "keywords": [
+    "LittleJS",
+    "HTML5",
+    "JavaScript",
+    "game",
+    "engine",
+    "library",
+    "JS13K",
+    "webgl"
+  ],
+  "author": "AdjWang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AdjWang/RainbowDefense/issues"
+  },
+  "homepage": "https://github.com/AdjWang/RainbowDefense",
+  "scripts": {
+    "start": "npx http-server -p 8000 src",
+    "build": "node src/build.mjs",
+    "build:engine": "node src/engine/engineBuild.mjs"
+  },
+  "devDependencies": {
+    "ect-bin": "~1.4.1",
+    "google-closure-compiler": "~20230502.0.0",
+    "roadroller": "~2.1.0",
+    "uglify-js": "~3.17.4"
+  }
+}

@@ -29,7 +29,7 @@ const UNICORN_AIR_CORNER_VERTICAL_CORRECTION_MAX = 0.3;
 const UNICORN_AIR_CORNER_VERTICAL_CORRECTION_STEP = 0.03;
 
 // Animation.
-const UNICORN_DRAW_OFFSET = vec2(0.1, 0.3)
+const UNICORN_DRAW_OFFSET = vec2(0.1, 0.3);
 // Head bob animation.
 const UNICORN_IDLE_HEAD_BOB_OFFSET = -0.03;
 const UNICORN_IDLE_HEAD_BOB_AMPLIFY = 0.03;
@@ -46,42 +46,33 @@ const UNICORN_JUMP_AIR_SCALE_Y = 1.12;
 const UNICORN_LAND_SCALE_TIME = 0.25;
 const UNICORN_LAND_SHRINK_SCALE_Y = 0.86;
 
+const UNICORN_ANIM_STATE_IDLE = 0;
+const UNICORN_ANIM_STATE_RUN = 1;
+const UNICORN_ANIM_STATE_JUMP = 2;
+const UNICORN_FRAME_INDEX_IDLE = 0;
+const UNICORN_FRAME_INDEX_JUMP = 0;
+const UNICORN_FRAME_INDEX_RUN = 1;
+const UNICORN_FRAME_COUNT_RUN = 2;
+const UNICORN_ANIM_RUN_SPEED = 8;  // frame/sec
+
 class Unicorn extends EngineObject {
-  #ANIM_STATE_IDLE = 0;
-  #ANIM_STATE_RUN = 1;
-  #ANIM_STATE_JUMP = 2;
-
-  #FRAME_INDEX_IDLE = 0;
-  #FRAME_INDEX_JUMP = 0;
-  #FRAME_INDEX_RUN = 1;
-  #FRAME_COUNT_RUN = 2;
-  #ANIM_RUN_SPEED = 8;  // frame/sec
-
-  #frameInfoHead;
-  #frameInfoBody;
-  #frameInfoBag;
-
-  // Motion.
-  #moveX = 0;
-  #moveY = 0;
-  #lastMoveX = 1;
-  #wasGrounded = false;
-  #jumpBufferTimer = new Timer;
-  #coyoteTimer = new Timer;
-
-  // Animation.
-  #animState = this.#ANIM_STATE_IDLE;
-  #runFrame = this.#FRAME_INDEX_IDLE;
-  #runFrameTimer = new Timer(1.0 / this.#ANIM_RUN_SPEED);
-  #landScaleTimer = new Timer;
-
   constructor(pos) {
     const colliderSize = vec2(0.9, 0.9);
     const frameSize = vec2(UNICORN_WIDTH, UNICORN_HEIGHT);
     super(pos, colliderSize);
-    this.#frameInfoHead = tile(0, frameSize, 1);
-    this.#frameInfoBody = tile(0, frameSize, 2);
-    this.#frameInfoBag = tile(0, frameSize, 3);
+    this._frameInfoHead = tile(0, frameSize, 1);
+    this._frameInfoBody = tile(0, frameSize, 2);
+    this._frameInfoBag = tile(0, frameSize, 3);
+    this._moveX = 0;
+    this._moveY = 0;
+    this._lastMoveX = 1;
+    this._wasGrounded = false;
+    this._jumpBufferTimer = new Timer;
+    this._coyoteTimer = new Timer;
+    this._animState = UNICORN_ANIM_STATE_IDLE;
+    this._runFrame = UNICORN_FRAME_INDEX_IDLE;
+    this._runFrameTimer = new Timer(1.0 / UNICORN_ANIM_RUN_SPEED);
+    this._landScaleTimer = new Timer;
     this.damping = 1;
     this.friction = 1;
     this.setCollision();
@@ -89,14 +80,14 @@ class Unicorn extends EngineObject {
 
   update() {
     // Update motion before updating physic.
-    this.#updateMotion();
-    this.#updateAirCornerCorrection();
+    this._updateMotion();
+    this._updateAirCornerCorrection();
     super.update();
-    this.#updateBufferedJump();
-    this.#updateAnim();
+    this._updateBufferedJump();
+    this._updateAnim();
   }
 
-  #updateMotion() {
+  _updateMotion() {
     const leftDown = keyIsDown(INPUT_KEY_LEFT);
     const rightDown = keyIsDown(INPUT_KEY_RIGHT);
     const upDown = keyIsDown(INPUT_KEY_UP);
@@ -106,61 +97,61 @@ class Unicorn extends EngineObject {
     const up = upDown ? 1 : 0;
     const down = downDown ? 1 : 0;
     if (keyWasPressed(INPUT_KEY_LEFT)) {
-      this.#lastMoveX = -1;
+      this._lastMoveX = -1;
     }
     if (keyWasPressed(INPUT_KEY_RIGHT)) {
-      this.#lastMoveX = 1;
+      this._lastMoveX = 1;
     }
-    this.#moveX = rightDown && leftDown ? this.#lastMoveX : right - left;
-    this.#moveY = up - down;
+    this._moveX = rightDown && leftDown ? this._lastMoveX : right - left;
+    this._moveY = up - down;
 
     const jumpPressed = keyWasPressed(INPUT_KEY_UP);
     const jumpReleased = keyWasReleased(INPUT_KEY_UP);
     const jumpHeld = upDown;
     const grounded = !!this.groundObject;
     if (grounded) {
-      this.#coyoteTimer.set(UNICORN_COYOTE_TIME);
+      this._coyoteTimer.set(UNICORN_COYOTE_TIME);
     }
     const impulse = grounded ? UNICORN_GROUND_IMPULSE : UNICORN_AIR_IMPULSE;
     const damping = grounded ? UNICORN_GROUND_DAMPING : UNICORN_AIR_DAMPING;
-    this.velocity.x = this.velocity.x * (1.0 - damping) + this.#moveX * impulse;
+    this.velocity.x = this.velocity.x * (1.0 - damping) + this._moveX * impulse;
     this.velocity.x = clamp(this.velocity.x, -UNICORN_MAX_SPEED_X, UNICORN_MAX_SPEED_X);
-    if (jumpPressed && (grounded || this.#coyoteTimer.active())) {
+    if (jumpPressed && (grounded || this._coyoteTimer.active())) {
       this.velocity.y = UNICORN_JUMP_INITIAL_SPEED;
-      this.#coyoteTimer.unset();
+      this._coyoteTimer.unset();
     }
     else if (jumpPressed) {
-      this.#jumpBufferTimer.set(UNICORN_JUMP_BUFFER_TIME);
+      this._jumpBufferTimer.set(UNICORN_JUMP_BUFFER_TIME);
     }
     if (jumpReleased && this.velocity.y > 0) {
       this.velocity.y *= 1.0 - UNICORN_JUMP_RELEASE_DAMPING;
     }
     if (jumpReleased) {
-      this.#jumpBufferTimer.unset();
+      this._jumpBufferTimer.unset();
     }
     this.gravityScale = jumpHeld && !grounded && abs(this.velocity.y) < UNICORN_JUMP_PEAK_SPEED ?
       UNICORN_JUMP_PEAK_GRAVITY_SCALE : 1;
-    if (this.#moveX) {
-      this.mirror = this.#moveX > 0;
+    if (this._moveX) {
+      this.mirror = this._moveX > 0;
     }
   }
 
-  #updateAirCornerCorrection() {
+  _updateAirCornerCorrection() {
     if (this.groundObject) {
       return;
     }
-    this.#updateMoveCornerCorrection();
-    this.#updateJumpCornerCorrection();
+    this._updateMoveCornerCorrection();
+    this._updateJumpCornerCorrection();
   }
 
-  #isTileBlockedAt(pos) {
+  _isTileBlockedAt(pos) {
     const tileData = getTileCollisionData(pos);
     return tileData && this.collideWithTile(tileData, pos);
   }
 
-  #updateMoveCornerCorrection() {
+  _updateMoveCornerCorrection() {
     // Use direction moving or intend to move.
-    const horizontalMoveDirection = sign(this.velocity.x) || this.#moveX;
+    const horizontalMoveDirection = sign(this.velocity.x) || this._moveX;
     if (!horizontalMoveDirection) {
       return;
     }
@@ -170,8 +161,8 @@ class Unicorn extends EngineObject {
     const cornerX = this.pos.x + horizontalMove + horizontalMoveDirection * this.size.x / 2;
     const topY = this.pos.y + this.size.y / 2 - epsilon;
     const bottomY = this.pos.y - this.size.y / 2 + epsilon;
-    const topBlocked = this.#isTileBlockedAt(vec2(cornerX, topY));
-    const bottomBlocked = this.#isTileBlockedAt(vec2(cornerX, bottomY));
+    const topBlocked = this._isTileBlockedAt(vec2(cornerX, topY));
+    const bottomBlocked = this._isTileBlockedAt(vec2(cornerX, bottomY));
     if (!topBlocked && !bottomBlocked || topBlocked && bottomBlocked) {
       return;
     }
@@ -192,9 +183,9 @@ class Unicorn extends EngineObject {
     }
   }
 
-  #updateJumpCornerCorrection() {
+  _updateJumpCornerCorrection() {
     // Use direction moving or intend to move.
-    const verticalMoveDirection = this.velocity.y > 0.0 ? 1 : 0 || this.#moveY;
+    const verticalMoveDirection = (this.velocity.y > 0.0 ? 1 : 0) || this._moveY;
     if (!verticalMoveDirection) {
       return;
     }
@@ -204,8 +195,8 @@ class Unicorn extends EngineObject {
     const cornerY = this.pos.y + verticalMove + verticalMoveDirection * this.size.y / 2;
     const leftX = this.pos.x - this.size.x / 2 + epsilon;
     const rightX = this.pos.x + this.size.x / 2 - epsilon;
-    const leftBlocked = this.#isTileBlockedAt(vec2(leftX, cornerY));
-    const rightBlocked = this.#isTileBlockedAt(vec2(rightX, cornerY));
+    const leftBlocked = this._isTileBlockedAt(vec2(leftX, cornerY));
+    const rightBlocked = this._isTileBlockedAt(vec2(rightX, cornerY));
     if (!leftBlocked && !rightBlocked || leftBlocked && rightBlocked) {
       return;
     }
@@ -229,71 +220,72 @@ class Unicorn extends EngineObject {
     }
   }
 
-  #updateBufferedJump() {
-    if (!this.#jumpBufferTimer.active() || !this.groundObject) {
+  _updateBufferedJump() {
+    if (!this._jumpBufferTimer.active() || !this.groundObject) {
       return;
     }
     this.velocity.y = UNICORN_JUMP_INITIAL_SPEED;
     this.groundObject = 0;
-    this.#jumpBufferTimer.unset();
-    this.#coyoteTimer.unset();
+    this._jumpBufferTimer.unset();
+    this._coyoteTimer.unset();
   }
 
-  #updateAnim() {
+  _updateAnim() {
     const grounded = !!this.groundObject;
-    if (grounded && !this.#wasGrounded) {
-      this.#landScaleTimer.set(UNICORN_LAND_SCALE_TIME);
+    if (grounded && !this._wasGrounded) {
+      this._landScaleTimer.set(UNICORN_LAND_SCALE_TIME);
     }
-    this.#wasGrounded = grounded;
+    this._wasGrounded = grounded;
 
     if (!grounded) {
-      this.#animState = this.#ANIM_STATE_JUMP;
-      this.#runFrame = this.#FRAME_INDEX_JUMP;
+      this._animState = UNICORN_ANIM_STATE_JUMP;
+      this._runFrame = UNICORN_FRAME_INDEX_JUMP;
       return;
     }
 
-    this.#animState = abs(this.velocity.x) > .01 ? this.#ANIM_STATE_RUN : this.#ANIM_STATE_IDLE;
-    if (this.#animState == this.#ANIM_STATE_IDLE) {
-      this.#runFrame = this.#FRAME_INDEX_IDLE;
+    this._animState = abs(this.velocity.x) > .01 ? UNICORN_ANIM_STATE_RUN : UNICORN_ANIM_STATE_IDLE;
+    if (this._animState == UNICORN_ANIM_STATE_IDLE) {
+      this._runFrame = UNICORN_FRAME_INDEX_IDLE;
       return;
     }
 
-    if (this.#runFrame < this.#FRAME_INDEX_RUN) {
-      this.#runFrame = this.#FRAME_INDEX_RUN;
+    if (this._runFrame < UNICORN_FRAME_INDEX_RUN) {
+      this._runFrame = UNICORN_FRAME_INDEX_RUN;
     }
-    else if (this.#runFrameTimer.elapsed()) {
-      this.#runFrameTimer.set(1.0 / this.#ANIM_RUN_SPEED);
-      this.#runFrame = this.#FRAME_INDEX_RUN +
-        (this.#runFrame - this.#FRAME_INDEX_RUN + 1) % this.#FRAME_COUNT_RUN;
+    else if (this._runFrameTimer.elapsed()) {
+      this._runFrameTimer.set(1.0 / UNICORN_ANIM_RUN_SPEED);
+      this._runFrame = UNICORN_FRAME_INDEX_RUN +
+        (this._runFrame - UNICORN_FRAME_INDEX_RUN + 1) % UNICORN_FRAME_COUNT_RUN;
     }
   }
 
-  #getJumpScaleY() {
-    if (this.#landScaleTimer.active()) {
-      const p = smoothStep(this.#landScaleTimer.getPercent());
+  _getJumpScaleY() {
+    if (this._landScaleTimer.active()) {
+      const p = smoothStep(this._landScaleTimer.getPercent());
       return lerp(UNICORN_LAND_SHRINK_SCALE_Y, 1, p);
     }
-    return this.#animState == this.#ANIM_STATE_JUMP ? UNICORN_JUMP_AIR_SCALE_Y : 1;
+    return this._animState == UNICORN_ANIM_STATE_JUMP ? UNICORN_JUMP_AIR_SCALE_Y : 1;
   }
 
   render() {
     const runCycle = Math.sin(time * UNICORN_RUN_HEAD_BOB_SPEED);
-    const headBob = this.#animState == this.#ANIM_STATE_IDLE ?
+    const headBob = this._animState == UNICORN_ANIM_STATE_IDLE ?
       Math.sin(time * UNICORN_IDLE_HEAD_BOB_SPEED) * UNICORN_IDLE_HEAD_BOB_AMPLIFY + UNICORN_IDLE_HEAD_BOB_OFFSET :
-      this.#animState == this.#ANIM_STATE_RUN ?
+      this._animState == UNICORN_ANIM_STATE_RUN ?
         runCycle * UNICORN_RUN_HEAD_BOB_AMPLIFY : 0;
     const headPos = this.pos.add(vec2(0, headBob));
-    const runRotate = this.#animState == this.#ANIM_STATE_RUN ?
-      this.#lastMoveX * UNICORN_RUN_ROTATE_ANGLE : 0;
-    const runScaleY = this.#animState == this.#ANIM_STATE_RUN ?
+    const runRotate = this._animState == UNICORN_ANIM_STATE_RUN ?
+      this._lastMoveX * UNICORN_RUN_ROTATE_ANGLE : 0;
+    const runScaleY = this._animState == UNICORN_ANIM_STATE_RUN ?
       1 + runCycle * UNICORN_RUN_SCALE_Y_AMPLIFY : 1;
     const drawOffset = vec2(UNICORN_DRAW_OFFSET.x * (this.mirror ? -1.0 : 1.0), UNICORN_DRAW_OFFSET.y);
     const drawSize = vec2(UNICORN_WIDTH / TILE_SIZE, UNICORN_HEIGHT / TILE_SIZE);
-    const drawSizeStretch = vec2(drawSize.x, drawSize.y * runScaleY * this.#getJumpScaleY());
+    const drawSizeStretch = vec2(drawSize.x, drawSize.y * runScaleY * this._getJumpScaleY());
     const scaleAnchorOffset = vec2(0, (drawSizeStretch.y - drawSize.y) / 2);
     const drawPos = this.pos.add(scaleAnchorOffset);
-    drawTile(headPos.add(scaleAnchorOffset).add(drawOffset), drawSizeStretch, this.#frameInfoHead, undefined, runRotate, this.mirror);
-    drawTile(drawPos.add(drawOffset), drawSizeStretch, this.#frameInfoBody.frame(this.#runFrame), undefined, runRotate, this.mirror);
-    drawTile(drawPos.add(drawOffset), drawSize, this.#frameInfoBag, undefined, runRotate, this.mirror);
+    drawTile(headPos.add(scaleAnchorOffset).add(drawOffset), drawSizeStretch, this._frameInfoHead, undefined, runRotate, this.mirror);
+    drawTile(drawPos.add(drawOffset), drawSizeStretch, this._frameInfoBody.frame(this._runFrame), undefined, runRotate, this.mirror);
+    drawTile(drawPos.add(drawOffset), drawSize, this._frameInfoBag, undefined, runRotate, this.mirror);
   }
+
 }
