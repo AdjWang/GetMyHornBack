@@ -134,11 +134,12 @@ class Unicorn extends EngineObject {
       this.#lastMoveX * UNICORN_RUN_ROTATE_ANGLE : 0;
     const runScaleY = this.#animState == this.#ANIM_STATE_RUN ?
       1 + runCycle * UNICORN_RUN_SCALE_Y_AMPLIFY : 1;
-    const drawSize = vec2(this.size.x, this.size.y * runScaleY * this.#getJumpScaleY());
-    const scaleAnchorOffset = vec2(0, (drawSize.y - this.size.y) / 2);
+    const drawSize = this.size;
+    const drawSizeStretch = vec2(this.size.x, this.size.y * runScaleY * this.#getJumpScaleY());
+    const scaleAnchorOffset = vec2(0, (drawSizeStretch.y - this.size.y) / 2);
     const drawPos = this.pos.add(scaleAnchorOffset);
-    drawTile(headPos.add(scaleAnchorOffset), drawSize, this.#frameInfoHead, undefined, runRotate, this.mirror);
-    drawTile(drawPos, drawSize, this.#frameInfoBody.frame(this.#runFrame), undefined, runRotate, this.mirror);
+    drawTile(headPos.add(scaleAnchorOffset), drawSizeStretch, this.#frameInfoHead, undefined, runRotate, this.mirror);
+    drawTile(drawPos, drawSizeStretch, this.#frameInfoBody.frame(this.#runFrame), undefined, runRotate, this.mirror);
     drawTile(drawPos, drawSize, this.#frameInfoBag, undefined, runRotate, this.mirror);
   }
 }
