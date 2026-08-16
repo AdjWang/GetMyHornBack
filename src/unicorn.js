@@ -10,9 +10,9 @@ class Unicorn extends EngineObject {
     const size = vec2(21.0/16, 24/16.0);
     super(pos, size);
     this.#size = size;
-    this.#playerHead = tile(1, vec2(21, 24));
-    this.#playerBody = tile(2, vec2(21, 24));
-    this.#playerBag =  tile(3, vec2(21, 24));
+    this.#playerHead = tile(0, vec2(21, 24), 1);
+    this.#playerBody = tile(0, vec2(21, 24), 2);
+    this.#playerBag =  tile(0, vec2(21, 24), 3);
     this.setCollision();
   }
 

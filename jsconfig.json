@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "target": "ES2020",
+    "module": "esnext",
+    "noImplicitAny": false,
+    "strict": false
+  },
+  "include": [
+    "src/**/*.js"
+  ],
+  "exclude": [
+    "src/engine/engineRelease.js",
+    "src/engine/engineExport.js"
+  ]
+}
