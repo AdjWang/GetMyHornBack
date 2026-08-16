@@ -15,6 +15,12 @@ const UNICORN_RUN_HEAD_BOB_AMPLIFY = 0.06;
 const UNICORN_RUN_HEAD_BOB_SPEED = 16;
 const UNICORN_RUN_ROTATE_ANGLE = 0.22;
 const UNICORN_RUN_SCALE_Y_AMPLIFY = 0.02;
+const UNICORN_JUMP_START_SCALE_TIME = 0.25;
+const UNICORN_JUMP_START_SHRINK_SCALE_Y = 0.75;
+const UNICORN_JUMP_START_STRETCH_SCALE_Y = 1.35;
+const UNICORN_JUMP_AIR_SCALE_Y = 1.08;
+const UNICORN_LAND_SCALE_TIME = 0.25;
+const UNICORN_LAND_SHRINK_SCALE_Y = 0.86;
 
 class Unicorn extends EngineObject {
   #ANIM_STATE_IDLE = 0;
@@ -33,8 +39,11 @@ class Unicorn extends EngineObject {
   #animState = this.#ANIM_STATE_IDLE;
   #moveX = 0;
   #lastMoveX = 1;
+  #wasGrounded = false;
   #runFrame = this.#FRAME_INDEX_IDLE;
   #runFrameTimer = new Timer(1.0 / this.#ANIM_RUN_SPEED);
+  #jumpStartScaleTimer = new Timer;
+  #landScaleTimer = new Timer;
 
   constructor(pos) {
     const size = vec2(UNICORN_WIDTH / TILE_SIZE, UNICORN_HEIGHT / TILE_SIZE);
@@ -75,6 +84,7 @@ class Unicorn extends EngineObject {
     this.velocity.x = clamp(this.velocity.x, -UNICORN_MAX_SPEED_X, UNICORN_MAX_SPEED_X);
     if (jumpPressed && grounded) {
       this.velocity.y = UNICORN_JUMP_INITIAL_SPEED;
+      this.#jumpStartScaleTimer.set(UNICORN_JUMP_START_SCALE_TIME);
     }
     if (this.#moveX) {
       this.mirror = this.#moveX > 0;
@@ -82,7 +92,13 @@ class Unicorn extends EngineObject {
   }
 
   #updateAnim() {
-    if (!this.groundObject) {
+    const grounded = !!this.groundObject;
+    if (grounded && !this.#wasGrounded) {
+      this.#landScaleTimer.set(UNICORN_LAND_SCALE_TIME);
+    }
+    this.#wasGrounded = grounded;
+
+    if (!grounded) {
       this.#animState = this.#ANIM_STATE_JUMP;
       this.#runFrame = this.#FRAME_INDEX_JUMP;
       return;
@@ -104,6 +120,24 @@ class Unicorn extends EngineObject {
     }
   }
 
+  #getJumpScaleY() {
+    if (this.#landScaleTimer.active()) {
+      const p = smoothStep(this.#landScaleTimer.getPercent());
+      return lerp(UNICORN_LAND_SHRINK_SCALE_Y, 1, p);
+    }
+    if (this.#jumpStartScaleTimer.active()) {
+      const p = this.#jumpStartScaleTimer.getPercent();
+      if (p < .35) {
+        return lerp(1, UNICORN_JUMP_START_SHRINK_SCALE_Y, smoothStep(p / .35));
+      }
+      return lerp(
+        UNICORN_JUMP_START_SHRINK_SCALE_Y,
+        UNICORN_JUMP_START_STRETCH_SCALE_Y,
+        smoothStep((p - .35) / .65));
+    }
+    return this.#animState == this.#ANIM_STATE_JUMP ? UNICORN_JUMP_AIR_SCALE_Y : 1;
+  }
+
   render() {
     const runCycle = Math.sin(time * UNICORN_RUN_HEAD_BOB_SPEED);
     const headBob = this.#animState == this.#ANIM_STATE_IDLE ?
@@ -115,7 +149,7 @@ class Unicorn extends EngineObject {
       this.#lastMoveX * UNICORN_RUN_ROTATE_ANGLE : 0;
     const runScaleY = this.#animState == this.#ANIM_STATE_RUN ?
       1 + runCycle * UNICORN_RUN_SCALE_Y_AMPLIFY : 1;
-    const drawSize = vec2(this.size.x, this.size.y * runScaleY);
+    const drawSize = vec2(this.size.x, this.size.y * runScaleY * this.#getJumpScaleY());
     drawTile(headPos, drawSize, this.#frameInfoHead, undefined, runRotate, this.mirror);
     drawTile(this.pos, drawSize, this.#frameInfoBody.frame(this.#runFrame), undefined, runRotate, this.mirror);
     drawTile(this.pos, drawSize, this.#frameInfoBag, undefined, runRotate, this.mirror);
