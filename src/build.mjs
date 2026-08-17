@@ -73,6 +73,7 @@ const sourceFiles =
     'gameObject.js',
     'assets/unicorn/unicornResource.js',
     'resourceLoader.js',
+    'background.js',
     'unicorn.js',
     'main.js',
 ];
