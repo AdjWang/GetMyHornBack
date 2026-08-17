@@ -45,9 +45,9 @@ let player;
 
 async function gameInit() {
     // Remap scene theme.
-    const sceneTheme = THEME_INDEX_CLOUD;
+    const sceneTheme = THEME_INDEX_GRASS;
     await remapTilesetColor(0, sceneTheme);
-    background = new Background(sceneTheme);
+    background = new Background();
 
     // Create tile collision and visible tile layer.
     initTileCollision(vec2(WORLD_WIDTH, WORLD_HEIGHT));
@@ -128,13 +128,10 @@ function updateWorldCamera() {
 
 ///////////////////////////////////////////////////////////////////////////////
 function gameUpdatePost() {
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 function gameRender() {
-    // draw a grey square in the background without using webgl
-    drawRect(vec2(WORLD_WIDTH/2, WORLD_HEIGHT/2), vec2(WORLD_WIDTH, WORLD_HEIGHT), new Color(.6, .6, .6), 0, /*screenSpace*/ false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

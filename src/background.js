@@ -11,21 +11,22 @@ const SKY_CLOUD_PARALLAX = 0.18;
 // Scroll along x axis.
 const SKY_CLOUD_SCROLL_SPEED = 0.8;
 // Randomize clouds.
-const SKY_CLOUD_RANDOM_POS_X = 0.08;
-const SKY_CLOUD_RANDOM_POS_Y = 0.2;
+const SKY_CLOUD_LOBE_RANDOM_POS_X = 0.08;
+const SKY_CLOUD_LOBE_RANDOM_POS_Y = 0.2;
+const SKY_CLOUD_RANDOM_POS_X = 4;
+const SKY_CLOUD_RANDOM_POS_Y = 4.5;
 const SKY_CLOUD_RANDOM_SIZE = 0.12;
 // Generate clouds in advance, then randomly select some to blit in render loop.
 // Clouds are randomly put to layers.
-const SKY_CLOUD_POOL_COUNT = 10;
+const SKY_CLOUD_POOL_COUNT = 20;
 const SKY_CLOUD_MIN_COUNT = 1;
 const SKY_CLOUD_MAX_COUNT = 5;
 const SKY_CLOUD_MIN_SCALE = 0.2;
 const SKY_CLOUD_MAX_SCALE = 1.2;
 
 class Background extends EngineObject {
-  constructor(theme) {
+  constructor() {
     super(vec2(), vec2(), undefined, 0, new Color, BACKGROUND_RENDER_ORDER);
-    this.theme = theme;
     this.cloudPool = [];
     for (let i = 0; i < SKY_CLOUD_POOL_COUNT; ++i) {
       this.cloudPool.push(this.createCloudImage());
@@ -115,9 +116,13 @@ class Background extends EngineObject {
     const pool = this.cloudPool.slice();
     for (let i = 0; i < count; ++i) {
       const imageIndex = this.randomInt(0, pool.length - 1);
+      const minX = SKY_CLOUD_RANDOM_POS_X
+      const maxX = WORLD_WIDTH - SKY_CLOUD_RANDOM_POS_X
+      const minY = SKY_CLOUD_RANDOM_POS_Y
+      const maxY = WORLD_HEIGHT - SKY_CLOUD_RANDOM_POS_Y
       clouds.push({
         image: pool.splice(imageIndex, 1)[0],
-        pos: vec2(this.randomRange(4, WORLD_WIDTH - 4), this.randomRange(3, WORLD_HEIGHT - 3)),
+        pos: vec2(this.randomRange(minX, maxX), this.randomRange(minY, maxY)),
         scale: this.randomRange(SKY_CLOUD_MIN_SCALE, SKY_CLOUD_MAX_SCALE),
         speed: this.randomRange(0.8, 1.2),
         layer: this.randomInt(0, BACKGROUND_LAYER_COUNT - 1),
@@ -149,8 +154,8 @@ class Background extends EngineObject {
     const baseMinX = -0.42 + this.randomRange(-0.05, 0.03);
     const baseMaxX = 0.44 + this.randomRange(-0.03, 0.05);
     for (const lobe of lobes) {
-      lobe[0] += this.randomRange(-SKY_CLOUD_RANDOM_POS_X, SKY_CLOUD_RANDOM_POS_X);
-      lobe[1] += this.randomRange(-SKY_CLOUD_RANDOM_POS_Y, SKY_CLOUD_RANDOM_POS_Y);
+      lobe[0] += this.randomRange(-SKY_CLOUD_LOBE_RANDOM_POS_X, SKY_CLOUD_LOBE_RANDOM_POS_X);
+      lobe[1] += this.randomRange(-SKY_CLOUD_LOBE_RANDOM_POS_Y, SKY_CLOUD_LOBE_RANDOM_POS_Y);
       lobe[2] *= 1 + this.randomRange(-SKY_CLOUD_RANDOM_SIZE, SKY_CLOUD_RANDOM_SIZE);
       lobe[3] *= 1 + this.randomRange(-SKY_CLOUD_RANDOM_SIZE, SKY_CLOUD_RANDOM_SIZE);
     }
