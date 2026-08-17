@@ -1,6 +1,7 @@
 'use strict';
 
 const BACKGROUND_RENDER_ORDER = -1e4;
+const BACKGROUND_LAYER_COUNT = 3;
 // Base size to generate.
 const SKY_CLOUD_SIZE = vec2(12, 4);
 // Make the image fit pixel style.
@@ -14,6 +15,7 @@ const SKY_CLOUD_RANDOM_POS_X = 0.08;
 const SKY_CLOUD_RANDOM_POS_Y = 0.2;
 const SKY_CLOUD_RANDOM_SIZE = 0.12;
 // Generate clouds in advance, then randomly select some to blit in render loop.
+// Clouds are randomly put to layers.
 const SKY_CLOUD_POOL_COUNT = 10;
 const SKY_CLOUD_MIN_COUNT = 1;
 const SKY_CLOUD_MAX_COUNT = 5;
@@ -51,13 +53,19 @@ class Background extends EngineObject {
   }
 
   drawCloud(context, cloud) {
-    const pos = worldToScreen(cloud.pos.add(cameraPos.subtract(vec2(WORLD_WIDTH / 2, WORLD_HEIGHT / 2)).scale(SKY_CLOUD_PARALLAX)));
+    // Adjust parallax, scroll speed, alpha and blur value according to layer depth.
+    const layerDepth = cloud.layer / (BACKGROUND_LAYER_COUNT - 1);
+    const layerParallax = SKY_CLOUD_PARALLAX * (0.45 + layerDepth * 0.75);
+    const pos = worldToScreen(cloud.pos.add(cameraPos.subtract(vec2(WORLD_WIDTH / 2, WORLD_HEIGHT / 2)).scale(layerParallax)));
     const scale = SKY_CLOUD_PIXEL_SIZE * worldScale * cloud.scale;
     const width = cloud.image.canvas.width * scale;
     const height = cloud.image.canvas.height * scale;
     const loopWidth = mainCanvasSize.x + width;
-    const scrollX = time * SKY_CLOUD_SCROLL_SPEED * worldScale * cloud.speed;
+    const scrollX = time * SKY_CLOUD_SCROLL_SPEED * worldScale * cloud.speed * (0.55 + layerDepth * 0.45);
     const x = backgroundWrap(pos.x + cloud.image.minX * worldScale * cloud.scale - scrollX, loopWidth) - width;
+    context.save();
+    context.globalAlpha = 0.65 + layerDepth * 0.35;
+    context.filter = cloud.layer == 0 ? 'blur(2px)' : cloud.layer == 1 ? 'blur(1px)' : 'none';
     context.drawImage(
       cloud.image.canvas,
       x,
@@ -65,6 +73,7 @@ class Background extends EngineObject {
       width,
       height,
     );
+    context.restore();
   }
 
   createCloudImage() {
@@ -111,6 +120,7 @@ class Background extends EngineObject {
         pos: vec2(this.randomRange(4, WORLD_WIDTH - 4), this.randomRange(3, WORLD_HEIGHT - 3)),
         scale: this.randomRange(SKY_CLOUD_MIN_SCALE, SKY_CLOUD_MAX_SCALE),
         speed: this.randomRange(0.8, 1.2),
+        layer: this.randomInt(0, BACKGROUND_LAYER_COUNT - 1),
       });
     }
     return clouds;
