@@ -79,6 +79,10 @@ class Background extends EngineObject {
     canvas.width = width;
     canvas.height = height;
     const context = canvas.getContext('2d');
+    const shadowStartY = 0.16;
+    const shadowBlendRange = 0.08;
+    const shadowRedDelta = 32;
+    const shadowGreenDelta = 12;
     for (let y = 0; y < height; ++y) {
       for (let x = 0; x < width; ++x) {
         const worldX = minX + x * SKY_CLOUD_PIXEL_SIZE;
@@ -86,8 +90,10 @@ class Background extends EngineObject {
         if (!this.isCloudPixel(worldX / SKY_CLOUD_SIZE.x, worldY / SKY_CLOUD_SIZE.y, lobes)) {
           continue;
         }
-        // Make below half darker.
-        context.fillStyle = worldY > SKY_CLOUD_SIZE.y * 0.16 ? '#dff3ff' : '#fff';
+        // Blend to the lower shadow across a small vertical range.
+        const shade = Math.max(0, Math.min(1, (worldY / SKY_CLOUD_SIZE.y - shadowStartY) / shadowBlendRange));
+        // Make light to dark transition soft.
+        context.fillStyle = `rgb(${Math.round(255 - shadowRedDelta * shade)},${Math.round(255 - shadowGreenDelta * shade)},255)`;
         context.fillRect(x, y, 1, 1);
       }
     }
