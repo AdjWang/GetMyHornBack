@@ -41,7 +41,7 @@ const TILE_COLOR_REMAP = [
 
 async function remapTilesetColor(textureIndex, to_idx) {
   const from_idx = TILE_COLOR_REMAP_INDEX_ROCK;
-  if (to_idx == TILE_COLOR_REMAP_INDEX_ROCK) {
+  if (from_idx == to_idx) {
     return;
   }
   const imageSource = IMAGE_SOURCES[textureIndex];
