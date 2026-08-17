@@ -42,13 +42,16 @@ const level1 = [
 ///////////////////////////////////////////////////////////////////////////////
 let player;
 
-function gameInit() {
-    // create tile collision and visible tile layer
+async function gameInit() {
+    // Remap scene theme.
+    await remapTilesetColor(0, TILE_COLOR_REMAP_INDEX_CLOUD);
+
+    // Create tile collision and visible tile layer.
     initTileCollision(vec2(WORLD_WIDTH, WORLD_HEIGHT));
     const pos = vec2(0, 0);
     const tileLayer = new TileLayer(pos, tileCollisionSize);
 
-    // get level data from the tiles image
+    // Get level data from the tiles image.
     const tileImage = textureInfos[0].image;
     mainContext.drawImage(tileImage, 0, 0);
     const imageData = mainContext.getImageData(0, 0, tileImage.width, tileImage.height).data;
@@ -67,21 +70,18 @@ function gameInit() {
             setTileCollisionData(pos, 1);
         }
     }
-
-    // draw tile layer with new data
+    // Draw tile layer with new data.
     tileLayer.tileInfo = tile(0, 16, 0, 0);
     tileLayer.redraw();
-
-    // setup camera
+    // Setup camera.
     updateWorldCamera();
-
-    // enable gravity
+    // Enable gravity.
     gravity.y = -0.01;
 
     unicornResource = createAsepriteResource(unicornAsepriteData, 1);
     player = new Unicorn(vec2(20, 18));
 
-    // create particle emitter
+    // Create particle emitter.
     particleEmitter = new ParticleEmitter(
         vec2(16, 9), 0,      // emitPos, emitAngle
         1, 0, 500, PI,      // emitSize, emitTime, emitRate, emiteCone
@@ -143,8 +143,4 @@ function gameRenderPost() {
 ///////////////////////////////////////////////////////////////////////////////
 // Startup LittleJS Engine
 setCanvasFixedSize(vec2(WORLD_WIDTH, WORLD_HEIGHT));
-engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost,
-    [
-        'assets/tileset/color.png',
-        'assets/unicorn/unicorn.png',
-    ]);
+engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost, IMAGE_SOURCES);
