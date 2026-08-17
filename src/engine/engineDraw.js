@@ -146,11 +146,11 @@ class TextureInfo
 {
     /**
      * Create a TextureInfo, called automatically by the engine
-     * @param {HTMLImageElement} image
+     * @param {HTMLImageElement | HTMLCanvasElement} image
      */
     constructor(image)
     {
-        /** @property {HTMLImageElement} - image source */
+        /** @property {HTMLImageElement | HTMLCanvasElement} - image source */
         this.image = image;
         /** @property {Vector2} - size of the image */
         this.size = vec2(image.width, image.height);

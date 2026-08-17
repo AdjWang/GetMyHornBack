@@ -219,7 +219,7 @@ function glCreateProgram(vsSource, fsSource)
 }
 
 /** Create WebGL texture from an image and init the texture settings
- *  @param {HTMLImageElement} image
+ *  @param {HTMLImageElement | HTMLCanvasElement} image
  *  @return {WebGLTexture}
  *  @memberof WebGL */
 function glCreateTexture(image)
