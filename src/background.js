@@ -1,14 +1,19 @@
 'use strict';
 
-const BACKGROUND_RENDER_ORDER = 1e4;
-const SKY_CLOUD_POS = vec2(17, 14);
+const BACKGROUND_RENDER_ORDER = -1e4;
+// Base size to generate.
 const SKY_CLOUD_SIZE = vec2(12, 4);
+// Make the image fit pixel style.
 const SKY_CLOUD_PIXEL_SIZE = 0.07;
+// How much the cloud follows the camera. Unused for now.
 const SKY_CLOUD_PARALLAX = 0.18;
-const SKY_CLOUD_SCROLL_SPEED = 10.4;
+// Scroll along x axis.
+const SKY_CLOUD_SCROLL_SPEED = 0.8;
+// Randomize clouds.
 const SKY_CLOUD_RANDOM_POS_X = 0.08;
 const SKY_CLOUD_RANDOM_POS_Y = 0.2;
 const SKY_CLOUD_RANDOM_SIZE = 0.12;
+// Generate clouds in advance, then randomly select some to blit in render loop.
 const SKY_CLOUD_POOL_COUNT = 10;
 const SKY_CLOUD_MIN_COUNT = 1;
 const SKY_CLOUD_MAX_COUNT = 5;
@@ -64,10 +69,10 @@ class Background extends EngineObject {
 
   createCloudImage() {
     const lobes = this.createCloudLobes();
-    const minX = -SKY_CLOUD_SIZE.x * 0.75;
-    const minY = -SKY_CLOUD_SIZE.y * 0.85;
-    const maxX = SKY_CLOUD_SIZE.x * 0.75;
-    const maxY = SKY_CLOUD_SIZE.y * 0.55;
+    const minX = -SKY_CLOUD_SIZE.x * 0.9;
+    const minY = -SKY_CLOUD_SIZE.y * 1.1;
+    const maxX = SKY_CLOUD_SIZE.x * 0.9;
+    const maxY = SKY_CLOUD_SIZE.y * 0.8;
     const width = Math.ceil((maxX - minX) / SKY_CLOUD_PIXEL_SIZE);
     const height = Math.ceil((maxY - minY) / SKY_CLOUD_PIXEL_SIZE);
     const canvas = document.createElement('canvas');
@@ -97,7 +102,7 @@ class Background extends EngineObject {
       const imageIndex = this.randomInt(0, pool.length - 1);
       clouds.push({
         image: pool.splice(imageIndex, 1)[0],
-        pos: vec2(this.randomRange(4, WORLD_WIDTH - 4), this.randomRange(11.5, 16.5)),
+        pos: vec2(this.randomRange(4, WORLD_WIDTH - 4), this.randomRange(3, WORLD_HEIGHT - 3)),
         scale: this.randomRange(SKY_CLOUD_MIN_SCALE, SKY_CLOUD_MAX_SCALE),
         speed: this.randomRange(0.8, 1.2),
       });
@@ -133,6 +138,7 @@ class Background extends EngineObject {
       lobe[2] *= 1 + this.randomRange(-SKY_CLOUD_RANDOM_SIZE, SKY_CLOUD_RANDOM_SIZE);
       lobe[3] *= 1 + this.randomRange(-SKY_CLOUD_RANDOM_SIZE, SKY_CLOUD_RANDOM_SIZE);
     }
+    // Return randomized lobes and the flat base horizontal range.
     return [lobes, baseMinX, baseMaxX];
   }
 
