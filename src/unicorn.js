@@ -6,6 +6,7 @@ const UNICORN_HEIGHT = 24;  // pixels
 
 // Motion.
 const UNICORN_MAX_SPEED_X = 0.22;
+const UNICORN_MAX_SPEED_Y = 0.5;
 const UNICORN_AIR_IMPULSE = 0.04;
 const UNICORN_GROUND_IMPULSE = 0.08;
 const UNICORN_AIR_DAMPING = 0.15;
@@ -137,6 +138,7 @@ class Unicorn extends EngineObject {
     if (this._moveX) {
       this.mirror = this._moveX > 0;
     }
+    this.velocity.y = clamp(this.velocity.y, -UNICORN_MAX_SPEED_Y, UNICORN_MAX_SPEED_Y);
   }
 
   _updateAirCornerCorrection() {
