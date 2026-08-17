@@ -248,15 +248,27 @@ async function engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, game
         
         if (canvasFixedSize.x)
         {
-            // clear canvas and set fixed size
-            mainCanvas.width  = canvasFixedSize.x;
-            mainCanvas.height = canvasFixedSize.y;
-            
-            // fit to window by adding space on top or bottom if necessary
-            const aspect = innerWidth / innerHeight;
-            const fixedAspect = mainCanvas.width / mainCanvas.height;
-            (glCanvas||mainCanvas).style.width = mainCanvas.style.width = overlayCanvas.style.width  = aspect < fixedAspect ? '100%' : '';
-            (glCanvas||mainCanvas).style.height = mainCanvas.style.height = overlayCanvas.style.height = aspect < fixedAspect ? '' : '100%';
+            // clear canvas and fit to window while preserving fixed aspect
+            const fixedAspect = canvasFixedSize.x / canvasFixedSize.y;
+            let width  = min(innerWidth,  canvasMaxSize.x);
+            let height = min(innerHeight, canvasMaxSize.y);
+            if (width / height > fixedAspect)
+                width = height * fixedAspect;
+            else
+                height = width / fixedAspect;
+            mainCanvas.width  = width | 0;
+            mainCanvas.height = height | 0;
+            const styleWidth = mainCanvas.width + 'px';
+            const styleHeight = mainCanvas.height + 'px';
+            mainCanvas.style.width = overlayCanvas.style.width = styleWidth;
+            mainCanvas.style.height = overlayCanvas.style.height = styleHeight;
+            if (glCanvas)
+            {
+                glCanvas.width = mainCanvas.width;
+                glCanvas.height = mainCanvas.height;
+                glCanvas.style.width = styleWidth;
+                glCanvas.style.height = styleHeight;
+            }
         }
         else
         {

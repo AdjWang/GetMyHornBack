@@ -73,15 +73,13 @@ function gameInit() {
     tileLayer.redraw();
 
     // setup camera
-    cameraPos = vec2(16, 8);
-    // cameraPos = vec2();
-    cameraScale = 32;
+    updateWorldCamera();
 
     // enable gravity
     gravity.y = -0.01;
 
     unicornResource = createAsepriteResource(unicornAsepriteData, 1);
-    player = new Unicorn(vec2(10, 5));
+    player = new Unicorn(vec2(20, 18));
 
     // create particle emitter
     particleEmitter = new ParticleEmitter(
@@ -100,6 +98,9 @@ function gameInit() {
 
 ///////////////////////////////////////////////////////////////////////////////
 function gameUpdate() {
+    worldScale = min(mainCanvasSize.x / WORLD_WIDTH, mainCanvasSize.y / WORLD_HEIGHT);
+    updateWorldCamera();
+
     if (mouseWasPressed(0)) {
         // play sound when mouse is pressed
         sound_click.play(mousePos);
@@ -112,8 +113,14 @@ function gameUpdate() {
     }
 
     // move particles to mouse location if on screen
-    if (mousePosScreen.x)
-        particleEmitter.pos = mousePos;
+    // if (mousePosScreen.x)
+    //     particleEmitter.pos = mousePos;
+    particleEmitter.pos = vec2(33, 15);
+}
+
+function updateWorldCamera() {
+    cameraPos = vec2(WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
+    cameraScale = worldScale;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -124,17 +131,18 @@ function gameUpdatePost() {
 ///////////////////////////////////////////////////////////////////////////////
 function gameRender() {
     // draw a grey square in the background without using webgl
-    drawRect(vec2(16, 8), vec2(32, 16), new Color(.6, .6, .6), 0, /*screenSpace*/ false);
+    drawRect(vec2(WORLD_WIDTH/2, WORLD_HEIGHT/2), vec2(WORLD_WIDTH, WORLD_HEIGHT), new Color(.6, .6, .6), 0, /*screenSpace*/ false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 function gameRenderPost() {
     // draw to overlay canvas for hud rendering
-    drawTextScreen('LittleJS JS13K Demo', vec2(mainCanvasSize.x / 2, 70), 80);
+    drawTextScreen('LittleJS JS13K Demo', vec2(mainCanvasSize.x / 2, worldScale * 2.2), worldScale * 2.5);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Startup LittleJS Engine
+setCanvasFixedSize(vec2(WORLD_WIDTH, WORLD_HEIGHT));
 engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost,
     [
         'assets/tileset/color.png',
