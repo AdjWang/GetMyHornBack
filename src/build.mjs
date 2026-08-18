@@ -74,6 +74,7 @@ const sourceFiles =
     'assets/unicorn/unicornResource.js',
     'resourceLoader.js',
     'background.js',
+    'bullet.js',
     'unicorn.js',
     'main.js',
 ];

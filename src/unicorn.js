@@ -4,6 +4,10 @@
 const UNICORN_WIDTH = 21;  // pixels
 const UNICORN_HEIGHT = 24;  // pixels
 
+const UNICORN_FIRE_COOLDOWN = 0.4;
+const UNICORN_FIRE_VELOCITY = vec2(0.45, 0.15);
+const UNICORN_FIRE_DAMAGE = 1.0;
+
 // Motion.
 const UNICORN_MAX_SPEED_X = 0.22;
 const UNICORN_MAX_SPEED_Y = 0.5;
@@ -28,7 +32,6 @@ const UNICORN_AIR_CORNER_HORIZONTAL_CORRECTION_STEP = 0.05;
 // Correct y axis pos if not aligned.
 const UNICORN_AIR_CORNER_VERTICAL_CORRECTION_MAX = 0.3;
 const UNICORN_AIR_CORNER_VERTICAL_CORRECTION_STEP = 0.03;
-const UNICORN_FIRE_COOLDOWN = 0.8;
 
 // Animation.
 const UNICORN_DRAW_OFFSET = vec2(0.1, 0.3);
@@ -313,9 +316,8 @@ class Unicorn extends EngineObject {
       return;
     }
     this._fireCooldownTimer.set(UNICORN_FIRE_COOLDOWN);
-    const bulletVelocity = vec2(0.5 * (this.mirror ? 1.0 : -1.0), 0.2);
-    const damage = 1;
-    new Bullet(this.pos.add(vec2(0.0, -0.2)), this.parent, bulletVelocity, damage);
+    const bulletVelocity = vec2(UNICORN_FIRE_VELOCITY.x * (this.mirror ? 1.0 : -1.0), UNICORN_FIRE_VELOCITY.y);
+    new Bullet(this.pos, this, bulletVelocity, UNICORN_FIRE_DAMAGE);
   }
 
   _updateAnim() {
