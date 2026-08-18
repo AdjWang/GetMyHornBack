@@ -4,6 +4,8 @@ const BULLET_TRAIL_POINT_COUNT = 8;
 const BULLET_TRAIL_THICKNESS = 0.05;
 const BULLET_TRAIL_TIME = 0.25;
 const RAINBOW_BULLET_COLOR_SPACING = 0.1;
+const SOUND_RAINBOW_HIT = new Sound([1.3,.15,224,.01,,.16,,1.5,-8,-13,,,,.2,,.3,,.64,.01,,868]);
+const SOUND_RAINBOW_HIT_VOLUME = 0.7;
 const RAINBOW_COLORS = [
   new Color(1.0, 0.2, 0.0),
   new Color(1.0, 0.5, 0.0),
@@ -52,11 +54,13 @@ class RainbowBullet extends EngineObject {
     if (o == this._attacker) {
       return false;
     }
+    SOUND_RAINBOW_HIT.play(this.pos, SOUND_RAINBOW_HIT_VOLUME);
     this.destroy();
     return true;
   }
 
   collideWithTile(tileData, pos) {
+    SOUND_RAINBOW_HIT.play(this.pos, SOUND_RAINBOW_HIT_VOLUME);
     this.destroy();
     return true;
   }
