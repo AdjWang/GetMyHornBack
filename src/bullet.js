@@ -3,11 +3,22 @@
 const BULLET_TRAIL_POINT_COUNT = 8;
 const BULLET_TRAIL_THICKNESS = 0.05;
 const BULLET_TRAIL_TIME = 0.25;
+const RAINBOW_BULLET_COLOR_SPACING = 0.1;
+const RAINBOW_COLORS = [
+  new Color(1.0, 0.2, 0.0),
+  new Color(1.0, 0.5, 0.0),
+  new Color(1.0, 1.0, 0.0),
+  new Color(0.0, 0.8, 0.2),
+  new Color(0.0, 0.8, 1.0),
+  new Color(0.1, 0.2, 1.0),
+  new Color(0.6, 0.0, 1.0),
+];
 
-class Bullet extends EngineObject {
+class RainbowBullet extends EngineObject {
   constructor(pos, attacker, velocity, damage) {
-    super(pos, vec2());
-    this.color = new Color(1, 1, 0);
+    super(pos, vec2(0.01, 0.01));
+    const colors = RAINBOW_COLORS;
+    this.color = colors[colors.length / 2 | 0];
     this.velocity = velocity;
     this.damping = 1;
     this.gravityScale = 0.8;
@@ -17,6 +28,8 @@ class Bullet extends EngineObject {
 
     this._attacker = attacker;
     this._damage = damage;
+    this._colors = colors;
+    this._colorOffsets = this._createColorOffsets(colors.length);
     this._trailPoints = [this.pos.copy()];
   }
 
@@ -32,7 +45,7 @@ class Bullet extends EngineObject {
   }
 
   render() {
-    drawBulletTrail(this._trailPoints, 1, this.color);
+    drawRainbowBulletTrail(this._trailPoints, 1, this._colors, this._colorOffsets);
   }
 
   collideWithObject(o) {
@@ -51,16 +64,28 @@ class Bullet extends EngineObject {
   destroy() {
     if (this.destroyed)
       return;
-    new BulletTrail(this._trailPoints, this.renderOrder, this.color);
+    new RainbowBulletTrail(this._trailPoints, this.renderOrder, this._colors, this._colorOffsets);
     super.destroy();
+  }
+
+  _createColorOffsets(count) {
+    const offsets = [];
+    const center = (count - 1) / 2;
+    for (let i = 0; i < count; ++i) {
+      offsets.push(vec2(0, (center - i) * RAINBOW_BULLET_COLOR_SPACING));
+    }
+    return offsets;
   }
 }
 
-class BulletTrail extends EngineObject {
-  constructor(points, renderOrder, color) {
-    super(vec2(), vec2(), undefined, 0, color, renderOrder);
+class RainbowBulletTrail extends EngineObject {
+  constructor(points, renderOrder, colors, colorOffsets) {
+    super(vec2(), vec2(), undefined, 0, new Color, renderOrder);
     this.points = points.map(p => p.copy());
+    this.colors = colors;
+    this.colorOffsets = colorOffsets;
     this.lifeTimer = new Timer(BULLET_TRAIL_TIME);
+    this.setCollision(false, false, false, false);
   }
 
   update() {
@@ -79,14 +104,18 @@ class BulletTrail extends EngineObject {
   }
 
   render() {
-    drawBulletTrail(this.points, 1 - this.lifeTimer.getPercent(), this.color);
+    drawRainbowBulletTrail(this.points, 1 - this.lifeTimer.getPercent(), this.colors, this.colorOffsets);
   }
 }
 
-function drawBulletTrail(points, alphaScale, color) {
-  for (let i = 1; i < points.length; ++i) {
-    const alpha = i / (points.length - 1) * alphaScale;
-    drawLine(points[i - 1], points[i], BULLET_TRAIL_THICKNESS,
-      new Color(color.r, color.g, color.b, alpha), false);
+function drawRainbowBulletTrail(points, alphaScale, colors, colorOffsets) {
+  for (let colorIndex = 0; colorIndex < colors.length; ++colorIndex) {
+    const color = colors[colorIndex];
+    const offset = colorOffsets[colorIndex];
+    for (let i = 1; i < points.length; ++i) {
+      const alpha = i / (points.length - 1) * alphaScale;
+      drawLine(points[i - 1].add(offset), points[i].add(offset), BULLET_TRAIL_THICKNESS,
+        new Color(color.r, color.g, color.b, alpha), false);
+    }
   }
 }

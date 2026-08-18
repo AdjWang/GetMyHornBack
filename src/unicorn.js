@@ -317,7 +317,7 @@ class Unicorn extends EngineObject {
     }
     this._fireCooldownTimer.set(UNICORN_FIRE_COOLDOWN);
     const bulletVelocity = vec2(UNICORN_FIRE_VELOCITY.x * (this.mirror ? 1.0 : -1.0), UNICORN_FIRE_VELOCITY.y);
-    new Bullet(this.pos, this, bulletVelocity, UNICORN_FIRE_DAMAGE);
+    new RainbowBullet(this.pos, this, bulletVelocity, UNICORN_FIRE_DAMAGE);
   }
 
   _updateAnim() {
