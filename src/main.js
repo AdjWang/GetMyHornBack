@@ -11,7 +11,7 @@
 const sound_click = new Sound([1, .5]);
 
 // game variables
-let particleEmitter;
+let dustEmitter;
 let unicornResource;
 let background;
 
@@ -83,42 +83,17 @@ async function gameInit() {
 
     unicornResource = createAsepriteResource(unicornAsepriteData, 1);
     player = new Unicorn(vec2(20, 18));
-
-    // Create particle emitter.
-    particleEmitter = new ParticleEmitter(
-        vec2(16, 9), 0,      // emitPos, emitAngle
-        1, 0, 500, PI,      // emitSize, emitTime, emitRate, emiteCone
-        tile(0, 16, 0, 1),  // tileIndex, tileSize
-        new Color(1, 1, 1), new Color(0, 0, 0),   // colorStartA, colorStartB
-        new Color(0, 0, 0, 0), new Color(0, 0, 0, 0), // colorEndA, colorEndB
-        2, .2, .2, .1, .05, // time, sizeStart, sizeEnd, speed, angleSpeed
-        .99, 1, 1, PI,      // damping, angleDamping, gravityScale, cone
-        .05, .5, true, true       // fadeRate, randomness, collide, additive
-    );
-    particleEmitter.restitution = .3; // bounce when it collides
-    particleEmitter.trailScale = 2;  // stretch in direction of motion
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 function gameUpdate() {
     worldScale = min(mainCanvasSize.x / WORLD_WIDTH, mainCanvasSize.y / WORLD_HEIGHT);
     updateWorldCamera();
-
+    // TODO
     if (mouseWasPressed(0)) {
         // play sound when mouse is pressed
         sound_click.play(mousePos);
-
-        // change particle color and set to fade out
-        particleEmitter.colorStartA = new Color;
-        particleEmitter.colorStartB = randColor();
-        particleEmitter.colorEndA = particleEmitter.colorStartA.scale(1, 0);
-        particleEmitter.colorEndB = particleEmitter.colorStartB.scale(1, 0);
     }
-
-    // move particles to mouse location if on screen
-    // if (mousePosScreen.x)
-    //     particleEmitter.pos = mousePos;
-    particleEmitter.pos = vec2(33, 15);
 }
 
 function updateWorldCamera() {

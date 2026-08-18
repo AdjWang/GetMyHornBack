@@ -80,6 +80,34 @@ class Unicorn extends EngineObject {
     this.damping = 1;
     this.friction = 1;
     this.setCollision();
+
+    const dustGrey = 0.8;
+    this._jumpDustEmitter = new ParticleEmitter(
+      vec2(),               // position
+      70 * PI / 180,        // angle
+      0.1,                  // emitSize
+      0.08,                 // emitTime
+      24,                   // emitRate
+      15 * PI / 180,        // emitConeAngle
+      undefined,            // tileInfo
+      new Color(1, 1, 1),   // colorStartA
+      new Color(1, 1, 1),   // colorStartB
+      new Color(dustGrey, dustGrey, dustGrey),     // colorEndA
+      new Color(dustGrey, dustGrey, dustGrey),     // colorEndB
+      0.28,                 // particleTime
+      0.12,                 // sizeStart
+      0.08,                 // sizeEnd
+      0.1,                  // speed
+      0.1,                  // angleSpeed
+      0.9,                  // damping
+      0.9,                  // angleDamping
+      0.0,                  // gravityScale
+      0,                    // particleConeAngle
+      0.9,                  // fadeRate
+      0.2,                  // randomness
+      false,                // collideTiles
+      false                 // additive
+    );
   }
 
   update() {
@@ -90,6 +118,27 @@ class Unicorn extends EngineObject {
     this._updateJumpCornerRestoreState();
     this._updateBufferedJump();
     this._updateAnim();
+  }
+
+  render() {
+    const runCycle = Math.sin(time * UNICORN_RUN_HEAD_BOB_SPEED);
+    const headBob = this._animState == UNICORN_ANIM_STATE_IDLE ?
+      Math.sin(time * UNICORN_IDLE_HEAD_BOB_SPEED) * UNICORN_IDLE_HEAD_BOB_AMPLIFY + UNICORN_IDLE_HEAD_BOB_OFFSET :
+      this._animState == UNICORN_ANIM_STATE_RUN ?
+        runCycle * UNICORN_RUN_HEAD_BOB_AMPLIFY : 0;
+    const headPos = this.pos.add(vec2(0, headBob));
+    const runRotate = this._animState == UNICORN_ANIM_STATE_RUN ?
+      this._lastMoveX * UNICORN_RUN_ROTATE_ANGLE : 0;
+    const runScaleY = this._animState == UNICORN_ANIM_STATE_RUN ?
+      1 + runCycle * UNICORN_RUN_SCALE_Y_AMPLIFY : 1;
+    const drawOffset = vec2(UNICORN_DRAW_OFFSET.x * (this.mirror ? -1.0 : 1.0), UNICORN_DRAW_OFFSET.y);
+    const drawSize = vec2(UNICORN_WIDTH / TILE_SIZE, UNICORN_HEIGHT / TILE_SIZE);
+    const drawSizeStretch = vec2(drawSize.x, drawSize.y * runScaleY * this._getJumpScaleY());
+    const scaleAnchorOffset = vec2(0, (drawSizeStretch.y - drawSize.y) / 2);
+    const drawPos = this.pos.add(scaleAnchorOffset);
+    drawAsepriteFrame(this._frameInfoHead[this._runFrame], headPos.add(scaleAnchorOffset).add(drawOffset), runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
+    drawAsepriteFrame(this._frameInfoBody[this._runFrame], drawPos.add(drawOffset), runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
+    drawAsepriteFrame(this._frameInfoBag[this._runFrame], drawPos.add(drawOffset), 1, undefined, runRotate, this.mirror);
   }
 
   _updateMotion() {
@@ -251,12 +300,15 @@ class Unicorn extends EngineObject {
     }
     this._jumpBufferTimer.unset();
     this._coyoteTimer.unset();
+    this._emitDust();
   }
 
   _updateAnim() {
     const grounded = !!this.groundObject;
     if (grounded && !this._wasGrounded) {
+      // Just landed.
       this._landScaleTimer.set(UNICORN_LAND_SCALE_TIME);
+      this._emitDust();
     }
     this._wasGrounded = grounded;
 
@@ -290,25 +342,16 @@ class Unicorn extends EngineObject {
     return this._animState == UNICORN_ANIM_STATE_JUMP ? UNICORN_JUMP_AIR_SCALE_Y : 1;
   }
 
-  render() {
-    const runCycle = Math.sin(time * UNICORN_RUN_HEAD_BOB_SPEED);
-    const headBob = this._animState == UNICORN_ANIM_STATE_IDLE ?
-      Math.sin(time * UNICORN_IDLE_HEAD_BOB_SPEED) * UNICORN_IDLE_HEAD_BOB_AMPLIFY + UNICORN_IDLE_HEAD_BOB_OFFSET :
-      this._animState == UNICORN_ANIM_STATE_RUN ?
-        runCycle * UNICORN_RUN_HEAD_BOB_AMPLIFY : 0;
-    const headPos = this.pos.add(vec2(0, headBob));
-    const runRotate = this._animState == UNICORN_ANIM_STATE_RUN ?
-      this._lastMoveX * UNICORN_RUN_ROTATE_ANGLE : 0;
-    const runScaleY = this._animState == UNICORN_ANIM_STATE_RUN ?
-      1 + runCycle * UNICORN_RUN_SCALE_Y_AMPLIFY : 1;
-    const drawOffset = vec2(UNICORN_DRAW_OFFSET.x * (this.mirror ? -1.0 : 1.0), UNICORN_DRAW_OFFSET.y);
-    const drawSize = vec2(UNICORN_WIDTH / TILE_SIZE, UNICORN_HEIGHT / TILE_SIZE);
-    const drawSizeStretch = vec2(drawSize.x, drawSize.y * runScaleY * this._getJumpScaleY());
-    const scaleAnchorOffset = vec2(0, (drawSizeStretch.y - drawSize.y) / 2);
-    const drawPos = this.pos.add(scaleAnchorOffset);
-    drawAsepriteFrame(this._frameInfoHead[this._runFrame], headPos.add(scaleAnchorOffset).add(drawOffset), runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
-    drawAsepriteFrame(this._frameInfoBody[this._runFrame], drawPos.add(drawOffset), runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
-    drawAsepriteFrame(this._frameInfoBag[this._runFrame], drawPos.add(drawOffset), 1, undefined, runRotate, this.mirror);
+  _emitDust() {
+    const footPos = vec2(this.pos.x, this.pos.y - this.size.y / 2);
+    this._jumpDustEmitter.pos = footPos;
+    const emitCount = 3;
+    for (let i = 0; i < emitCount; i++) {
+      this._jumpDustEmitter.emitParticle();
+    }
+    this._jumpDustEmitter.angle = -this._jumpDustEmitter.angle;
+    for (let i = 0; i < emitCount; i++) {
+      this._jumpDustEmitter.emitParticle();
+    }
   }
-
 }
