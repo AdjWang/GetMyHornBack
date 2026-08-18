@@ -11,6 +11,8 @@ const UNICORN_FIRE_DAMAGE = 1.0;
 // const SOUND_FIRE = new Sound([1.1, 0, 420, 0.02, 0.08, 0.18, 1, 1.9, 8, 0, 120, 0.04, 0.03]);
 const SOUND_FIRE = new Sound([,.15,94,,.12,.06,,2.9,13,48,,,.13,,,,,.7,.05,,-1417]);
 const SOUND_FIRE_VOLUME = 0.7;
+const SOUND_JUMP = new Sound([,.15,224,.02,.02,.06,,1.7,,50,,,,,,,,.61,.02]);
+const SOUND_JUMP_VOLUME = 0.8;
 
 // Motion.
 const UNICORN_MAX_SPEED_X = 0.22;
@@ -312,6 +314,7 @@ class Unicorn extends EngineObject {
     this._jumpBufferTimer.unset();
     this._coyoteTimer.unset();
     this._emitDust();
+    SOUND_JUMP.play(this.pos, SOUND_JUMP_VOLUME);
   }
 
   _updateFire() {
