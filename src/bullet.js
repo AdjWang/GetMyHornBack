@@ -3,7 +3,6 @@
 const BULLET_TRAIL_POINT_COUNT = 8;
 const BULLET_TRAIL_THICKNESS = 0.05;
 const BULLET_TRAIL_TIME = 0.25;
-const BULLET_TRAIL_DAMPING = 1.0;
 
 class Bullet extends EngineObject {
   constructor(pos, attacker, velocity, damage) {
@@ -52,24 +51,28 @@ class Bullet extends EngineObject {
   destroy() {
     if (this.destroyed)
       return;
-    new BulletTrail(this._trailPoints, this.velocity, this.renderOrder, this.color);
+    new BulletTrail(this._trailPoints, this.renderOrder, this.color);
     super.destroy();
   }
 }
 
 class BulletTrail extends EngineObject {
-  constructor(points, velocity, renderOrder, color) {
+  constructor(points, renderOrder, color) {
     super(vec2(), vec2(), undefined, 0, color, renderOrder);
     this.points = points.map(p => p.copy());
-    this.velocity = velocity.copy();
     this.lifeTimer = new Timer(BULLET_TRAIL_TIME);
   }
 
   update() {
+    const p = this.lifeTimer.getPercent();
+    const head = this.points[this.points.length - 1];
     for (let i = 0; i < this.points.length; ++i) {
-      this.points[i] = this.points[i].add(this.velocity);
+      const targetIndex = Math.min(i + 1, this.points.length - 1);
+      this.points[i] = this.points[i].lerp(this.points[targetIndex], p);
     }
-    this.velocity = this.velocity.scale(BULLET_TRAIL_DAMPING);
+    if (this.points.length) {
+      this.points[this.points.length - 1] = head;
+    }
     if (this.lifeTimer.elapsed()) {
       this.destroy();
     }
