@@ -28,6 +28,7 @@ const UNICORN_AIR_CORNER_HORIZONTAL_CORRECTION_STEP = 0.05;
 // Correct y axis pos if not aligned.
 const UNICORN_AIR_CORNER_VERTICAL_CORRECTION_MAX = 0.3;
 const UNICORN_AIR_CORNER_VERTICAL_CORRECTION_STEP = 0.03;
+const UNICORN_FIRE_COOLDOWN = 0.8;
 
 // Animation.
 const UNICORN_DRAW_OFFSET = vec2(0.1, 0.3);
@@ -60,6 +61,7 @@ class Unicorn extends EngineObject {
   constructor(pos) {
     const colliderSize = vec2(0.9, 0.9);
     super(pos, colliderSize);
+    this.mirror = false;
     this._frameInfoHead = unicornResource.head;
     this._frameInfoBody = unicornResource.body;
     this._frameInfoBag = unicornResource.bag;
@@ -77,6 +79,7 @@ class Unicorn extends EngineObject {
     this._runFrame = UNICORN_FRAME_INDEX_IDLE;
     this._runFrameTimer = new Timer(1.0 / UNICORN_ANIM_RUN_SPEED);
     this._landScaleTimer = new Timer;
+    this._fireCooldownTimer = new Timer(0);
     this.damping = 1;
     this.friction = 1;
     this.setCollision();
@@ -117,6 +120,7 @@ class Unicorn extends EngineObject {
     super.update();
     this._updateJumpCornerRestoreState();
     this._updateBufferedJump();
+    this._updateFire();
     this._updateAnim();
   }
 
@@ -301,6 +305,17 @@ class Unicorn extends EngineObject {
     this._jumpBufferTimer.unset();
     this._coyoteTimer.unset();
     this._emitDust();
+  }
+
+  _updateFire() {
+    const fireDown = keyIsDown(INPUT_KEY_FIRE);
+    if (!fireDown || !this._fireCooldownTimer.elapsed()) {
+      return;
+    }
+    this._fireCooldownTimer.set(UNICORN_FIRE_COOLDOWN);
+    const bulletVelocity = vec2(0.5 * (this.mirror ? 1.0 : -1.0), 0.2);
+    const damage = 1;
+    new Bullet(this.pos.add(vec2(0.0, -0.2)), this.parent, bulletVelocity, damage);
   }
 
   _updateAnim() {
