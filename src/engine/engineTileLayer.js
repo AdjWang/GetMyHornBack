@@ -210,29 +210,23 @@ class TileLayer extends EngineObject
     {
         ASSERT(mainContext != this.context, 'must call redrawEnd() after drawing tiles');
 
-        // draw the entire cached level onto the canvas
+        // draw the entire cached level as a GL texture when available
+        if (glEnable && this.textureInfo)
+        {
+            drawTile(
+                vec2(this.pos.x + this.size.x / 2, this.pos.y + this.size.y / 2),
+                this.size,
+                { pos: vec2(), size: vec2(this.canvas.width, this.canvas.height), textureInfo: this.textureInfo, padding: 0 },
+            );
+            return;
+        }
+
+        // fallback to the main canvas
         const context = mainContext;
         const sx = this.size.x, sy = this.size.y;
         const w = cameraScale*sx, h = cameraScale*sy;
-
-        if (cameraAngle)
-        {
-            // the cache is axis aligned in layer space, so draw it from its
-            // center and spin it about the camera to match everything else
-            const center = worldToScreen(vec2(this.pos.x + sx/2, this.pos.y + sy/2));
-            context.save();
-            context.translate(center.x|0, center.y|0);
-            context.rotate(-cameraAngle);
-            context.drawImage(this.canvas, -w/2, -h/2, w, h);
-            context.restore();
-        }
-        else
-        {
-            const pos = worldToScreen(vec2(this.pos.x, this.pos.y + sy));
-
-            // fix canvas jitter in some browsers if position is not an integer
-            context.drawImage(this.canvas, pos.x|0, pos.y|0, w, h);
-        }
+        const pos = worldToScreen(vec2(this.pos.x, this.pos.y + sy));
+        context.drawImage(this.canvas, pos.x|0, pos.y|0, w, h);
     }
 
     /** Draw all the tile data to an offscreen canvas 
@@ -286,6 +280,7 @@ class TileLayer extends EngineObject
     {
         ASSERT(mainContext == this.context, 'must call redrawStart() before drawing tiles');
         glCopyToContext(mainContext, true);
+        this.textureInfo = new TextureInfo(this.canvas);
         //debugSaveCanvas(this.canvas);
 
         // set stuff back to normal

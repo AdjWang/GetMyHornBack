@@ -6,6 +6,7 @@ const BACKGROUND_SKY_GRADIENT_COLORS = [
   ['#84d7ff', '#e7f8ff', '#fff0bd'],
   ['#06114b', '#101f67', '#263185'],
 ];
+const BACKGROUND_SKY_GRADIENT_TEXTURE_HEIGHT = 256;
 const BACKGROUND_CLOUD_BASE_COLORS = [
   [255, 255, 255],
   [74, 70, 169],
@@ -49,43 +50,16 @@ class Background extends EngineObject {
     } else {
       this.colorTheme = BACKGROUND_COLOR_THEME_DAY;
     }
+    this.createSkyTexture();
     if (this.colorTheme == BACKGROUND_COLOR_THEME_NIGHT) {
-      // Static star field for night scenes.
-      this.starEmitter = new ParticleEmitter(
-        vec2(WORLD_WIDTH / 2, WORLD_HEIGHT / 2),   // position
-        0,                                         // angle
-        vec2(WORLD_WIDTH, WORLD_HEIGHT * 0.9),     // emitSize
-        0,                                         // emitTime
-        0,                                         // emitRate
-        0,                                         // emitConeAngle
-        undefined,                                 // tileInfo
-        BACKGROUND_STAR_COLOR_A,                   // colorStartA
-        BACKGROUND_STAR_COLOR_B,                   // colorStartB
-        new Color(0, 0, 0, 0),                     // colorEndA
-        new Color(0, 0, 0, 0),                     // colorEndB
-        1e9,                                       // particleTime
-        0.04,                                      // sizeStart
-        0.04,                                      // sizeEnd
-        0,                                         // speed
-        0,                                         // angleSpeed
-        1,                                         // damping
-        1,                                         // angleDamping
-        0,                                         // gravityScale
-        PI,                                        // particleConeAngle
-        0,                                         // fadeRate
-        0.3,                                       // randomness
-        false,                                     // collideTiles
-        true,                                      // additive
-        true,                                      // randomColorLinear
-        RENDER_ORDER_BACKGROUND_STAR               // renderOrder
-      );
+      this.stars = [];
       for (let i = 0; i < BACKGROUND_STAR_COUNT; ++i) {
-        let star = this.starEmitter.emitParticle();
-        if (star.pos.y < BACKGROUND_STAR_HEIGHT) {
-          star.destroy();
-        }
+        this.stars.push({
+          pos: vec2(this.randomRange(0, WORLD_WIDTH), this.randomRange(BACKGROUND_STAR_HEIGHT, WORLD_HEIGHT)),
+          size: this.randomRange(0.02, 0.05),
+          color: Math.random() < 0.5 ? BACKGROUND_STAR_COLOR_A : BACKGROUND_STAR_COLOR_B,
+        });
       }
-      this.starEmitter.emitRate = 0;
     }
     this.cloudPool = [];
     for (let i = 0; i < SKY_CLOUD_POOL_COUNT; ++i) {
@@ -99,43 +73,46 @@ class Background extends EngineObject {
   }
 
   drawSky() {
-    const context = mainContext;
-    const gradient = context.createLinearGradient(0, 0, 0, mainCanvasSize.y);
+    drawTile(vec2(WORLD_WIDTH / 2, WORLD_HEIGHT / 2), vec2(WORLD_WIDTH, WORLD_HEIGHT), this.skyTileInfo);
+    if (this.stars) {
+      for (const star of this.stars) {
+        drawRect(star.pos, vec2(star.size), star.color);
+      }
+    }
+    for (const cloud of this.clouds) {
+      this.drawCloud(cloud);
+    }
+  }
+
+  createSkyTexture() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1;
+    canvas.height = BACKGROUND_SKY_GRADIENT_TEXTURE_HEIGHT;
+    const context = canvas.getContext('2d');
     const colors = BACKGROUND_SKY_GRADIENT_COLORS[this.colorTheme];
+    const gradient = context.createLinearGradient(0, 0, 0, canvas.height);
     gradient.addColorStop(0, colors[0]);
     gradient.addColorStop(0.7, colors[1]);
     gradient.addColorStop(1, colors[2]);
     context.fillStyle = gradient;
-    context.fillRect(0, 0, mainCanvasSize.x, mainCanvasSize.y);
-
-    context.imageSmoothingEnabled = false;
-    for (const cloud of this.clouds) {
-      this.drawCloud(context, cloud);
-    }
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    const textureInfo = new TextureInfo(canvas);
+    this.skyTileInfo = new TileInfo(vec2(), vec2(1, BACKGROUND_SKY_GRADIENT_TEXTURE_HEIGHT), textureInfo, 0);
   }
 
-  drawCloud(context, cloud) {
+  drawCloud(cloud) {
     // Adjust parallax, scroll speed, alpha and blur value according to layer depth.
     const layerDepth = cloud.layer / (BACKGROUND_LAYER_COUNT - 1);
     const layerParallax = SKY_CLOUD_PARALLAX * (0.45 + layerDepth * 0.75);
-    const pos = worldToScreen(cloud.pos.add(cameraPos.subtract(vec2(WORLD_WIDTH / 2, WORLD_HEIGHT / 2)).scale(layerParallax)));
-    const scale = SKY_CLOUD_PIXEL_SIZE * worldScale * cloud.scale;
-    const width = cloud.image.canvas.width * scale;
-    const height = cloud.image.canvas.height * scale;
-    const loopWidth = mainCanvasSize.x + width;
-    const scrollX = time * SKY_CLOUD_SCROLL_SPEED * worldScale * cloud.speed * (0.55 + layerDepth * 0.45);
-    const x = backgroundWrap(pos.x + cloud.image.minX * worldScale * cloud.scale - scrollX, loopWidth) - width;
-    context.save();
-    context.globalAlpha = 0.65 + layerDepth * 0.35;
-    context.filter = cloud.layer == 0 ? 'blur(2px)' : cloud.layer == 1 ? 'blur(1px)' : 'none';
-    context.drawImage(
-      cloud.image.canvas,
-      x,
-      pos.y + cloud.image.minY * worldScale * cloud.scale,
-      width,
-      height,
-    );
-    context.restore();
+    const basePos = cloud.pos.add(cameraPos.subtract(vec2(WORLD_WIDTH / 2, WORLD_HEIGHT / 2)).scale(layerParallax));
+    const width = cloud.canvas.width * SKY_CLOUD_PIXEL_SIZE * cloud.scale;
+    const height = cloud.canvas.height * SKY_CLOUD_PIXEL_SIZE * cloud.scale;
+    const loopWidth = WORLD_WIDTH + width;
+    const scrollX = time * SKY_CLOUD_SCROLL_SPEED * cloud.speed * (0.55 + layerDepth * 0.45);
+    const x = backgroundWrap(basePos.x + cloud.minX * cloud.scale - scrollX, loopWidth) - width;
+    const cloudPos = vec2(x + width / 2, basePos.y + cloud.minY * cloud.scale + height / 2);
+    const cloudColor = new Color(1, 1, 1, 0.65 + layerDepth * 0.35);
+    drawTile(cloudPos, vec2(width, height), cloud.tileInfo, cloudColor);
   }
 
   createCloudImage() {
@@ -170,7 +147,8 @@ class Background extends EngineObject {
         context.fillRect(x, y, 1, 1);
       }
     }
-    return { canvas, minX, minY };
+    const textureInfo = new TextureInfo(canvas);
+    return { canvas, textureInfo, tileInfo: new TileInfo(vec2(), vec2(canvas.width, canvas.height), textureInfo, 0), minX, minY };
   }
 
   selectClouds() {
@@ -184,7 +162,7 @@ class Background extends EngineObject {
       const minY = SKY_CLOUD_RANDOM_POS_Y
       const maxY = WORLD_HEIGHT - SKY_CLOUD_RANDOM_POS_Y
       clouds.push({
-        image: pool.splice(imageIndex, 1)[0],
+        ...pool.splice(imageIndex, 1)[0],
         pos: vec2(this.randomRange(minX, maxX), this.randomRange(minY, maxY)),
         scale: this.randomRange(SKY_CLOUD_MIN_SCALE, SKY_CLOUD_MAX_SCALE),
         speed: this.randomRange(0.8, 1.2),
