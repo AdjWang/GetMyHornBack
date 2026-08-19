@@ -119,7 +119,7 @@ function drawRainbowBulletTrail(points, alphaScale, colors, colorOffsets) {
     for (let i = 1; i < points.length; ++i) {
       const alpha = i / (points.length - 1) * alphaScale;
       drawLine(points[i - 1].add(offset), points[i].add(offset), BULLET_TRAIL_THICKNESS,
-        new Color(color.r, color.g, color.b, alpha), false);
+        new Color(color.r, color.g, color.b, alpha));
     }
   }
 }
