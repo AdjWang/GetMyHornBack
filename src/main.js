@@ -45,7 +45,7 @@ let dragon;
 
 async function gameInit() {
     // Remap scene theme.
-    const sceneTheme = THEME_INDEX_ROCK;
+    const sceneTheme = THEME_INDEX_CLOUD;
     await remapTilesetColor(0, sceneTheme);
     foreground = new Foreground(sceneTheme);
     background = new Background(sceneTheme);
