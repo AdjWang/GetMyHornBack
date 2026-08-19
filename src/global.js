@@ -6,9 +6,9 @@ const WORLD_WIDTH = 30;  // cells
 const WORLD_HEIGHT = 20;  // cells
 
 const IMAGE_SOURCES = [
-  'assets/tileset/color.png',
-  'assets/unicorn/unicorn.png',
-  'assets/leaf/color.png',
+  'assets/tileset.png',
+  'assets/unicorn.png',
+  'assets/leaf.png',
 ];
 
 const THEME_INDEX_ROCK = 0;
