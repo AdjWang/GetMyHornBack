@@ -55,12 +55,7 @@ async function gameInit() {
     initTileCollision(vec2(WORLD_WIDTH, WORLD_HEIGHT));
     const pos = vec2(0, 0);
     const tileLayer = new TileLayer(pos, tileCollisionSize);
-
-    // Get level data from the tiles image.
-    const tileImage = textureInfos[0].image;
-    mainContext.drawImage(tileImage, 0, 0);
-    const imageData = mainContext.getImageData(0, 0, tileImage.width, tileImage.height).data;
-
+    tileLayer.renderOrder = 0;
     for (let y = 0; y < tileCollisionSize.y; y++) {
         for (let x = 0; x < tileCollisionSize.x; x++) {
             let pos = vec2(x, tileCollisionSize.y - y - 1);

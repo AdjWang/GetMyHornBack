@@ -1,21 +1,7 @@
 'use strict';
-
-const BACKGROUND_RENDER_ORDER = -1e4;
 const BACKGROUND_LAYER_COUNT = 3;
 const BACKGROUND_COLOR_THEME_DAY = 0;
 const BACKGROUND_COLOR_THEME_NIGHT = 1;
-// const BACKGROUND_SKY_GRADIENT_COLORS = [
-//   ['#84d7ff', '#e7f8ff', '#fff0bd'],
-//   ['#101735', '#243461', '#4f4a7d'],
-// ];
-// const BACKGROUND_CLOUD_BASE_COLORS = [
-//   [255, 255, 255],
-//   [176, 194, 236],
-// ];
-// const BACKGROUND_CLOUD_SHADOW_DELTAS = [
-//   [32, 12],
-//   [44, 36],
-// ];
 const BACKGROUND_SKY_GRADIENT_COLORS = [
   ['#84d7ff', '#e7f8ff', '#fff0bd'],
   ['#06114b', '#101f67', '#263185'],
@@ -28,6 +14,11 @@ const BACKGROUND_CLOUD_SHADOW_DELTAS = [
   [32, 12],
   [18, 16],
 ];
+const BACKGROUND_STAR_COUNT = 40;
+// Only show stars above this height.
+const BACKGROUND_STAR_HEIGHT = 12;
+const BACKGROUND_STAR_COLOR_A = new Color(1, 1, 1, 0.9);
+const BACKGROUND_STAR_COLOR_B = new Color(0.7, 0.8, 1, 0.7);
 // Base size to generate.
 const SKY_CLOUD_SIZE = vec2(12, 4);
 // Make the image fit pixel style.
@@ -52,11 +43,49 @@ const SKY_CLOUD_MAX_SCALE = 1.2;
 
 class Background extends EngineObject {
   constructor(sceneTheme) {
-    super(vec2(), vec2(), undefined, 0, new Color, BACKGROUND_RENDER_ORDER);
+    super(vec2(), vec2(), undefined, 0, new Color, RENDER_ORDER_BACKGROUND);
     if (sceneTheme == THEME_INDEX_ROCK) {
       this.colorTheme = BACKGROUND_COLOR_THEME_NIGHT;
     } else {
       this.colorTheme = BACKGROUND_COLOR_THEME_DAY;
+    }
+    if (this.colorTheme == BACKGROUND_COLOR_THEME_NIGHT) {
+      // Static star field for night scenes.
+      this.starEmitter = new ParticleEmitter(
+        vec2(WORLD_WIDTH / 2, WORLD_HEIGHT / 2),   // position
+        0,                                         // angle
+        vec2(WORLD_WIDTH, WORLD_HEIGHT * 0.9),     // emitSize
+        0,                                         // emitTime
+        0,                                         // emitRate
+        0,                                         // emitConeAngle
+        undefined,                                 // tileInfo
+        BACKGROUND_STAR_COLOR_A,                   // colorStartA
+        BACKGROUND_STAR_COLOR_B,                   // colorStartB
+        new Color(0, 0, 0, 0),                     // colorEndA
+        new Color(0, 0, 0, 0),                     // colorEndB
+        1e9,                                       // particleTime
+        0.04,                                      // sizeStart
+        0.04,                                      // sizeEnd
+        0,                                         // speed
+        0,                                         // angleSpeed
+        1,                                         // damping
+        1,                                         // angleDamping
+        0,                                         // gravityScale
+        PI,                                        // particleConeAngle
+        0,                                         // fadeRate
+        0.3,                                       // randomness
+        false,                                     // collideTiles
+        true,                                      // additive
+        true,                                      // randomColorLinear
+        RENDER_ORDER_BACKGROUND_STAR               // renderOrder
+      );
+      for (let i = 0; i < BACKGROUND_STAR_COUNT; ++i) {
+        let star = this.starEmitter.emitParticle();
+        if (star.pos.y < BACKGROUND_STAR_HEIGHT) {
+          star.destroy();
+        }
+      }
+      this.starEmitter.emitRate = 0;
     }
     this.cloudPool = [];
     for (let i = 0; i < SKY_CLOUD_POOL_COUNT; ++i) {
