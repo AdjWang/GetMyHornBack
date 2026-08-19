@@ -71,7 +71,7 @@ const UNICORN_ANIM_RUN_SPEED = 8;  // frame/sec
 class Unicorn extends EngineObject {
   constructor(pos) {
     const colliderSize = vec2(0.9, 0.9);
-    super(pos, colliderSize);
+    super(pos, colliderSize, undefined, 0, new Color, RENDER_ORDER_UNICORN);
     this.mirror = false;
     this._frameInfoHead = unicornResource.head;
     this._frameInfoBody = unicornResource.body;

@@ -24,7 +24,7 @@ class RainbowBullet extends EngineObject {
     this.velocity = velocity;
     this.damping = 1;
     this.gravityScale = 0.8;
-    this.renderOrder = 100;
+    this.renderOrder = RENDER_ORDER_BULLET;
     this.drawSize = vec2();
     this.setCollision(true, false);
 

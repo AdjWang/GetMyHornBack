@@ -55,7 +55,7 @@ async function gameInit() {
     initTileCollision(vec2(WORLD_WIDTH, WORLD_HEIGHT));
     const pos = vec2(0, 0);
     const tileLayer = new TileLayer(pos, tileCollisionSize);
-    tileLayer.renderOrder = 0;
+    tileLayer.renderOrder = RENDER_ORDER_TILE_LAYER;
     for (let y = 0; y < tileCollisionSize.y; y++) {
         for (let x = 0; x < tileCollisionSize.x; x++) {
             let pos = vec2(x, tileCollisionSize.y - y - 1);

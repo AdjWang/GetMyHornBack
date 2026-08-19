@@ -8,6 +8,7 @@ const FOREGROUND_LARGE_LEAF_ALPHA = 0.35;
 class Foreground extends EngineObject {
   constructor(sceneTheme) {
     super()
+    this.renderOrder = RENDER_ORDER_FOREGROUND;
     if (sceneTheme == THEME_INDEX_GRASS) {
       const color = new Color(1, 1, 1);
       const leafEmitter = new ParticleEmitter(
