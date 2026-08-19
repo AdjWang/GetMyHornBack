@@ -13,8 +13,14 @@ function createAsepriteFrames(data, textureIndex) {
   const frames = [];
   for (let i = 0; i < data.length; ++i) {
     const frame = data[i];
+    // Fix incorrect image cutting align value.
+    const bleedFix = 0.5;
     frames[i] = {
-      tileInfo: new TileInfo(vec2(frame[0], frame[1]), vec2(frame[2], frame[3]), textureInfos[textureIndex]),
+      tileInfo: new TileInfo(
+        vec2(frame[0] + bleedFix, frame[1] + bleedFix),
+        vec2(frame[2] - bleedFix * 2, frame[3] - bleedFix * 2),
+        textureInfos[textureIndex],
+      ),
       size: vec2(frame[2] / TILE_SIZE, frame[3] / TILE_SIZE),
       offset: vec2(frame[4] / TILE_SIZE, frame[5] / TILE_SIZE),
     };
