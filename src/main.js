@@ -11,8 +11,6 @@
 const sound_click = new Sound([1, .5]);
 
 // game variables
-let dustEmitter;
-let unicornResource;
 let foreground;
 let background;
 
@@ -71,14 +69,13 @@ async function gameInit() {
         }
     }
     // Draw tile layer with new data.
-    tileLayer.tileInfo = tile(0, 16, 0, 0);
+    tileLayer.tileInfo = tile(0, 16, TEXTURE_INDEX_TILESET, 0);
     tileLayer.redraw();
     // Setup camera.
     updateWorldCamera();
     // Enable gravity.
     gravity.y = -0.01;
 
-    unicornResource = createAsepriteResource(unicornAsepriteData, 1);
     player = new Unicorn(vec2(20, 18));
 }
 
