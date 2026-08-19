@@ -73,10 +73,10 @@ class Unicorn extends EngineObject {
     const colliderSize = vec2(0.9, 0.9);
     super(pos, colliderSize, undefined, 0, new Color, RENDER_ORDER_CHARACTER);
     this.mirror = false;
-    const unicornResource = createAsepriteResource(unicornAsepriteData, TEXTURE_INDEX_UNICORN);
-    this._frameInfoHead = unicornResource.head;
-    this._frameInfoBody = unicornResource.body;
-    this._frameInfoBag = unicornResource.bag;
+    const res = createAsepriteResource(unicornAsepriteData, TEXTURE_INDEX_UNICORN, ['bag', 'body', 'head']);
+    this._frameInfoHead = res.head;
+    this._frameInfoBody = res.body;
+    this._frameInfoBag = res.bag;
     this._moveX = 0;
     this._moveY = 0;
     this._lastMoveX = 1;

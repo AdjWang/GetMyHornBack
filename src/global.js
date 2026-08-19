@@ -9,6 +9,7 @@ const IMAGE_SOURCES = [
   'assets/tileset.png',
   'assets/leaf.png',
   'assets/unicorn.png',
+  'assets/dragon.png',
 ];
 
 const THEME_INDEX_ROCK = 0;
@@ -18,6 +19,7 @@ const THEME_INDEX_CLOUD = 2;
 const TEXTURE_INDEX_TILESET = 0;
 const TEXTURE_INDEX_LEAF = 1;
 const TEXTURE_INDEX_UNICORN = 2;
+const TEXTURE_INDEX_DRAGON = 3;
 
 const RENDER_ORDER_BACKGROUND = -1e4;
 const RENDER_ORDER_TILE_LAYER = 0;

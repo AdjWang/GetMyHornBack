@@ -41,6 +41,7 @@ const level1 = [
 
 ///////////////////////////////////////////////////////////////////////////////
 let player;
+let dragon;
 
 async function gameInit() {
     // Remap scene theme.
@@ -77,6 +78,7 @@ async function gameInit() {
     gravity.y = -0.01;
 
     player = new Unicorn(vec2(20, 18));
+    dragon = new Dragon(vec2(15, 18));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

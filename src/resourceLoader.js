@@ -1,11 +1,12 @@
 'use strict';
 
-function createAsepriteResource(data, textureIndex) {
-  return {
-    bag: createAsepriteFrames(data[0], textureIndex),
-    body: createAsepriteFrames(data[1], textureIndex),
-    head: createAsepriteFrames(data[2], textureIndex),
-  };
+function createAsepriteResource(data, textureIndex, frameNames) {
+  const res = {};
+  for (let i = 0; i < data.length; ++i) {
+    const frameName = frameNames && frameNames[i] || i;
+    res[frameName] = createAsepriteFrames(data[i], textureIndex);
+  }
+  return res;
 }
 
 function createAsepriteFrames(data, textureIndex) {
