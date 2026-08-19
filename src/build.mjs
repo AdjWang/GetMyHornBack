@@ -70,6 +70,7 @@ const sourceFiles =
 
     // game files
     'global.js',
+    'assets/dragonResource.js',
     'assets/unicornResource.js',
     'resourceLoader.js',
     'foreground.js',
@@ -81,8 +82,9 @@ const sourceFiles =
 const dataFiles =
 [
     'assets/tileset.png',
-    'assets/unicorn.png',
     'assets/leaf.png',
+    'assets/dragon.png',
+    'assets/unicorn.png',
 ];
 
 console.log(`Building ${PROGRAM_NAME}...`);
