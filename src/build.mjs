@@ -73,6 +73,7 @@ const sourceFiles =
     'gameObject.js',
     'assets/unicorn/unicornResource.js',
     'resourceLoader.js',
+    'foreground.js',
     'background.js',
     'bullet.js',
     'unicorn.js',
@@ -82,6 +83,7 @@ const dataFiles =
 [
     'assets/tileset/color.png',
     'assets/unicorn/unicorn.png',
+    'assets/leaf/color.png',
 ];
 
 console.log(`Building ${PROGRAM_NAME}...`);
