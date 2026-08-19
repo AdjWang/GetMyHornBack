@@ -50,7 +50,7 @@ class Foreground extends EngineObject {
         0,                    // angle
         100,                  // emitSize
         0,                    // emitTime
-        10,                   // emitRate
+        30,                   // emitRate
         PI,                   // emitConeAngle
         undefined,            // tileInfo
         colorA,               // colorStartA
@@ -58,10 +58,10 @@ class Foreground extends EngineObject {
         colorB,               // colorEndA
         colorA,               // colorEndB
         1.2,                  // particleTime
-        0.4,                  // sizeStart
-        0.2,                  // sizeEnd
-        0.03,                 // speed
-        0.05,                 // angleSpeed
+        0.12,                 // sizeStart
+        0.05,                 // sizeEnd
+        0.02,                 // speed
+        0.0,                  // angleSpeed
         1.0,                  // damping
         1.0,                  // angleDamping
         0.0,                  // gravityScale

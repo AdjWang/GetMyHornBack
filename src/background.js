@@ -2,6 +2,32 @@
 
 const BACKGROUND_RENDER_ORDER = -1e4;
 const BACKGROUND_LAYER_COUNT = 3;
+const BACKGROUND_COLOR_THEME_DAY = 0;
+const BACKGROUND_COLOR_THEME_NIGHT = 1;
+// const BACKGROUND_SKY_GRADIENT_COLORS = [
+//   ['#84d7ff', '#e7f8ff', '#fff0bd'],
+//   ['#101735', '#243461', '#4f4a7d'],
+// ];
+// const BACKGROUND_CLOUD_BASE_COLORS = [
+//   [255, 255, 255],
+//   [176, 194, 236],
+// ];
+// const BACKGROUND_CLOUD_SHADOW_DELTAS = [
+//   [32, 12],
+//   [44, 36],
+// ];
+const BACKGROUND_SKY_GRADIENT_COLORS = [
+  ['#84d7ff', '#e7f8ff', '#fff0bd'],
+  ['#06114b', '#101f67', '#263185'],
+];
+const BACKGROUND_CLOUD_BASE_COLORS = [
+  [255, 255, 255],
+  [74, 70, 169],
+];
+const BACKGROUND_CLOUD_SHADOW_DELTAS = [
+  [32, 12],
+  [18, 16],
+];
 // Base size to generate.
 const SKY_CLOUD_SIZE = vec2(12, 4);
 // Make the image fit pixel style.
@@ -25,8 +51,13 @@ const SKY_CLOUD_MIN_SCALE = 0.2;
 const SKY_CLOUD_MAX_SCALE = 1.2;
 
 class Background extends EngineObject {
-  constructor() {
+  constructor(sceneTheme) {
     super(vec2(), vec2(), undefined, 0, new Color, BACKGROUND_RENDER_ORDER);
+    if (sceneTheme == THEME_INDEX_ROCK) {
+      this.colorTheme = BACKGROUND_COLOR_THEME_NIGHT;
+    } else {
+      this.colorTheme = BACKGROUND_COLOR_THEME_DAY;
+    }
     this.cloudPool = [];
     for (let i = 0; i < SKY_CLOUD_POOL_COUNT; ++i) {
       this.cloudPool.push(this.createCloudImage());
@@ -41,9 +72,10 @@ class Background extends EngineObject {
   drawSky() {
     const context = mainContext;
     const gradient = context.createLinearGradient(0, 0, 0, mainCanvasSize.y);
-    gradient.addColorStop(0, '#84d7ff');
-    gradient.addColorStop(0.7, '#e7f8ff');
-    gradient.addColorStop(1, '#fff0bd');
+    const colors = BACKGROUND_SKY_GRADIENT_COLORS[this.colorTheme];
+    gradient.addColorStop(0, colors[0]);
+    gradient.addColorStop(0.7, colors[1]);
+    gradient.addColorStop(1, colors[2]);
     context.fillStyle = gradient;
     context.fillRect(0, 0, mainCanvasSize.x, mainCanvasSize.y);
 
@@ -89,10 +121,12 @@ class Background extends EngineObject {
     canvas.width = width;
     canvas.height = height;
     const context = canvas.getContext('2d');
+    const cloudBaseColor = BACKGROUND_CLOUD_BASE_COLORS[this.colorTheme];
+    const cloudShadowDelta = BACKGROUND_CLOUD_SHADOW_DELTAS[this.colorTheme];
     const shadowStartY = 0.16;
     const shadowBlendRange = 0.08;
-    const shadowRedDelta = 32;
-    const shadowGreenDelta = 12;
+    const shadowRedDelta = cloudShadowDelta[0];
+    const shadowGreenDelta = cloudShadowDelta[1];
     for (let y = 0; y < height; ++y) {
       for (let x = 0; x < width; ++x) {
         const worldX = minX + x * SKY_CLOUD_PIXEL_SIZE;
@@ -103,7 +137,7 @@ class Background extends EngineObject {
         // Blend to the lower shadow across a small vertical range.
         const shade = Math.max(0, Math.min(1, (worldY / SKY_CLOUD_SIZE.y - shadowStartY) / shadowBlendRange));
         // Make light to dark transition soft.
-        context.fillStyle = `rgb(${Math.round(255 - shadowRedDelta * shade)},${Math.round(255 - shadowGreenDelta * shade)},255)`;
+        context.fillStyle = `rgb(${Math.round(cloudBaseColor[0] - shadowRedDelta * shade)},${Math.round(cloudBaseColor[1] - shadowGreenDelta * shade)},${cloudBaseColor[2]})`;
         context.fillRect(x, y, 1, 1);
       }
     }

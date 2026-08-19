@@ -49,7 +49,7 @@ async function gameInit() {
     const sceneTheme = THEME_INDEX_ROCK;
     await remapTilesetColor(0, sceneTheme);
     foreground = new Foreground(sceneTheme);
-    background = new Background();
+    background = new Background(sceneTheme);
 
     // Create tile collision and visible tile layer.
     initTileCollision(vec2(WORLD_WIDTH, WORLD_HEIGHT));
