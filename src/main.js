@@ -13,6 +13,7 @@ const sound_click = new Sound([1, .5]);
 // game variables
 let dustEmitter;
 let unicornResource;
+let foreground;
 let background;
 
 // WebGL can be removed to save ~963 bytes - see "Disabling WebGL" in README.md
@@ -47,6 +48,7 @@ async function gameInit() {
     // Remap scene theme.
     const sceneTheme = THEME_INDEX_GRASS;
     await remapTilesetColor(0, sceneTheme);
+    foreground = new Foreground(sceneTheme);
     background = new Background();
 
     // Create tile collision and visible tile layer.

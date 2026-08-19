@@ -8,6 +8,7 @@ const WORLD_HEIGHT = 20;  // cells
 const IMAGE_SOURCES = [
   'assets/tileset/color.png',
   'assets/unicorn/unicorn.png',
+  'assets/leaf/color.png',
 ];
 
 const THEME_INDEX_ROCK = 0;
