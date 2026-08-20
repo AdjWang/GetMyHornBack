@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>Tone Player</title>
+<link rel=stylesheet href=style.css>
+</head>
+<body>
+<main class=panel>
+  <div class=title>Tone Player</div>
+  <pre id=output>Loading tone.txt...</pre>
+  <button id=replay type=button>Replay</button>
+  <div class=hint>Autoplay runs once on load. If the browser blocks it, click Replay.</div>
+</main>
+
+<script>
+var soundEnable = true;
+var headlessMode = false;
+var soundVolume = 1;
+var soundDefaultRange = 0;
+var soundDefaultTaper = 0.5;
+</script>
+<script src=../engine/engineMath.js></script>
+<script src=../engine/engineAudio.js></script>
+<script src=musicPlayer.js></script>
+</body>
+</html>

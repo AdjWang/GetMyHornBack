@@ -13,6 +13,8 @@ const sound_click = new Sound([1, .5]);
 // game variables
 let foreground;
 let background;
+let backgroundMusic;
+let backgroundMusicVolume = 0.0;
 
 // WebGL can be removed to save ~963 bytes - see "Disabling WebGL" in README.md
 
@@ -79,12 +81,18 @@ async function gameInit() {
 
     player = new Unicorn(vec2(20, 18));
     dragon = new Dragon(vec2(15, 18));
+
+    backgroundMusic = new ZzFXMusic(BACKGROUND_MUSIC);
+    backgroundMusic.playMusic(backgroundMusicVolume, true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 function gameUpdate() {
     worldScale = min(mainCanvasSize.x / WORLD_WIDTH, mainCanvasSize.y / WORLD_HEIGHT);
     updateWorldCamera();
+    if (backgroundMusic) {
+        backgroundMusic.setVolume(backgroundMusicVolume);
+    }
     // TODO
     if (mouseWasPressed(0)) {
         // play sound when mouse is pressed
