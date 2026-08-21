@@ -9,6 +9,7 @@ const RAINBOW_CELL_PREVIEW_LIGHT_COLOR = new Color(1, 1, 1, 0.9);
 const RAINBOW_CELL_ACTIVE_COLOR = new Color(1, 1, 1, 1);
 let activeRainbowCell;
 
+// Locked preview after click to anchor a rainbow cell.
 class RainbowCellPreview extends EngineObject {
   constructor() {
     super(vec2(), vec2(1), undefined, 0, new Color, RAINBOW_CELL_RENDER_ORDER);
@@ -55,6 +56,7 @@ class RainbowCellPreview extends EngineObject {
   }
 }
 
+// Mask under mouse to show target.
 class RainbowCellMousePreview extends EngineObject {
   constructor() {
     super(vec2(), vec2(1), undefined, 0, new Color, RAINBOW_CELL_RENDER_ORDER);

@@ -7,9 +7,6 @@
 
 'use strict';
 
-// sound effects
-const sound_click = new Sound([1, .5]);
-
 // game variables
 let foreground;
 let background;
@@ -96,11 +93,6 @@ function gameUpdate() {
     updateWorldCamera();
     if (backgroundMusic) {
         backgroundMusic.setVolume(backgroundMusicVolume);
-    }
-    // TODO
-    if (mouseWasPressed(0)) {
-        // play sound when mouse is pressed
-        sound_click.play(mousePos);
     }
 }
 

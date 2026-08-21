@@ -76,6 +76,7 @@ const sourceFiles =
     'foreground.js',
     'background.js',
     'bullet.js',
+    'rainbowCell.js',
     'unicorn.js',
     'main.js',
 ];
