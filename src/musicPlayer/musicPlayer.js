@@ -8,9 +8,9 @@ const NOTE_NAMES = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
 const NOTE_OFFSETS = [0, 2, 4, 5, 7, 9, 11];
 const ROOT_NOTE = 12;
 const BPM = 80;
-const ROOT_FREQUENCY = 261.625565;
+const C_FREQUENCY = 261.625565;
 const DEFAULT_DURATION = [0, 1, 0, 0];
-const INSTRUMENT = [.28, .01, ROOT_FREQUENCY, .001, .03, .16, 1, 1.2, 0, 0, 0, 0, 0, 0, 0, 0, .02, .45, .03, 0, 0];
+const INSTRUMENT = [.28, .01, C_FREQUENCY, .001, .03, .16, 1, 1.2, 0, 0, 0, 0, 0, 0, 0, 0, .02, .45, .03, 0, 0];
 
 let currentMusic;
 

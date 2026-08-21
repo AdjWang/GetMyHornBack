@@ -3,7 +3,7 @@
 const BULLET_TRAIL_POINT_COUNT = 8;
 const BULLET_TRAIL_THICKNESS = 0.05;
 const BULLET_TRAIL_TIME = 0.25;
-const RAINBOW_BULLET_COLOR_SPACING = 0.1;
+const RAINBOW_BULLET_COLOR_SPACING = 0.05;
 const SOUND_RAINBOW_HIT = new Sound([1.3,.15,224,.01,,.16,,1.5,-8,-13,,,,.2,,.3,,.64,.01,,868]);
 const SOUND_RAINBOW_HIT_VOLUME = 0.7;
 const RAINBOW_COLORS = [
@@ -23,7 +23,7 @@ class RainbowBullet extends EngineObject {
     this.color = colors[colors.length / 2 | 0];
     this.velocity = velocity;
     this.damping = 1;
-    this.gravityScale = 0.8;
+    this.gravityScale = 0.0;
     this.renderOrder = RENDER_ORDER_BULLET;
     this.drawSize = vec2();
     this.setCollision(true, false);

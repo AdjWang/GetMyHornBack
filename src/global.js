@@ -39,6 +39,6 @@ const INPUT_KEY_UP = 'ArrowUp';
 const INPUT_KEY_DOWN = 'ArrowDown';
 const INPUT_KEY_LEFT = 'ArrowLeft';
 const INPUT_KEY_RIGHT = 'ArrowRight';
-const INPUT_KEY_FIRE = 'KeyJ';
+const INPUT_KEY_FIRE = 0;
 
 let worldScale = TILE_SIZE;

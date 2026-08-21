@@ -5,7 +5,7 @@ const UNICORN_WIDTH = 21;  // pixels
 const UNICORN_HEIGHT = 24;  // pixels
 
 const UNICORN_FIRE_COOLDOWN = 0.4;
-const UNICORN_FIRE_VELOCITY = vec2(0.45, 0.15);
+const UNICORN_FIRE_SPEED = 0.45;
 const UNICORN_FIRE_DAMAGE = 1.0;
 // Not so happy. Leave here as backup.
 // const SOUND_FIRE = new Sound([1.1, 0, 420, 0.02, 0.08, 0.18, 1, 1.9, 8, 0, 120, 0.04, 0.03]);
@@ -326,7 +326,11 @@ class Unicorn extends EngineObject {
       return;
     }
     this._fireCooldownTimer.set(UNICORN_FIRE_COOLDOWN);
-    const bulletVelocity = vec2(UNICORN_FIRE_VELOCITY.x * (this.mirror ? 1.0 : -1.0), UNICORN_FIRE_VELOCITY.y);
+    const targetCellCenter = mousePos.floor().add(vec2(0.5));
+    const fireDirection = targetCellCenter.subtract(this.pos);
+    const bulletVelocity = fireDirection.lengthSquared() ?
+      fireDirection.normalize(UNICORN_FIRE_SPEED) :
+      vec2(this._lastMoveX * UNICORN_FIRE_SPEED, 0);
     SOUND_FIRE.play(this.pos, SOUND_FIRE_VOLUME);
     new RainbowBullet(this.pos, this, bulletVelocity, UNICORN_FIRE_DAMAGE);
   }
