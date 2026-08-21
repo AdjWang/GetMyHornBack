@@ -54,6 +54,12 @@ class RainbowCellPreview extends EngineObject {
   collideWithObject(o) {
     return false;
   }
+
+  renderDebugInfo() {
+    if (this._bullet) {
+      super.renderDebugInfo();
+    }
+  }
 }
 
 // Mask under mouse to show target.
@@ -69,6 +75,9 @@ class RainbowCellMousePreview extends EngineObject {
 
   render() {
     drawRainbowCellPreview(this.pos, this.size);
+  }
+
+  renderDebugInfo() {
   }
 }
 
@@ -119,6 +128,7 @@ class RainbowCell extends EngineObject {
     if (activeRainbowCell == this) {
       activeRainbowCell = undefined;
     }
+    this.setCollision(false, false, false, false);
     super.destroy();
   }
 }
