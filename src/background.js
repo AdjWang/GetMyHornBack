@@ -2,11 +2,13 @@
 const BACKGROUND_LAYER_COUNT = 3;
 const BACKGROUND_COLOR_THEME_DAY = 0;
 const BACKGROUND_COLOR_THEME_NIGHT = 1;
-const BACKGROUND_SKY_GRADIENT_COLORS = [
-  ['#84d7ff', '#e7f8ff', '#fff0bd'],
-  ['#06114b', '#101f67', '#263185'],
-];
+const BACKGROUND_SKY_GRADIENT_TEXTURE_WIDTH = 384;
 const BACKGROUND_SKY_GRADIENT_TEXTURE_HEIGHT = 256;
+const BACKGROUND_SKY_GRADIENT_PIXEL_BLOCK = 2;
+const BACKGROUND_SKY_GRADIENT_BAND_COLORS = [
+  ['#84d7ff', '#b3e8ff', '#e7f8ff', '#fff0bd'],
+  ['#06114b', '#0b1859', '#101f67', '#263185'],
+];
 const BACKGROUND_CLOUD_BASE_COLORS = [
   [255, 255, 255],
   [74, 70, 169],
@@ -86,18 +88,28 @@ class Background extends EngineObject {
 
   createSkyTexture() {
     const canvas = document.createElement('canvas');
-    canvas.width = 1;
+    canvas.width = BACKGROUND_SKY_GRADIENT_TEXTURE_WIDTH;
     canvas.height = BACKGROUND_SKY_GRADIENT_TEXTURE_HEIGHT;
     const context = canvas.getContext('2d');
-    const colors = BACKGROUND_SKY_GRADIENT_COLORS[this.colorTheme];
-    const gradient = context.createLinearGradient(0, 0, 0, canvas.height);
-    gradient.addColorStop(0, colors[0]);
-    gradient.addColorStop(0.7, colors[1]);
-    gradient.addColorStop(1, colors[2]);
-    context.fillStyle = gradient;
-    context.fillRect(0, 0, canvas.width, canvas.height);
+    const colors = BACKGROUND_SKY_GRADIENT_BAND_COLORS[this.colorTheme];
+    const block = BACKGROUND_SKY_GRADIENT_PIXEL_BLOCK;
+    const bandHeight = canvas.height / colors.length;
+    const waveAmplitude = Math.floor(bandHeight * 0.22);
+    const waveCycles = 2;
+    for (let x = 0; x < canvas.width; x += block) {
+      const phase = x / canvas.width * Math.PI * 2 * waveCycles;
+      let top = 0;
+      for (let bandIndex = 0; bandIndex < colors.length; ++bandIndex) {
+        const bottom = bandIndex == colors.length - 1 ? canvas.height :
+          Math.round((bandIndex + 1) * bandHeight + Math.sin(phase + bandIndex * 1.7) * waveAmplitude);
+        context.fillStyle = colors[bandIndex];
+        context.fillRect(x, top, block, bottom - top);
+        top = bottom;
+      }
+    }
+
     const textureInfo = new TextureInfo(canvas);
-    this.skyTileInfo = new TileInfo(vec2(), vec2(1, BACKGROUND_SKY_GRADIENT_TEXTURE_HEIGHT), textureInfo, 0);
+    this.skyTileInfo = new TileInfo(vec2(), vec2(canvas.width, canvas.height), textureInfo, 0);
   }
 
   drawCloud(cloud) {
