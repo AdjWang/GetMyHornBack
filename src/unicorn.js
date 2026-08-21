@@ -4,7 +4,7 @@
 const UNICORN_WIDTH = 21;  // pixels
 const UNICORN_HEIGHT = 24;  // pixels
 
-const UNICORN_FIRE_COOLDOWN = 0.4;
+const UNICORN_FIRE_COOLDOWN = 0.3;
 const UNICORN_FIRE_SPEED = 0.45;
 const UNICORN_FIRE_DAMAGE = 1.0;
 // Not so happy. Leave here as backup.

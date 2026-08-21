@@ -31,7 +31,7 @@ class RainbowBullet extends EngineObject {
     this._attacker = attacker;
     this._damage = damage;
     this._colors = colors;
-    this._colorOffsets = this._createColorOffsets(colors.length);
+    this._colorOffsets = this._createColorOffsets(colors.length, velocity);
     this._trailPoints = [this.pos.copy()];
   }
 
@@ -72,11 +72,13 @@ class RainbowBullet extends EngineObject {
     super.destroy();
   }
 
-  _createColorOffsets(count) {
+  _createColorOffsets(count, velocity) {
     const offsets = [];
     const center = (count - 1) / 2;
+    const direction = velocity.lengthSquared() ? velocity.normalize() : vec2(1, 0);
+    const offsetDirection = vec2(-direction.y, direction.x);
     for (let i = 0; i < count; ++i) {
-      offsets.push(vec2(0, (center - i) * RAINBOW_BULLET_COLOR_SPACING));
+      offsets.push(offsetDirection.scale((center - i) * RAINBOW_BULLET_COLOR_SPACING));
     }
     return offsets;
   }
