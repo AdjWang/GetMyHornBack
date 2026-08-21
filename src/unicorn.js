@@ -332,7 +332,8 @@ class Unicorn extends EngineObject {
       fireDirection.normalize(UNICORN_FIRE_SPEED) :
       vec2(this._lastMoveX * UNICORN_FIRE_SPEED, 0);
     SOUND_FIRE.play(this.pos, SOUND_FIRE_VOLUME);
-    new RainbowBullet(this.pos, this, bulletVelocity, UNICORN_FIRE_DAMAGE);
+    const bullet = new RainbowBullet(this.pos, this, bulletVelocity, UNICORN_FIRE_DAMAGE, rainbowCellPreview);
+    rainbowCellPreview.lock(targetCellCenter, bullet);
   }
 
   _updateAnim() {

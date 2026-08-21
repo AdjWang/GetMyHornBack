@@ -8,11 +8,55 @@ const RAINBOW_CELL_PREVIEW_DARK_COLOR = new Color(0, 0, 0, 0.9);
 const RAINBOW_CELL_PREVIEW_LIGHT_COLOR = new Color(1, 1, 1, 0.9);
 const RAINBOW_CELL_ACTIVE_COLOR = new Color(1, 1, 1, 1);
 
-class RainbowCell extends EngineObject {
+class RainbowCellPreview extends EngineObject {
   constructor() {
     super(vec2(), vec2(1), undefined, 0, new Color, RAINBOW_CELL_RENDER_ORDER);
     this.mass = 0;
+    this._bullet = undefined;
+    this.setCollision(false, false, false, false);
+  }
+
+  lock(pos, bullet) {
+    this.pos = pos.floor().add(vec2(0.5));
+    this._bullet = bullet;
     this.setCollision(true, true, false, true);
+  }
+
+  render() {
+    if (!this._bullet) {
+      return;
+    }
+    drawRainbowCellPreview(this.pos, this.size);
+  }
+
+  isLockedFor(bullet) {
+    return this._bullet == bullet;
+  }
+
+  onBulletHit(bullet, hitCell) {
+    if (!this.isLockedFor(bullet)) {
+      return;
+    }
+    if (hitCell) {
+      new RainbowCell(this.pos);
+    }
+    this.clear();
+  }
+
+  clear() {
+    this._bullet = undefined;
+    this.setCollision(false, false, false, false);
+  }
+
+  collideWithObject(o) {
+    return false;
+  }
+}
+
+class RainbowCellMousePreview extends EngineObject {
+  constructor() {
+    super(vec2(), vec2(1), undefined, 0, new Color, RAINBOW_CELL_RENDER_ORDER);
+    this.setCollision(false, false, false, false);
   }
 
   update() {
@@ -21,14 +65,6 @@ class RainbowCell extends EngineObject {
 
   render() {
     drawRainbowCellPreview(this.pos, this.size);
-  }
-
-  createStandableCell() {
-    new RainbowStandableCell(this.pos);
-  }
-
-  collideWithObject(o) {
-    return false;
   }
 }
 
@@ -52,7 +88,7 @@ function drawRainbowCellPreviewSide(start, end) {
   }
 }
 
-class RainbowStandableCell extends EngineObject {
+class RainbowCell extends EngineObject {
   constructor(pos) {
     super(pos.floor().add(vec2(0.5)), vec2(1), undefined, 0, RAINBOW_CELL_ACTIVE_COLOR, RAINBOW_CELL_RENDER_ORDER);
     this.mass = 0;
