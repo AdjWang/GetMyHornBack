@@ -2,8 +2,8 @@
 
 const TILE_SIZE = 16;  // pixels
 
-const WORLD_WIDTH = 30;  // cells
-const WORLD_HEIGHT = 20;  // cells
+const WORLD_WIDTH = 24;  // cells
+const WORLD_HEIGHT = 16;  // cells
 
 const IMAGE_SOURCES = [
   'assets/tileset.png',
@@ -20,6 +20,9 @@ const TEXTURE_INDEX_TILESET = 0;
 const TEXTURE_INDEX_LEAF = 1;
 const TEXTURE_INDEX_UNICORN = 2;
 const TEXTURE_INDEX_DRAGON = 3;
+
+const WATER_TILE_ID = 15;
+const WATER_TILE_INDEX = WATER_TILE_ID - 1;
 
 const RENDER_ORDER_BACKGROUND = -1e4;
 const RENDER_ORDER_TILE_LAYER = 0;

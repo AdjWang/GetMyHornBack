@@ -8,13 +8,15 @@
     ],
     "fileStates": {
     },
-    "last.imagePath": "C:/JsProjects/LittleJS/examples/RainbowDefense/assets/tileset",
+    "last.imagePath": "C:/JsProjects/RainbowDefense/src/assets",
+    "map.height": 16,
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 16,
     "map.tileWidth": 16,
+    "map.width": 24,
     "openFiles": [
     ],
-    "project": "maps.tiled-project",
+    "project": "rd.tiled-project",
     "recentFiles": [
     ],
     "tileset.lastUsedFormat": "tsx",
