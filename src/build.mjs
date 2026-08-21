@@ -78,6 +78,7 @@ const sourceFiles =
     'bullet.js',
     'rainbowCell.js',
     'unicorn.js',
+    'level.js',
     'main.js',
 ];
 const dataFiles =
