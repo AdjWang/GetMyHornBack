@@ -117,7 +117,7 @@ class RainbowCell extends EngineObject {
   }
 
   render() {
-    drawRect(this.pos, this.size, RAINBOW_CELL_ACTIVE_COLOR);
+    drawTile(this.pos, this.size, tile(vec2(3, 2), 16, TEXTURE_INDEX_TILESET, 0), RAINBOW_CELL_ACTIVE_COLOR);
   }
 
   collideWithObject(o) {
