@@ -54,6 +54,12 @@ class RainbowBullet extends EngineObject {
     if (o == this._attacker) {
       return false;
     }
+    if (o instanceof RainbowCell) {
+      o.createStandableCell();
+      SOUND_RAINBOW_HIT.play(this.pos, SOUND_RAINBOW_HIT_VOLUME);
+      this.destroy();
+      return false;
+    }
     SOUND_RAINBOW_HIT.play(this.pos, SOUND_RAINBOW_HIT_VOLUME);
     this.destroy();
     return true;

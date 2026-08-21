@@ -44,6 +44,7 @@ const level1 = [
 ///////////////////////////////////////////////////////////////////////////////
 let player;
 let dragon;
+let rainbowCell;
 
 async function gameInit() {
     // Remap scene theme.
@@ -81,6 +82,7 @@ async function gameInit() {
 
     player = new Unicorn(vec2(20, 18));
     dragon = new Dragon(vec2(15, 18));
+    rainbowCell = new RainbowCell;
 
     backgroundMusic = new ZzFXMusic(BACKGROUND_MUSIC);
     backgroundMusic.playMusic(backgroundMusicVolume, true);
