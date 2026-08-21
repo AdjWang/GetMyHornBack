@@ -61,4 +61,5 @@ async function loadLevel(idx) {
     tileLayer.redraw();
 
    new Unicorn(START_POINT[idx]);
+  //  new Dragon(START_POINT[idx]);
 }

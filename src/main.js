@@ -18,29 +18,29 @@ let rainbowCellPreview;
 let rainbowCellMousePreview;
 
 async function gameInit() {
-    await loadLevel(0);
-    updateWorldCamera();
-    gravity.y = -0.01;
+  await loadLevel(0);
+  updateWorldCamera();
+  gravity.y = -0.01;
 
-    rainbowCellMousePreview = new RainbowCellMousePreview;
-    rainbowCellPreview = new RainbowCellPreview;
+  rainbowCellMousePreview = new RainbowCellMousePreview;
+  rainbowCellPreview = new RainbowCellPreview;
 
-    backgroundMusic = new ZzFXMusic(BACKGROUND_MUSIC);
-    backgroundMusic.playMusic(backgroundMusicVolume, true);
+  backgroundMusic = new ZzFXMusic(BACKGROUND_MUSIC);
+  backgroundMusic.playMusic(backgroundMusicVolume, true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 function gameUpdate() {
-    worldScale = min(mainCanvasSize.x / WORLD_WIDTH, mainCanvasSize.y / WORLD_HEIGHT);
-    updateWorldCamera();
-    if (backgroundMusic) {
-        backgroundMusic.setVolume(backgroundMusicVolume);
-    }
+  worldScale = min(mainCanvasSize.x / WORLD_WIDTH, mainCanvasSize.y / WORLD_HEIGHT);
+  updateWorldCamera();
+  if (backgroundMusic) {
+    backgroundMusic.setVolume(backgroundMusicVolume);
+  }
 }
 
 function updateWorldCamera() {
-    cameraPos = vec2(WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
-    cameraScale = worldScale;
+  cameraPos = vec2(WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
+  cameraScale = worldScale;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -53,8 +53,8 @@ function gameRender() {
 
 ///////////////////////////////////////////////////////////////////////////////
 function gameRenderPost() {
-    // draw to overlay canvas for hud rendering
-    drawTextScreen('LittleJS JS13K Demo', vec2(mainCanvasSize.x / 2, worldScale * 2.2), worldScale * 2.5);
+  // draw to overlay canvas for hud rendering
+  drawTextScreen('LittleJS JS13K Demo', vec2(mainCanvasSize.x / 2, worldScale * 2.2), worldScale * 2.5);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
