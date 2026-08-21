@@ -7,6 +7,7 @@ const RAINBOW_CELL_PREVIEW_DASH_THICKNESS = 0.1;
 const RAINBOW_CELL_PREVIEW_DARK_COLOR = new Color(0, 0, 0, 0.9);
 const RAINBOW_CELL_PREVIEW_LIGHT_COLOR = new Color(1, 1, 1, 0.9);
 const RAINBOW_CELL_ACTIVE_COLOR = new Color(1, 1, 1, 1);
+let activeRainbowCell;
 
 class RainbowCellPreview extends EngineObject {
   constructor() {
@@ -38,6 +39,7 @@ class RainbowCellPreview extends EngineObject {
       return;
     }
     if (hitCell) {
+      activeRainbowCell?.destroy();
       new RainbowCell(this.pos);
     }
     this.clear();
@@ -91,6 +93,7 @@ function drawRainbowCellPreviewSide(start, end) {
 class RainbowCell extends EngineObject {
   constructor(pos) {
     super(pos.floor().add(vec2(0.5)), vec2(1), undefined, 0, RAINBOW_CELL_ACTIVE_COLOR, RAINBOW_CELL_RENDER_ORDER);
+    activeRainbowCell = this;
     this.mass = 0;
     this._timer = new Timer(RAINBOW_CELL_TIME);
     this.setCollision(true, true, false, true);
@@ -108,5 +111,12 @@ class RainbowCell extends EngineObject {
 
   collideWithObject(o) {
     return !(o instanceof RainbowBullet);
+  }
+
+  destroy() {
+    if (activeRainbowCell == this) {
+      activeRainbowCell = undefined;
+    }
+    super.destroy();
   }
 }
