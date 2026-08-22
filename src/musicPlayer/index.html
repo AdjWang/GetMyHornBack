@@ -15,7 +15,7 @@
     Loop
   </label>
   <button id=replay type=button>Replay</button>
-  <div class=hint>Autoplay runs once on load. If the browser blocks it, click Replay.</div>
+  <div class=hint>Playback starts on the first click or key press.</div>
 </main>
 
 <script>
@@ -24,6 +24,11 @@ var headlessMode = false;
 var soundVolume = 1;
 var soundDefaultRange = 0;
 var soundDefaultTaper = 0.5;
+ASSERT = function (cond, ...msg) {
+  if (!cond) {
+    console.error(...msg);
+  }
+};
 </script>
 <script src=../engine/engineMath.js></script>
 <script src=../engine/engineAudio.js></script>

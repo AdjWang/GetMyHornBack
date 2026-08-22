@@ -13,35 +13,49 @@ const DEFAULT_DURATION = [0, 1, 0, 0];
 const INSTRUMENT = [.28, .01, C_FREQUENCY, .001, .03, .16, 1, 1.2, 0, 0, 0, 0, 0, 0, 0, 0, .02, .45, .03, 0, 0];
 
 let currentMusic;
+let currentChannels;
+let currentMusicData;
+let musicReady = false;
 
 REPLAY.addEventListener('click', playToneOnce);
-window.addEventListener('load', playToneOnce, { once: true });
+window.addEventListener('pointerdown', playToneOnce, { once: true });
+window.addEventListener('keydown', playToneOnce, { once: true });
+window.addEventListener('load', loadToneMusic, { once: true });
 
 async function playToneOnce() {
   try {
-    const channels = await loadToneChannels();
-    const music = buildMusic(channels);
-    currentMusic?.stop();
-    currentMusic = new ZzFXMusic(music);
+    await loadToneMusic();
     audioInit();
+    currentMusic?.stop();
+    currentMusic = new ZzFXMusic(currentMusicData);
     currentMusic.playMusic(1, LOOP.checked);
-    OUTPUT.textContent = formatChannels(channels);
+    OUTPUT.textContent = formatChannels(currentChannels) + '\nPlaying...';
   } catch (error) {
     OUTPUT.textContent = `Failed to play channel files\n${error.message}`;
   }
 }
 
+async function loadToneMusic() {
+  if (musicReady) {
+    return;
+  }
+  currentChannels = await loadToneChannels();
+  currentMusicData = buildMusic(currentChannels);
+  musicReady = true;
+  OUTPUT.textContent = formatChannels(currentChannels) + '\nReady';
+}
+
 async function loadToneChannels() {
+  const fileNames = await loadToneChannelFileNames();
+  if (!fileNames.length)
+    throw new Error(`No channel files found in ${CHANNEL_PATH}`);
+
   const channels = [];
-  for (let index = 1; ; ++index) {
-    const response = await fetch(`${CHANNEL_PATH}${index}.txt`, { cache: 'no-store' });
-    if (!response.ok) {
-      if (index == 1)
-        throw new Error(`Missing channel file: ${CHANNEL_PATH}1.txt`);
-      break;
-    }
-    const text = await response.text();
-    channels.push(parseToneText(text, index));
+  for (const fileName of fileNames) {
+    const response = await fetch(`${CHANNEL_PATH}${fileName}`, { cache: 'no-store' });
+    if (!response.ok)
+      throw new Error(`Missing channel file: ${CHANNEL_PATH}${fileName}`);
+    channels.push(parseToneText(await response.text(), fileName));
   }
   if (!channels.length)
     throw new Error('No channel files found');
@@ -54,7 +68,19 @@ async function loadToneChannels() {
   return channels;
 }
 
-function parseToneText(text, channelIndex) {
+async function loadToneChannelFileNames() {
+  const response = await fetch(CHANNEL_PATH, { cache: 'no-store' });
+  if (!response.ok)
+    return ['1.txt'];
+  const html = await response.text();
+  const fileNames = [...html.matchAll(/href="([^"]+\.txt)"/gi)]
+    .map(match => decodeURIComponent(match[1].split('/').pop()))
+    .filter(name => /^\d+\.txt$/.test(name))
+    .sort((a, b) => Number(a) - Number(b));
+  return fileNames.length ? fileNames : ['1.txt'];
+}
+
+function parseToneText(text, channelName) {
   const lines = trimTrailingBlankLines(text.split(/\r?\n/).filter(line => !line.trim().startsWith('#')));
   const selectedLines = selectPlayableLines(lines);
   const events = parseToneLines(selectedLines);
@@ -62,7 +88,7 @@ function parseToneText(text, channelIndex) {
     return events;
   if (selectedLines != lines)
     return parseToneLines(lines);
-  throw new Error(`Channel ${channelIndex} is empty`);
+  throw new Error(`Channel ${channelName} is empty`);
 }
 
 function selectPlayableLines(lines) {

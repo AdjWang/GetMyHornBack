@@ -33,7 +33,7 @@ const LEVELS = [
 
 async function loadLevel(idx) {
     // Remap scene theme.
-    const sceneTheme = THEME_INDEX_CLOUD;
+    const sceneTheme = THEME_INDEX_GRASS;
     await remapTilesetColor(0, sceneTheme);
     foreground = new Foreground(sceneTheme);
     background = new Background(sceneTheme);
