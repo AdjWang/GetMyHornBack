@@ -9,7 +9,7 @@
 
 // game variables
 let backgroundMusic;
-let backgroundMusicVolume = 0.0;
+let backgroundMusicVolume = 0.9;
 
 // WebGL can be removed to save ~963 bytes - see "Disabling WebGL" in README.md
 
@@ -25,7 +25,7 @@ async function gameInit() {
   rainbowCellMousePreview = new RainbowCellMousePreview;
   rainbowCellPreview = new RainbowCellPreview;
 
-  backgroundMusic = new ZzFXMusic(BACKGROUND_MUSIC);
+  backgroundMusic = new ZzFXMusic(THEME);
   backgroundMusic.playMusic(backgroundMusicVolume, true);
 }
 

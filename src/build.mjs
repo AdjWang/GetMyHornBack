@@ -70,6 +70,7 @@ const sourceFiles =
 
     // game files
     'global.js',
+    'assets/music.js',
     'assets/dragonResource.js',
     'assets/unicornResource.js',
     'resourceLoader.js',
