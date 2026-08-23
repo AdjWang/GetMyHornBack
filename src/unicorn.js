@@ -326,14 +326,12 @@ class Unicorn extends EngineObject {
       return;
     }
     this._fireCooldownTimer.set(UNICORN_FIRE_COOLDOWN);
-    const targetCellCenter = mousePos.floor().add(vec2(0.5));
-    const fireDirection = targetCellCenter.subtract(this.pos);
+    const fireDirection = mousePos.subtract(this.pos);
     const bulletVelocity = fireDirection.lengthSquared() ?
       fireDirection.normalize(UNICORN_FIRE_SPEED) :
       vec2(this._lastMoveX * UNICORN_FIRE_SPEED, 0);
     SOUND_FIRE.play(this.pos, SOUND_FIRE_VOLUME);
-    const bullet = new RainbowBullet(this.pos, this, bulletVelocity, UNICORN_FIRE_DAMAGE, rainbowCellPreview);
-    rainbowCellPreview.lock(targetCellCenter, bullet);
+    new RainbowBullet(this.pos, this, bulletVelocity, UNICORN_FIRE_DAMAGE);
   }
 
   _updateAnim() {
