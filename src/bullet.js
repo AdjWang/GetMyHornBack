@@ -35,6 +35,32 @@ class RainbowBullet extends EngineObject {
     this._colors = colors;
     this._colorOffsets = this._createColorOffsets(colors.length, velocity);
     this._trailPoints = [this.pos.copy()];
+    this._explodeEmitter = new ParticleEmitter(
+      vec2(),               // position
+      0,                    // angle
+      0.1,                  // emitSize
+      0.02,                 // emitTime
+      24,                   // emitRate
+      PI * 2,               // emitConeAngle
+      undefined,            // tileInfo
+      new Color,            // colorStartA
+      new Color,            // colorStartB
+      new Color,            // colorEndA
+      new Color,            // colorEndB
+      0.08,                 // particleTime
+      0.15,                 // sizeStart
+      0.15,                 // sizeEnd
+      0.1,                  // speed
+      0.1,                  // angleSpeed
+      1.0,                  // damping
+      1.0,                  // angleDamping
+      0.0,                  // gravityScale
+      0,                    // particleConeAngle
+      0.3,                  // fadeRate
+      0.0,                  // randomness
+      false,                // collideTiles
+      false                 // additive
+    );
   }
 
   update() {
@@ -88,6 +114,13 @@ class RainbowBullet extends EngineObject {
 
   _explode() {
     SOUND_RAINBOW_HIT.play(this.pos, SOUND_RAINBOW_HIT_VOLUME);
+    this._explodeEmitter.pos = this.pos;
+    RAINBOW_COLORS.forEach(color => {
+      let debris = this._explodeEmitter.emitParticle();
+      debris.pos = this.pos.add(randInCircle(0.08));
+      debris.colorStart = color;
+      debris.colorEndDelta = new Color(0, 0, 0, 0).subtract(color);
+    });
     this.destroy();
   }
 }

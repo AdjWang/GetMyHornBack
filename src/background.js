@@ -57,8 +57,8 @@ class Background extends EngineObject {
       this.stars = [];
       for (let i = 0; i < BACKGROUND_STAR_COUNT; ++i) {
         this.stars.push({
-          pos: vec2(this.randomRange(0, WORLD_WIDTH), this.randomRange(BACKGROUND_STAR_HEIGHT, WORLD_HEIGHT)),
-          size: this.randomRange(0.02, 0.05),
+          pos: vec2(randomRange(0, WORLD_WIDTH), randomRange(BACKGROUND_STAR_HEIGHT, WORLD_HEIGHT)),
+          size: randomRange(0.02, 0.05),
           color: Math.random() < 0.5 ? BACKGROUND_STAR_COLOR_A : BACKGROUND_STAR_COLOR_B,
         });
       }
@@ -153,7 +153,7 @@ class Background extends EngineObject {
           continue;
         }
         // Blend to the lower shadow across a small vertical range.
-        const shade = Math.max(0, Math.min(1, (worldY / SKY_CLOUD_SIZE.y - shadowStartY) / shadowBlendRange));
+        const shade = clamp((worldY / SKY_CLOUD_SIZE.y - shadowStartY) / shadowBlendRange, 0, 1);
         // Make light to dark transition soft.
         context.fillStyle = `rgb(${Math.round(cloudBaseColor[0] - shadowRedDelta * shade)},${Math.round(cloudBaseColor[1] - shadowGreenDelta * shade)},${cloudBaseColor[2]})`;
         context.fillRect(x, y, 1, 1);
@@ -165,20 +165,20 @@ class Background extends EngineObject {
 
   selectClouds() {
     const clouds = [];
-    const count = this.randomInt(SKY_CLOUD_MIN_COUNT, SKY_CLOUD_MAX_COUNT);
+    const count = randomInt(SKY_CLOUD_MIN_COUNT, SKY_CLOUD_MAX_COUNT);
     const pool = this.cloudPool.slice();
     for (let i = 0; i < count; ++i) {
-      const imageIndex = this.randomInt(0, pool.length - 1);
+      const imageIndex = randomInt(0, pool.length - 1);
       const minX = SKY_CLOUD_RANDOM_POS_X
       const maxX = WORLD_WIDTH - SKY_CLOUD_RANDOM_POS_X
       const minY = SKY_CLOUD_RANDOM_POS_Y
       const maxY = WORLD_HEIGHT - SKY_CLOUD_RANDOM_POS_Y
       clouds.push({
         ...pool.splice(imageIndex, 1)[0],
-        pos: vec2(this.randomRange(minX, maxX), this.randomRange(minY, maxY)),
-        scale: this.randomRange(SKY_CLOUD_MIN_SCALE, SKY_CLOUD_MAX_SCALE),
-        speed: this.randomRange(0.8, 1.2),
-        layer: this.randomInt(0, BACKGROUND_LAYER_COUNT - 1),
+        pos: vec2(randomRange(minX, maxX), randomRange(minY, maxY)),
+        scale: randomRange(SKY_CLOUD_MIN_SCALE, SKY_CLOUD_MAX_SCALE),
+        speed: randomRange(0.8, 1.2),
+        layer: randomInt(0, BACKGROUND_LAYER_COUNT - 1),
       });
     }
     return clouds;
@@ -204,24 +204,16 @@ class Background extends EngineObject {
       [0.16, -0.08, 0.48, 0.52],
       [0.38, 0.12, 0.36, 0.4],
     ];
-    const baseMinX = -0.42 + this.randomRange(-0.05, 0.03);
-    const baseMaxX = 0.44 + this.randomRange(-0.03, 0.05);
+    const baseMinX = -0.42 + randomRange(-0.05, 0.03);
+    const baseMaxX = 0.44 + randomRange(-0.03, 0.05);
     for (const lobe of lobes) {
-      lobe[0] += this.randomRange(-SKY_CLOUD_LOBE_RANDOM_POS_X, SKY_CLOUD_LOBE_RANDOM_POS_X);
-      lobe[1] += this.randomRange(-SKY_CLOUD_LOBE_RANDOM_POS_Y, SKY_CLOUD_LOBE_RANDOM_POS_Y);
-      lobe[2] *= 1 + this.randomRange(-SKY_CLOUD_RANDOM_SIZE, SKY_CLOUD_RANDOM_SIZE);
-      lobe[3] *= 1 + this.randomRange(-SKY_CLOUD_RANDOM_SIZE, SKY_CLOUD_RANDOM_SIZE);
+      lobe[0] += randomRange(-SKY_CLOUD_LOBE_RANDOM_POS_X, SKY_CLOUD_LOBE_RANDOM_POS_X);
+      lobe[1] += randomRange(-SKY_CLOUD_LOBE_RANDOM_POS_Y, SKY_CLOUD_LOBE_RANDOM_POS_Y);
+      lobe[2] *= 1 + randomRange(-SKY_CLOUD_RANDOM_SIZE, SKY_CLOUD_RANDOM_SIZE);
+      lobe[3] *= 1 + randomRange(-SKY_CLOUD_RANDOM_SIZE, SKY_CLOUD_RANDOM_SIZE);
     }
     // Return randomized lobes and the flat base horizontal range.
     return [lobes, baseMinX, baseMaxX];
-  }
-
-  randomRange(min, max) {
-    return min + Math.random() * (max - min);
-  }
-
-  randomInt(min, max) {
-    return min + Math.floor(Math.random() * (max - min + 1));
   }
 
   inCloudLobe(x, y, cx, cy, rx, ry) {

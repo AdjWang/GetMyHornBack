@@ -69,6 +69,7 @@ const sourceFiles =
     `engine/engine.js`,
 
     // game files
+    'rdmath.js',
     'global.js',
     'assets/music.js',
     'assets/dragonResource.js',
