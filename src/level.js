@@ -4,6 +4,11 @@ let foreground;
 let background;
 let tileLayer;
 
+const TILED_FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+const TILED_FLIPPED_VERTICALLY_FLAG = 0x40000000;
+const TILED_FLIPPED_DIAGONALLY_FLAG = 0x20000000;
+const TILED_TILE_ID_MASK = 0x0fffffff;
+
 const LEVEL1 = [
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -13,14 +18,14 @@ const LEVEL1 = [
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 2,2147483649,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,2684354562,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,2684354562,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,2684354562,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,2684354562,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,2684354562,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,2684354562,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,2684354562,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,1073741828,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
+2147483652,2684354562,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+536870914,2684354562,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+536870914,2684354562,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+536870914,2684354562,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+536870914,2684354562,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+536870914,2684354562,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+536870914,2684354562,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,536870914,
+536870914,1073741828,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3221225476
 ];
 
 const START_POINT = [
@@ -30,6 +35,37 @@ const START_POINT = [
 const LEVELS = [
   LEVEL1,
 ];
+
+function decodeTiledTile(gid) {
+    const rawGid = gid >>> 0;
+    const horizontal = !!(rawGid & TILED_FLIPPED_HORIZONTALLY_FLAG);
+    const vertical = !!(rawGid & TILED_FLIPPED_VERTICALLY_FLAG);
+    const diagonal = !!(rawGid & TILED_FLIPPED_DIAGONALLY_FLAG);
+    const tile = (rawGid & TILED_TILE_ID_MASK) - 1;
+    let direction = 0;
+    let mirror = false;
+    if (diagonal) {
+        if (horizontal && vertical) {
+            direction = 1;
+            mirror = true;
+        } else if (horizontal) {
+            direction = 1;
+        } else if (vertical) {
+            direction = 3;
+        } else {
+            direction = 3;
+            mirror = true;
+        }
+    } else if (horizontal && vertical) {
+        direction = 2;
+    } else if (horizontal) {
+        mirror = true;
+    } else if (vertical) {
+        direction = 2;
+        mirror = true;
+    }
+    return new TileLayerData(tile, direction, mirror);
+}
 
 async function loadLevel(idx) {
     // Remap scene theme.
@@ -50,8 +86,7 @@ async function loadLevel(idx) {
             if (tile_id == 0) {
                 continue;
             }
-            const tileIndex = tile_id - 1;
-            const data = new TileLayerData(tileIndex);
+            const data = decodeTiledTile(tile_id);
             tileLayer.setData(pos, data);
             setTileCollisionData(pos, 1);
         }
