@@ -17,7 +17,7 @@ let backgroundMusicVolume = 0.1;
 let crosshair;
 
 async function gameInit() {
-  await loadLevel(0);
+  await loadLevel(1);
   updateWorldCamera();
   gravity.y = -0.01;
 
@@ -51,8 +51,8 @@ function gameRender() {
 
 ///////////////////////////////////////////////////////////////////////////////
 function gameRenderPost() {
-  // draw to overlay canvas for hud rendering
-  drawTextScreen('LittleJS JS13K Demo', vec2(mainCanvasSize.x / 2, worldScale * 2.2), worldScale * 2.5);
+  // TODO
+  drawTextScreen('Rainbow Defense', vec2(mainCanvasSize.x / 2, worldScale * 2.2), worldScale * 2.5);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

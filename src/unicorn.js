@@ -126,6 +126,15 @@ class Unicorn extends EngineObject {
   }
 
   update() {
+    if (this.pos.x < 0) {
+      this.pos.x = 0;
+    }
+    if (this.pos.x > WORLD_WIDTH) {
+      this.pos.x = WORLD_WIDTH;
+    }
+    if (this.pos.y < -0.5) {
+      this.pos.y = WORLD_HEIGHT + 0.5;
+    }
     // Update motion before updating physic.
     this._updateMotion();
     this._updateAirCornerCorrection();

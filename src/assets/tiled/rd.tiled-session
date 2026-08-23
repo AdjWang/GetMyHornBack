@@ -19,6 +19,14 @@
                 "y": 144.5
             }
         },
+        "level0.tmx": {
+            "scale": 2,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 192,
+                "y": 138
+            }
+        },
         "level1.tmx": {
             "scale": 2.765885416666667,
             "selectedLayer": 0,
