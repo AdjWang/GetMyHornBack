@@ -17,7 +17,7 @@ const RAINBOW_COLORS = [
 ];
 
 class RainbowBullet extends EngineObject {
-  constructor(pos, attacker, velocity, damage, range) {
+  constructor(pos, attacker, velocity, damage, range, bounceCount = 0) {
     super(pos, vec2(0.01, 0.01));
     const colors = RAINBOW_COLORS;
     this.color = colors[colors.length / 2 | 0];
@@ -30,6 +30,8 @@ class RainbowBullet extends EngineObject {
 
     this._attacker = attacker;
     this._damage = damage;
+    this._restBounceCount = bounceCount;
+    this._previousPos = pos.copy();
     this._startPos = pos.copy();
     this._range = range;
     this._colors = colors;
@@ -64,6 +66,8 @@ class RainbowBullet extends EngineObject {
   }
 
   update() {
+    this._previousPos = this.pos.copy();
+    this._bouncedThisFrame = false;
     super.update();
     if (this.destroyed) {
       return;
@@ -85,11 +89,17 @@ class RainbowBullet extends EngineObject {
     if (o == this._attacker) {
       return false;
     }
+    if (this._bounce(this._getObjectHitNormal(o))) {
+      return false;
+    }
     this._explode();
     return true;
   }
 
   collideWithTile(tileData, pos) {
+    if (this._bounce(this._getTileHitNormal(pos))) {
+      return false;
+    }
     this._explode();
     return true;
   }
@@ -110,6 +120,34 @@ class RainbowBullet extends EngineObject {
       offsets.push(offsetDirection.scale((center - i) * RAINBOW_BULLET_COLOR_SPACING));
     }
     return offsets;
+  }
+
+  _bounce(normal) {
+    if (this._restBounceCount <= 0 || this._bouncedThisFrame) {
+      return false;
+    }
+    this.velocity = this.velocity.subtract(normal.scale(2 * this.velocity.dot(normal)));
+    this._colorOffsets = this._createColorOffsets(this._colors.length, this.velocity);
+    this._startPos = this.pos.copy();
+    --this._restBounceCount;
+    this._bouncedThisFrame = true;
+    return true;
+  }
+
+  _getObjectHitNormal(o) {
+    const delta = this._previousPos.subtract(o.pos);
+    if (abs(delta.x) > abs(delta.y)) {
+      return vec2(sign(delta.x) || -sign(this.velocity.x) || 1, 0);
+    }
+    return vec2(0, sign(delta.y) || -sign(this.velocity.y) || 1);
+  }
+
+  _getTileHitNormal(pos) {
+    const delta = this._previousPos.subtract(pos.add(vec2(0.5)));
+    if (abs(delta.x) > abs(delta.y)) {
+      return vec2(sign(delta.x) || -sign(this.velocity.x) || 1, 0);
+    }
+    return vec2(0, sign(delta.y) || -sign(this.velocity.y) || 1);
   }
 
   _explode() {
