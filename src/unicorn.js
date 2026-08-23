@@ -59,6 +59,8 @@ const UNICORN_RUN_SCALE_Y_AMPLIFY = 0.02;
 const UNICORN_JUMP_AIR_SCALE_Y = 1.12;
 const UNICORN_LAND_SCALE_TIME = 0.25;
 const UNICORN_LAND_SHRINK_SCALE_Y = 0.86;
+// Limit head rotation angle towards crosshair.
+const UNICORN_HEAD_ROTATE_RANGE = vec2(-0.7, 0.15);
 
 const UNICORN_ANIM_STATE_IDLE = 0;
 const UNICORN_ANIM_STATE_RUN = 1;
@@ -163,7 +165,9 @@ class Unicorn extends EngineObject {
     const drawSizeStretch = vec2(drawSize.x, drawSize.y * runScaleY * this._getJumpScaleY());
     const scaleAnchorOffset = vec2(0, (drawSizeStretch.y - drawSize.y) / 2);
     const drawPos = this.pos.add(scaleAnchorOffset);
-    drawAsepriteFrame(this._frameInfoHead[this._runFrame], headPos.add(scaleAnchorOffset).add(drawOffset), runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
+    const headDrawPos = headPos.add(scaleAnchorOffset).add(drawOffset);
+    const headRotate = this._getHeadAimRotate(headDrawPos);
+    drawAsepriteFrame(this._frameInfoHead[this._runFrame], headDrawPos, runScaleY * this._getJumpScaleY(), undefined, headRotate, this.mirror);
     drawAsepriteFrame(this._frameInfoBody[this._runFrame], drawPos.add(drawOffset), runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
     drawAsepriteFrame(this._frameInfoBag[this._runFrame], drawPos.add(drawOffset), 1, undefined, runRotate, this.mirror);
   }
@@ -358,6 +362,17 @@ class Unicorn extends EngineObject {
     const facingX = this._getFacingX();
     const movingX = sign(this.velocity.x) || this._moveX || facingX;
     return (facingX == movingX ? 1 : -1) * facingX * UNICORN_RUN_ROTATE_ANGLE;
+  }
+
+  _getHeadAimRotate(pos) {
+    const aim = mousePos.subtract(pos);
+    const facingX = this._getFacingX();
+    const rot = aim.lengthSquared() ? -Math.atan2(aim.y, abs(aim.x)) * facingX : 0;
+    if (facingX > 0) {
+      return clamp(rot, UNICORN_HEAD_ROTATE_RANGE.x, UNICORN_HEAD_ROTATE_RANGE.y);
+    } else {
+      return clamp(rot, -UNICORN_HEAD_ROTATE_RANGE.y, -UNICORN_HEAD_ROTATE_RANGE.x);
+    }
   }
 
   _updateAnim() {
