@@ -155,7 +155,7 @@ class Unicorn extends EngineObject {
         runCycle * UNICORN_RUN_HEAD_BOB_AMPLIFY : 0;
     const headPos = this.pos.add(vec2(0, headBob));
     const runRotate = this._animState == UNICORN_ANIM_STATE_RUN ?
-      this._lastMoveX * UNICORN_RUN_ROTATE_ANGLE : 0;
+      this._getRunRotate() : 0;
     const runScaleY = this._animState == UNICORN_ANIM_STATE_RUN ?
       1 + runCycle * UNICORN_RUN_SCALE_Y_AMPLIFY : 1;
     const drawOffset = vec2(UNICORN_DRAW_OFFSET.x * (this.mirror ? -1.0 : 1.0), UNICORN_DRAW_OFFSET.y);
@@ -211,9 +211,7 @@ class Unicorn extends EngineObject {
     }
     this.gravityScale = jumpHeld && !grounded && abs(this.velocity.y) < UNICORN_JUMP_PEAK_SPEED ?
       UNICORN_JUMP_PEAK_GRAVITY_SCALE : 1;
-    if (this._moveX) {
-      this.mirror = this._moveX > 0;
-    }
+    this._updateFacing();
     this.velocity.y = clamp(this.velocity.y, -UNICORN_MAX_SPEED_Y, UNICORN_MAX_SPEED_Y);
   }
 
@@ -340,9 +338,26 @@ class Unicorn extends EngineObject {
     const fireDirection = mousePos.subtract(this.pos);
     const bulletVelocity = fireDirection.lengthSquared() ?
       fireDirection.normalize(UNICORN_FIRE_SPEED) :
-      vec2(this._lastMoveX * UNICORN_FIRE_SPEED, 0);
+      vec2(this._getFacingX() * UNICORN_FIRE_SPEED, 0);
     SOUND_FIRE.play(this.pos, SOUND_FIRE_VOLUME);
     new RainbowBullet(this.pos, this, bulletVelocity, UNICORN_FIRE_DAMAGE, UNICORN_FIRE_RANGE);
+  }
+
+  _updateFacing() {
+    const aimX = mousePos.x - this.pos.x;
+    if (aimX) {
+      this.mirror = aimX > 0;
+    }
+  }
+
+  _getFacingX() {
+    return this.mirror ? 1 : -1;
+  }
+
+  _getRunRotate() {
+    const facingX = this._getFacingX();
+    const movingX = sign(this.velocity.x) || this._moveX || facingX;
+    return (facingX == movingX ? 1 : -1) * facingX * UNICORN_RUN_ROTATE_ANGLE;
   }
 
   _updateAnim() {
