@@ -89,6 +89,7 @@ const dataFiles =
     'assets/tileset.png',
     'assets/objects.png',
     'assets/dragon.png',
+    'assets/slime.png',
     'assets/unicorn.png',
 ];
 
