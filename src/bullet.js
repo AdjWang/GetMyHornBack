@@ -17,7 +17,7 @@ const RAINBOW_COLORS = [
 ];
 
 class RainbowBullet extends EngineObject {
-  constructor(pos, attacker, velocity, damage) {
+  constructor(pos, attacker, velocity, damage, range) {
     super(pos, vec2(0.01, 0.01));
     const colors = RAINBOW_COLORS;
     this.color = colors[colors.length / 2 | 0];
@@ -30,6 +30,8 @@ class RainbowBullet extends EngineObject {
 
     this._attacker = attacker;
     this._damage = damage;
+    this._startPos = pos.copy();
+    this._range = range;
     this._colors = colors;
     this._colorOffsets = this._createColorOffsets(colors.length, velocity);
     this._trailPoints = [this.pos.copy()];
@@ -44,6 +46,9 @@ class RainbowBullet extends EngineObject {
     if (this._trailPoints.length > BULLET_TRAIL_POINT_COUNT) {
       this._trailPoints.shift();
     }
+    if (this._range && this.pos.distanceSquared(this._startPos) >= this._range * this._range) {
+      this._explode();
+    }
   }
 
   render() {
@@ -54,14 +59,12 @@ class RainbowBullet extends EngineObject {
     if (o == this._attacker) {
       return false;
     }
-    SOUND_RAINBOW_HIT.play(this.pos, SOUND_RAINBOW_HIT_VOLUME);
-    this.destroy();
+    this._explode();
     return true;
   }
 
   collideWithTile(tileData, pos) {
-    SOUND_RAINBOW_HIT.play(this.pos, SOUND_RAINBOW_HIT_VOLUME);
-    this.destroy();
+    this._explode();
     return true;
   }
 
@@ -81,6 +84,11 @@ class RainbowBullet extends EngineObject {
       offsets.push(offsetDirection.scale((center - i) * RAINBOW_BULLET_COLOR_SPACING));
     }
     return offsets;
+  }
+
+  _explode() {
+    SOUND_RAINBOW_HIT.play(this.pos, SOUND_RAINBOW_HIT_VOLUME);
+    this.destroy();
   }
 }
 

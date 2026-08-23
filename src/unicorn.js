@@ -6,6 +6,7 @@ const UNICORN_HEIGHT = 24;  // pixels
 
 const UNICORN_FIRE_COOLDOWN = 0.3;
 const UNICORN_FIRE_SPEED = 0.45;
+const UNICORN_FIRE_RANGE = 8;
 const UNICORN_FIRE_DAMAGE = 1.0;
 // Not so happy. Leave here as backup.
 // const SOUND_FIRE = new Sound([1.1, 0, 420, 0.02, 0.08, 0.18, 1, 1.9, 8, 0, 120, 0.04, 0.03]);
@@ -126,6 +127,7 @@ class Unicorn extends EngineObject {
   }
 
   update() {
+    // Limit movable area.
     if (this.pos.x < 0) {
       this.pos.x = 0;
     }
@@ -340,7 +342,7 @@ class Unicorn extends EngineObject {
       fireDirection.normalize(UNICORN_FIRE_SPEED) :
       vec2(this._lastMoveX * UNICORN_FIRE_SPEED, 0);
     SOUND_FIRE.play(this.pos, SOUND_FIRE_VOLUME);
-    new RainbowBullet(this.pos, this, bulletVelocity, UNICORN_FIRE_DAMAGE);
+    new RainbowBullet(this.pos, this, bulletVelocity, UNICORN_FIRE_DAMAGE, UNICORN_FIRE_RANGE);
   }
 
   _updateAnim() {
