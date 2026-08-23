@@ -1,6 +1,5 @@
 'use strict';
 
-const FOREGROUND_LEAF_TILE_SIZE = 8;
 const FOREGROUND_LARGE_LEAF_SIZE_GATE = 0.5;
 const FOREGROUND_LARGE_LEAF_ALPHA = 0.35;
 
@@ -17,7 +16,7 @@ class Foreground extends EngineObject {
         0,                    // emitTime
         5,                    // emitRate
         0,                    // emitConeAngle
-        tile(0, FOREGROUND_LEAF_TILE_SIZE, TEXTURE_INDEX_LEAF, 0),     // tileInfo
+        tile(0, LEAF_SIZE, TEXTURE_INDEX_LEAF, 0),     // tileInfo
         color,                // colorStartA
         color,                // colorStartB
         color,                // colorEndA

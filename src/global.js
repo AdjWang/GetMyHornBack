@@ -7,7 +7,7 @@ const WORLD_HEIGHT = 16;  // cells
 
 const IMAGE_SOURCES = [
   'assets/tileset.png',
-  'assets/leaf.png',
+  'assets/objects.png',
   'assets/unicorn.png',
   'assets/dragon.png',
 ];
@@ -18,8 +18,12 @@ const THEME_INDEX_CLOUD = 2;
 
 const TEXTURE_INDEX_TILESET = 0;
 const TEXTURE_INDEX_LEAF = 1;
+const TEXTURE_INDEX_FIREBALL = 1;
 const TEXTURE_INDEX_UNICORN = 2;
 const TEXTURE_INDEX_DRAGON = 3;
+
+const LEAF_SIZE = 8;
+const FIREBALL_SIZE = 8;
 
 const WATER_TILE_ID = 15;
 const WATER_TILE_INDEX = WATER_TILE_ID - 1;

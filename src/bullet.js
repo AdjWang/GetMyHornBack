@@ -16,7 +16,7 @@ const RAINBOW_COLORS = [
   new Color(0.6, 0.0, 1.0),
 ];
 
-class RainbowBullet extends EngineObject {
+class RainbowBeam extends EngineObject {
   constructor(pos, attacker, velocity, damage, range, bounceCount = 0) {
     super(pos, vec2(0.01, 0.01));
     const colors = RAINBOW_COLORS;
@@ -82,7 +82,7 @@ class RainbowBullet extends EngineObject {
   }
 
   render() {
-    drawRainbowBulletTrail(this._trailPoints, 1, this._colors, this._colorOffsets);
+    drawRainbowBeamTrail(this._trailPoints, 1, this._colors, this._colorOffsets);
   }
 
   collideWithObject(o) {
@@ -107,7 +107,7 @@ class RainbowBullet extends EngineObject {
   destroy() {
     if (this.destroyed)
       return;
-    new RainbowBulletTrail(this._trailPoints, this.renderOrder, this._colors, this._colorOffsets);
+    new RainbowBeamTrail(this._trailPoints, this.renderOrder, this._colors, this._colorOffsets);
     super.destroy();
   }
 
@@ -163,7 +163,7 @@ class RainbowBullet extends EngineObject {
   }
 }
 
-class RainbowBulletTrail extends EngineObject {
+class RainbowBeamTrail extends EngineObject {
   constructor(points, renderOrder, colors, colorOffsets) {
     super(vec2(), vec2(), undefined, 0, new Color, renderOrder);
     this.points = points.map(p => p.copy());
@@ -189,11 +189,11 @@ class RainbowBulletTrail extends EngineObject {
   }
 
   render() {
-    drawRainbowBulletTrail(this.points, 1 - this.lifeTimer.getPercent(), this.colors, this.colorOffsets);
+    drawRainbowBeamTrail(this.points, 1 - this.lifeTimer.getPercent(), this.colors, this.colorOffsets);
   }
 }
 
-function drawRainbowBulletTrail(points, alphaScale, colors, colorOffsets) {
+function drawRainbowBeamTrail(points, alphaScale, colors, colorOffsets) {
   for (let colorIndex = 0; colorIndex < colors.length; ++colorIndex) {
     const color = colors[colorIndex];
     const offset = colorOffsets[colorIndex];
@@ -202,5 +202,49 @@ function drawRainbowBulletTrail(points, alphaScale, colors, colorOffsets) {
       drawLine(points[i - 1].add(offset), points[i].add(offset), BULLET_TRAIL_THICKNESS,
         new Color(color.r, color.g, color.b, alpha));
     }
+  }
+}
+
+class FireBall extends EngineObject {
+  constructor(pos, attacker, velocity, damage, range) {
+    super(pos, vec2(0.45, 0.45),
+          tile(1, FIREBALL_SIZE, TEXTURE_INDEX_FIREBALL, 0));
+    this.velocity = velocity;
+    this.damping = 1;
+    this.gravityScale = 0;
+    this.renderOrder = RENDER_ORDER_BULLET;
+    this.setCollision(true, false);
+
+    this._attacker = attacker;
+    this._damage = damage;
+    this._startPos = pos.copy();
+    this._range = range;
+  }
+
+  update() {
+    super.update();
+    if (this.destroyed) {
+      return;
+    }
+    if (this._range && this.pos.distanceSquared(this._startPos) >= this._range * this._range) {
+      this._explode();
+    }
+  }
+
+  collideWithObject(o) {
+    if (o == this._attacker) {
+      return false;
+    }
+    this._explode();
+    return true;
+  }
+
+  collideWithTile(tileData, pos) {
+    this._explode();
+    return true;
+  }
+
+  _explode() {
+    this.destroy();
   }
 }

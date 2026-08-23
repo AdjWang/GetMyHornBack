@@ -344,7 +344,9 @@ class Unicorn extends EngineObject {
       fireDirection.normalize(UNICORN_FIRE_SPEED) :
       vec2(this._getFacingX() * UNICORN_FIRE_SPEED, 0);
     SOUND_FIRE.play(this.pos, SOUND_FIRE_VOLUME);
-    new RainbowBullet(this.pos, this, bulletVelocity, UNICORN_FIRE_DAMAGE, UNICORN_FIRE_RANGE);
+    new RainbowBeam(this.pos, this, bulletVelocity, UNICORN_FIRE_DAMAGE, UNICORN_FIRE_RANGE);
+    // TODO
+    // new FireBall(this.pos, this, bulletVelocity, UNICORN_FIRE_DAMAGE, UNICORN_FIRE_RANGE);
   }
 
   _updateFacing() {

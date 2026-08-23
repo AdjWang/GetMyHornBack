@@ -79,6 +79,7 @@ const sourceFiles =
     'background.js',
     'bullet.js',
     'crosshair.js',
+    'monster.js',
     'unicorn.js',
     'level.js',
     'main.js',
@@ -86,7 +87,7 @@ const sourceFiles =
 const dataFiles =
 [
     'assets/tileset.png',
-    'assets/leaf.png',
+    'assets/objects.png',
     'assets/dragon.png',
     'assets/unicorn.png',
 ];
