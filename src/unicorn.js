@@ -18,13 +18,13 @@ const SOUND_LAND = new Sound([,.03,65.40639,.02,.01,.07,4,,10,,,,,.7]);
 const SOUND_LAND_VOLUME = 0.05;
 
 // Motion.
-const UNICORN_MAX_SPEED_X = 0.22;
+const UNICORN_MAX_SPEED_X = 0.2;
 const UNICORN_MAX_SPEED_Y = 0.5;
 const UNICORN_AIR_IMPULSE = 0.04;
 const UNICORN_GROUND_IMPULSE = 0.08;
 const UNICORN_AIR_DAMPING = 0.15;
 const UNICORN_GROUND_DAMPING = 0.3;
-const UNICORN_JUMP_INITIAL_SPEED = 0.3;
+const UNICORN_JUMP_INITIAL_SPEED = 0.27;
 // Reach peak earlier if player release jump button.
 const UNICORN_JUMP_RELEASE_DAMPING = 0.5;
 // Tricks.
