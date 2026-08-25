@@ -78,7 +78,6 @@ const sourceFiles =
     'foreground.js',
     'background.js',
     'bullet.js',
-    'crosshair.js',
     'monster.js',
     'unicorn.js',
     'level.js',

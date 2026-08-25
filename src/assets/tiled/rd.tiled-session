@@ -11,6 +11,17 @@
         "": {
             "scaleInDock": 1
         },
+        "C:/JsProjects/archive/platformer/data/gameLevelData.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 832,
+                "y": 362
+            }
+        },
+        "C:/JsProjects/archive/platformer/data/gameLevelData.tsx": {
+            "scaleInDock": 1
+        },
         "level.tmx": {
             "scale": 2,
             "selectedLayer": 0,
@@ -20,19 +31,19 @@
             }
         },
         "level0.tmx": {
-            "scale": 2,
+            "scale": 0.75,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 192,
-                "y": 138
+                "x": 270.66666666666663,
+                "y": 46.66666666666663
             }
         },
         "level1.tmx": {
-            "scale": 2.765885416666667,
+            "scale": 0.75,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 191.98192260615758,
-                "y": 127.98794840410505
+                "x": 3567.9999999999995,
+                "y": 131.99999999999994
             }
         },
         "test.tsx": {

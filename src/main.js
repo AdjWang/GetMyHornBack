@@ -14,14 +14,10 @@ let backgroundMusicVolume = 0.1;
 // WebGL can be removed to save ~963 bytes - see "Disabling WebGL" in README.md
 
 ///////////////////////////////////////////////////////////////////////////////
-let crosshair;
-
 async function gameInit() {
   await loadLevel(1);
   updateWorldCamera();
   gravity.y = -0.01;
-
-  crosshair = new Crosshair;
 
   backgroundMusic = new ZzFXMusic(THEME);
   backgroundMusic.playMusic(backgroundMusicVolume, true);
@@ -29,7 +25,7 @@ async function gameInit() {
 
 ///////////////////////////////////////////////////////////////////////////////
 function gameUpdate() {
-  worldScale = min(mainCanvasSize.x / WORLD_WIDTH, mainCanvasSize.y / WORLD_HEIGHT);
+  worldScale = min(mainCanvasSize.x / VIEW_WIDTH, mainCanvasSize.y / VIEW_HEIGHT);
   updateWorldCamera();
   if (backgroundMusic) {
     backgroundMusic.setVolume(backgroundMusicVolume);
@@ -37,7 +33,13 @@ function gameUpdate() {
 }
 
 function updateWorldCamera() {
-  cameraPos = vec2(WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
+  if (player) {
+    cameraPos = vec2(player.pos.x, VIEW_HEIGHT / 2);
+    foreground.pos.x = player.pos.x;
+    background.pos.x = player.pos.x;
+  } else {
+    cameraPos = vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2);
+  }
   cameraScale = worldScale;
 }
 
@@ -57,5 +59,5 @@ function gameRenderPost() {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Startup LittleJS Engine
-setCanvasFixedSize(vec2(WORLD_WIDTH, WORLD_HEIGHT));
+setCanvasFixedSize(vec2(VIEW_WIDTH, VIEW_HEIGHT));
 engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost, IMAGE_SOURCES);

@@ -59,8 +59,6 @@ const UNICORN_RUN_SCALE_Y_AMPLIFY = 0.02;
 const UNICORN_JUMP_AIR_SCALE_Y = 1.12;
 const UNICORN_LAND_SCALE_TIME = 0.25;
 const UNICORN_LAND_SHRINK_SCALE_Y = 0.86;
-// Limit head rotation angle towards crosshair.
-const UNICORN_HEAD_ROTATE_RANGE = vec2(-0.7, 0.15);
 
 const UNICORN_ANIM_STATE_IDLE = 0;
 const UNICORN_ANIM_STATE_RUN = 1;
@@ -94,7 +92,6 @@ class Unicorn extends EngineObject {
     this._runFrame = UNICORN_FRAME_INDEX_IDLE;
     this._runFrameTimer = new Timer(1.0 / UNICORN_ANIM_RUN_SPEED);
     this._landScaleTimer = new Timer;
-    this._fireCooldownTimer = new Timer(0);
     this.damping = 1;
     this.friction = 1;
     this.setCollision();
@@ -133,11 +130,12 @@ class Unicorn extends EngineObject {
     if (this.pos.x < 0) {
       this.pos.x = 0;
     }
-    if (this.pos.x > WORLD_WIDTH) {
-      this.pos.x = WORLD_WIDTH;
+    const levelSize = getLevelSize(currentLevel);
+    if (this.pos.x > levelSize.x) {
+      this.pos.x = levelSize.x;
     }
     if (this.pos.y < -0.5) {
-      this.pos.y = WORLD_HEIGHT + 0.5;
+      this.pos.y = levelSize.y + 0.5;
     }
     // Update motion before updating physic.
     this._updateMotion();
@@ -145,7 +143,6 @@ class Unicorn extends EngineObject {
     super.update();
     this._updateJumpCornerRestoreState();
     this._updateBufferedJump();
-    this._updateFire();
     this._updateAnim();
   }
 
@@ -166,8 +163,7 @@ class Unicorn extends EngineObject {
     const scaleAnchorOffset = vec2(0, (drawSizeStretch.y - drawSize.y) / 2);
     const drawPos = this.pos.add(scaleAnchorOffset);
     const headDrawPos = headPos.add(scaleAnchorOffset).add(drawOffset);
-    const headRotate = this._getHeadAimRotate(headDrawPos);
-    drawAsepriteFrame(this._frameInfoHead[this._runFrame], headDrawPos, runScaleY * this._getJumpScaleY(), undefined, headRotate, this.mirror);
+    drawAsepriteFrame(this._frameInfoHead[this._runFrame], headDrawPos, runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
     drawAsepriteFrame(this._frameInfoBody[this._runFrame], drawPos.add(drawOffset), runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
     drawAsepriteFrame(this._frameInfoBag[this._runFrame], drawPos.add(drawOffset), 1, undefined, runRotate, this.mirror);
   }
@@ -333,27 +329,8 @@ class Unicorn extends EngineObject {
     SOUND_JUMP.play(this.pos, SOUND_JUMP_VOLUME);
   }
 
-  _updateFire() {
-    const fireDown = keyIsDown(INPUT_KEY_FIRE);
-    if (!fireDown || !this._fireCooldownTimer.elapsed()) {
-      return;
-    }
-    this._fireCooldownTimer.set(UNICORN_FIRE_COOLDOWN);
-    const fireDirection = mousePos.subtract(this.pos);
-    const bulletVelocity = fireDirection.lengthSquared() ?
-      fireDirection.normalize(UNICORN_FIRE_SPEED) :
-      vec2(this._getFacingX() * UNICORN_FIRE_SPEED, 0);
-    SOUND_FIRE.play(this.pos, SOUND_FIRE_VOLUME);
-    new RainbowBeam(this.pos, this, bulletVelocity, UNICORN_FIRE_DAMAGE, UNICORN_FIRE_RANGE);
-    // TODO
-    // new FireBall(this.pos, this, bulletVelocity, UNICORN_FIRE_DAMAGE, UNICORN_FIRE_RANGE);
-  }
-
   _updateFacing() {
-    const aimX = mousePos.x - this.pos.x;
-    if (aimX) {
-      this.mirror = aimX > 0;
-    }
+    this.mirror = this.velocity.x > 0;
   }
 
   _getFacingX() {
@@ -364,17 +341,6 @@ class Unicorn extends EngineObject {
     const facingX = this._getFacingX();
     const movingX = sign(this.velocity.x) || this._moveX || facingX;
     return (facingX == movingX ? 1 : -1) * facingX * UNICORN_RUN_ROTATE_ANGLE;
-  }
-
-  _getHeadAimRotate(pos) {
-    const aim = mousePos.subtract(pos);
-    const facingX = this._getFacingX();
-    const rot = aim.lengthSquared() ? -Math.atan2(aim.y, abs(aim.x)) * facingX : 0;
-    if (facingX > 0) {
-      return clamp(rot, UNICORN_HEAD_ROTATE_RANGE.x, UNICORN_HEAD_ROTATE_RANGE.y);
-    } else {
-      return clamp(rot, -UNICORN_HEAD_ROTATE_RANGE.y, -UNICORN_HEAD_ROTATE_RANGE.x);
-    }
   }
 
   _updateAnim() {

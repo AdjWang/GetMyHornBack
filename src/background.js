@@ -57,7 +57,7 @@ class Background extends EngineObject {
       this.stars = [];
       for (let i = 0; i < BACKGROUND_STAR_COUNT; ++i) {
         this.stars.push({
-          pos: vec2(randomRange(0, WORLD_WIDTH), randomRange(BACKGROUND_STAR_HEIGHT, WORLD_HEIGHT)),
+          pos: vec2(randomRange(0, VIEW_WIDTH), randomRange(BACKGROUND_STAR_HEIGHT, VIEW_HEIGHT)),
           size: randomRange(0.02, 0.05),
           color: Math.random() < 0.5 ? BACKGROUND_STAR_COLOR_A : BACKGROUND_STAR_COLOR_B,
         });
@@ -75,7 +75,7 @@ class Background extends EngineObject {
   }
 
   drawSky() {
-    drawTile(vec2(WORLD_WIDTH / 2, WORLD_HEIGHT / 2), vec2(WORLD_WIDTH, WORLD_HEIGHT), this.skyTileInfo);
+    drawTile(vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2), vec2(VIEW_WIDTH, VIEW_HEIGHT), this.skyTileInfo);
     if (this.stars) {
       for (const star of this.stars) {
         drawRect(star.pos, vec2(star.size), star.color);
@@ -116,10 +116,10 @@ class Background extends EngineObject {
     // Adjust parallax, scroll speed, alpha and blur value according to layer depth.
     const layerDepth = cloud.layer / (BACKGROUND_LAYER_COUNT - 1);
     const layerParallax = SKY_CLOUD_PARALLAX * (0.45 + layerDepth * 0.75);
-    const basePos = cloud.pos.add(cameraPos.subtract(vec2(WORLD_WIDTH / 2, WORLD_HEIGHT / 2)).scale(layerParallax));
+    const basePos = cloud.pos.add(cameraPos.subtract(vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2)).scale(layerParallax));
     const width = cloud.canvas.width * SKY_CLOUD_PIXEL_SIZE * cloud.scale;
     const height = cloud.canvas.height * SKY_CLOUD_PIXEL_SIZE * cloud.scale;
-    const loopWidth = WORLD_WIDTH + width;
+    const loopWidth = VIEW_WIDTH + width;
     const scrollX = time * SKY_CLOUD_SCROLL_SPEED * cloud.speed * (0.55 + layerDepth * 0.45);
     const x = backgroundWrap(basePos.x + cloud.minX * cloud.scale - scrollX, loopWidth) - width;
     const cloudPos = vec2(x + width / 2, basePos.y + cloud.minY * cloud.scale + height / 2);
@@ -170,9 +170,9 @@ class Background extends EngineObject {
     for (let i = 0; i < count; ++i) {
       const imageIndex = randomInt(0, pool.length - 1);
       const minX = SKY_CLOUD_RANDOM_POS_X
-      const maxX = WORLD_WIDTH - SKY_CLOUD_RANDOM_POS_X
+      const maxX = VIEW_WIDTH - SKY_CLOUD_RANDOM_POS_X
       const minY = SKY_CLOUD_RANDOM_POS_Y
-      const maxY = WORLD_HEIGHT - SKY_CLOUD_RANDOM_POS_Y
+      const maxY = VIEW_HEIGHT - SKY_CLOUD_RANDOM_POS_Y
       clouds.push({
         ...pool.splice(imageIndex, 1)[0],
         pos: vec2(randomRange(minX, maxX), randomRange(minY, maxY)),

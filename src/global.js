@@ -2,8 +2,8 @@
 
 const TILE_SIZE = 16;  // pixels
 
-const WORLD_WIDTH = 24;  // cells
-const WORLD_HEIGHT = 16;  // cells
+const VIEW_WIDTH = 24;  // cells
+const VIEW_HEIGHT = 16;  // cells
 
 const IMAGE_SOURCES = [
   'assets/tileset.png',
@@ -51,3 +51,8 @@ const INPUT_KEY_RIGHT = 'ArrowRight';
 const INPUT_KEY_FIRE = 0;
 
 let worldScale = TILE_SIZE;
+let currentLevel = 0;
+let player = undefined;
+let foreground = undefined;
+let background = undefined;
+let tileLayer = undefined;
