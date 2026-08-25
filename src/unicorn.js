@@ -41,6 +41,7 @@ const UNICORN_AIR_CORNER_HORIZONTAL_CORRECTION_STEP = 0.05;
 // Correct y axis pos if not aligned.
 const UNICORN_AIR_CORNER_VERTICAL_CORRECTION_MAX = 0.3;
 const UNICORN_AIR_CORNER_VERTICAL_CORRECTION_STEP = 0.03;
+const UNICORN_KNOCKBACK_SPEED = 0.5;
 
 // Animation.
 const UNICORN_DRAW_OFFSET = vec2(0.1, 0.3);
@@ -76,7 +77,6 @@ class Unicorn extends EngineObject {
   constructor(pos) {
     const colliderSize = vec2(0.9, 0.9);
     super(pos, colliderSize, undefined, 0, new Color, RENDER_ORDER_CHARACTER);
-    this.mirror = false;
     const res = createAsepriteResource(unicornAsepriteData, TEXTURE_INDEX_UNICORN, ['bag', 'body', 'head']);
     this._frameInfoHead = res.head;
     this._frameInfoBody = res.body;
@@ -87,6 +87,8 @@ class Unicorn extends EngineObject {
     this._wasGrounded = false;
     this._jumpBufferTimer = new Timer;
     this._coyoteTimer = new Timer;
+    this._knockbackTargetX = undefined;
+    this._knockbackDirection = 0;
     // When jump with 0 initial speed with corner correction, the correction
     // stops object after correcting instead of perform jumping. Use this flag
     // to restore jump.
@@ -95,6 +97,8 @@ class Unicorn extends EngineObject {
     this._runFrame = UNICORN_FRAME_INDEX_IDLE;
     this._runFrameTimer = new Timer(1.0 / UNICORN_ANIM_RUN_SPEED);
     this._landScaleTimer = new Timer;
+    this.mirror = false;
+    this.mass = 1;
     this.damping = 1;
     this.friction = 1;
     this.setCollision();
@@ -141,9 +145,14 @@ class Unicorn extends EngineObject {
       this.pos.y = levelSize.y + 0.5;
     }
     // Update motion before updating physic.
-    this._updateMotion();
+    if (this._isKnockbackActive()) {
+      this._updateKnockbackMotion();
+    } else {
+      this._updateMotion();
+    }
     this._updateAirCornerCorrection();
     super.update();
+    this._updateKnockbackState();
     this._updateJumpCornerRestoreState();
     this._updateBufferedJump();
     this._updateAnim();
@@ -176,6 +185,19 @@ class Unicorn extends EngineObject {
 
   getFacingX() {
     return this.mirror ? 1 : -1;
+  }
+
+  takeKnockback(cells) {
+    if (!cells) {
+      return;
+    }
+    const levelSize = getLevelSize(currentLevel);
+    this._knockbackDirection = sign(cells);
+    this._knockbackTargetX = clamp(this.pos.x + cells, 0, levelSize.x);
+    this.velocity.x = this._knockbackDirection * UNICORN_KNOCKBACK_SPEED;
+    this._moveX = 0;
+    this._moveY = 0;
+    this._jumpBufferTimer.unset();
   }
 
   _updateMotion() {
@@ -223,6 +245,33 @@ class Unicorn extends EngineObject {
       UNICORN_JUMP_PEAK_GRAVITY_SCALE : 1;
     this._updateFacing();
     this.velocity.y = clamp(this.velocity.y, -UNICORN_MAX_SPEED_Y, UNICORN_MAX_SPEED_Y);
+  }
+
+  _isKnockbackActive() {
+    return this._knockbackTargetX !== undefined;
+  }
+
+  _updateKnockbackMotion() {
+    this._moveX = 0;
+    this._moveY = 0;
+    this.velocity.x = this._knockbackDirection * UNICORN_KNOCKBACK_SPEED;
+    this.velocity.y = clamp(this.velocity.y, -UNICORN_MAX_SPEED_Y, UNICORN_MAX_SPEED_Y);
+  }
+
+  _updateKnockbackState() {
+    if (!this._isKnockbackActive()) {
+      return;
+    }
+    const reachedTarget = (this.pos.x - this._knockbackTargetX) * this._knockbackDirection >= 0;
+    const blocked = !this.velocity.x;
+    if (reachedTarget) {
+      this.pos.x = this._knockbackTargetX;
+    }
+    if (reachedTarget || blocked) {
+      this.velocity.x = 0;
+      this._knockbackTargetX = undefined;
+      this._knockbackDirection = 0;
+    }
   }
 
   _updateAirCornerCorrection() {
@@ -321,7 +370,7 @@ class Unicorn extends EngineObject {
   }
 
   _updateBufferedJump() {
-    if (!this._jumpBufferTimer.active() || !this.groundObject) {
+    if (this._isKnockbackActive() || !this._jumpBufferTimer.active() || !this.groundObject) {
       return;
     }
     this._startJump(true);
