@@ -123,7 +123,7 @@ class Background extends EngineObject {
     // Adjust parallax, scroll speed, alpha and blur value according to layer depth.
     const layerDepth = cloud.layer / (BACKGROUND_LAYER_COUNT - 1);
     const layerParallax = SKY_CLOUD_PARALLAX * (0.45 + layerDepth * 0.75);
-    const basePos = cloud.pos.add(this.pos.subtract(vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2)).scale(layerParallax));
+    const basePos = cloud.pos.subtract(this.pos.subtract(vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2)).scale(layerParallax));
     const width = cloud.canvas.width * SKY_CLOUD_PIXEL_SIZE * cloud.scale;
     const height = cloud.canvas.height * SKY_CLOUD_PIXEL_SIZE * cloud.scale;
     const loopWidth = VIEW_WIDTH + width;
