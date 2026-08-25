@@ -32,23 +32,14 @@ function gameUpdate() {
   }
 }
 
-function updateWorldCamera() {
-  if (player) {
-    cameraPos = vec2(player.pos.x, VIEW_HEIGHT / 2);
-    foreground.pos.x = player.pos.x;
-    background.pos.x = player.pos.x;
-  } else {
-    cameraPos = vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2);
-  }
-  cameraScale = worldScale;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 function gameUpdatePost() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 function gameRender() {
+  // TODO
+  // drawTile(player.pos.add(vec2(2, 0)), vec2(1.6, 0.7).multiply(vec2(5)), tile(0, vec2(16, 7), TEXTURE_INDEX_CLOUD, 0));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

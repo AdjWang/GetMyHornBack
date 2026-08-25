@@ -75,6 +75,7 @@ const sourceFiles =
     'assets/dragonResource.js',
     'assets/unicornResource.js',
     'resourceLoader.js',
+    'camera.js',
     'foreground.js',
     'background.js',
     'bullet.js',
