@@ -24,7 +24,7 @@ const UNICORN_AIR_IMPULSE = 0.04;
 const UNICORN_GROUND_IMPULSE = 0.08;
 const UNICORN_AIR_DAMPING = 0.15;
 const UNICORN_GROUND_DAMPING = 0.3;
-const UNICORN_JUMP_INITIAL_SPEED = 0.27;
+const UNICORN_JUMP_INITIAL_SPEED = 0.23;
 // Reach peak earlier if player release jump button.
 const UNICORN_JUMP_RELEASE_DAMPING = 0.5;
 // Tricks.
@@ -50,7 +50,10 @@ const UNICORN_IDLE_HEAD_BOB_AMPLIFY = 0.03;
 const UNICORN_IDLE_HEAD_BOB_SPEED = 8;
 // When running, use zero bob offset.
 const UNICORN_RUN_HEAD_BOB_AMPLIFY = 0.06;
-const UNICORN_RUN_HEAD_BOB_SPEED = 16;
+const UNICORN_RUN_HEAD_BOB_SPEED = 22;
+const UNICORN_RUN_HEAD_BOB_OFFSET = 0.4;
+const UNICORN_RUN_BODY_BOB_OFFSET = 0.0;
+const UNICORN_RUN_BAG_BOB_OFFSET = -0.4;
 // Slightly rotate body when running to make it looks weight.
 const UNICORN_RUN_ROTATE_ANGLE = 0.22;
 // Stretch when running to make it looks dynamic.
@@ -147,11 +150,14 @@ class Unicorn extends EngineObject {
   }
 
   render() {
-    const runCycle = Math.sin(time * UNICORN_RUN_HEAD_BOB_SPEED);
-    const headBob = this._animState == UNICORN_ANIM_STATE_IDLE ?
-      Math.sin(time * UNICORN_IDLE_HEAD_BOB_SPEED) * UNICORN_IDLE_HEAD_BOB_AMPLIFY + UNICORN_IDLE_HEAD_BOB_OFFSET :
-      this._animState == UNICORN_ANIM_STATE_RUN ?
-        runCycle * UNICORN_RUN_HEAD_BOB_AMPLIFY : 0;
+    const runBobTime = time * UNICORN_RUN_HEAD_BOB_SPEED;
+    const runCycle = Math.sin(runBobTime);
+    const idleHeadBob = this._animState == UNICORN_ANIM_STATE_IDLE ?
+      Math.sin(time * UNICORN_IDLE_HEAD_BOB_SPEED) * UNICORN_IDLE_HEAD_BOB_AMPLIFY + UNICORN_IDLE_HEAD_BOB_OFFSET : 0;
+    const headRunBob = this._getRunBob(runBobTime, UNICORN_RUN_HEAD_BOB_OFFSET);
+    const bodyRunBob = this._getRunBob(runBobTime, UNICORN_RUN_BODY_BOB_OFFSET);
+    const bagRunBob = this._getRunBob(runBobTime, UNICORN_RUN_BAG_BOB_OFFSET);
+    const headBob = idleHeadBob + headRunBob;
     const headPos = this.pos.add(vec2(0, headBob));
     const runRotate = this._animState == UNICORN_ANIM_STATE_RUN ?
       this._getRunRotate() : 0;
@@ -164,8 +170,8 @@ class Unicorn extends EngineObject {
     const drawPos = this.pos.add(scaleAnchorOffset);
     const headDrawPos = headPos.add(scaleAnchorOffset).add(drawOffset);
     drawAsepriteFrame(this._frameInfoHead[this._runFrame], headDrawPos, runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
-    drawAsepriteFrame(this._frameInfoBody[this._runFrame], drawPos.add(drawOffset), runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
-    drawAsepriteFrame(this._frameInfoBag[this._runFrame], drawPos.add(drawOffset), 1, undefined, runRotate, this.mirror);
+    drawAsepriteFrame(this._frameInfoBody[this._runFrame], drawPos.add(vec2(0, bodyRunBob)).add(drawOffset), runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
+    drawAsepriteFrame(this._frameInfoBag[this._runFrame], drawPos.add(vec2(0, bagRunBob)).add(drawOffset), 1, undefined, runRotate, this.mirror);
   }
 
   _updateMotion() {
@@ -341,6 +347,11 @@ class Unicorn extends EngineObject {
     const facingX = this._getFacingX();
     const movingX = sign(this.velocity.x) || this._moveX || facingX;
     return (facingX == movingX ? 1 : -1) * facingX * UNICORN_RUN_ROTATE_ANGLE;
+  }
+
+  _getRunBob(runBobTime, offset) {
+    return this._animState == UNICORN_ANIM_STATE_RUN ?
+      Math.sin(runBobTime + offset) * UNICORN_RUN_HEAD_BOB_AMPLIFY : 0;
   }
 
   _updateAnim() {
