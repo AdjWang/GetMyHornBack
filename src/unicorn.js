@@ -174,6 +174,10 @@ class Unicorn extends EngineObject {
     drawAsepriteFrame(this._frameInfoBag[this._runFrame], drawPos.add(vec2(0, bagRunBob)).add(drawOffset), 1, undefined, runRotate, this.mirror);
   }
 
+  getFacingX() {
+    return this.mirror ? 1 : -1;
+  }
+
   _updateMotion() {
     const leftDown = keyIsDown(INPUT_KEY_LEFT);
     const rightDown = keyIsDown(INPUT_KEY_RIGHT);
@@ -339,12 +343,8 @@ class Unicorn extends EngineObject {
     this.mirror = this.velocity.x > 0;
   }
 
-  _getFacingX() {
-    return this.mirror ? 1 : -1;
-  }
-
   _getRunRotate() {
-    const facingX = this._getFacingX();
+    const facingX = this.getFacingX();
     const movingX = sign(this.velocity.x) || this._moveX || facingX;
     return (facingX == movingX ? 1 : -1) * facingX * UNICORN_RUN_ROTATE_ANGLE;
   }

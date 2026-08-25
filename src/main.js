@@ -16,7 +16,7 @@ let backgroundMusicVolume = 0.1;
 ///////////////////////////////////////////////////////////////////////////////
 async function gameInit() {
   await loadLevel(1);
-  updateWorldCamera();
+  initWorldCamera();
   background.updatePos(cameraPos);
   foreground.updatePos(cameraPos);
   gravity.y = -0.01;
