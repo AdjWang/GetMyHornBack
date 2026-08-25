@@ -9,6 +9,7 @@ const SLIME_STATE_MANIFEST = 1;
 const SLIME_STATE_DASH = 2;
 const SLIME_MANIFEST_TIME = 0.8;
 const SLIME_DASH_SPEED = 0.28;
+const SLIME_DASH_MAX_DISTANCE = 4;
 const SLIME_HIT_KNOCKBACK_CELLS = 6;
 const SLIME_SIGHT_HEIGHT = 1.2;
 const SLIME_HINT_COLOR = new Color(1, 0.45, 0.45);
@@ -171,6 +172,9 @@ class Slime extends EngineObject {
       return;
     }
     this._caughtPos = this._caughtObject.pos.copy();
+    this._caughtPos.x = clamp(this._caughtPos.x,
+      this.pos.x - SLIME_DASH_MAX_DISTANCE,
+      this.pos.x + SLIME_DASH_MAX_DISTANCE);
     const dashDirection = sign(this._caughtPos.x - this.pos.x) || (this.mirror ? 1 : -1);
     this._dashDirection = dashDirection;
     this.mirror = dashDirection > 0;
