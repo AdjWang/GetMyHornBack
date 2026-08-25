@@ -119,7 +119,6 @@ class Slime extends EngineObject {
       }
       return;
     }
-
     if (this._state == SLIME_STATE_MANIFEST) {
       this.color = SLIME_HINT_COLOR;
       this.velocity.x = 0;
@@ -128,7 +127,6 @@ class Slime extends EngineObject {
       }
       return;
     }
-
     if (this._state == SLIME_STATE_DASH) {
       this.color = new Color;
     }

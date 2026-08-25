@@ -195,6 +195,7 @@ class Unicorn extends EngineObject {
     this._knockbackDirection = sign(cells);
     this._knockbackTargetX = clamp(this.pos.x + cells, 0, levelSize.x);
     this.velocity.x = this._knockbackDirection * UNICORN_KNOCKBACK_SPEED;
+    this.mirror = this._knockbackDirection > 0;
     this._moveX = 0;
     this._moveY = 0;
     this._jumpBufferTimer.unset();
@@ -389,7 +390,9 @@ class Unicorn extends EngineObject {
   }
 
   _updateFacing() {
-    this.mirror = this.velocity.x > 0;
+    if (this.velocity.x) {
+      this.mirror = this.velocity.x > 0;
+    }
   }
 
   _getRunRotate() {
