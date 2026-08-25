@@ -17,6 +17,8 @@ let backgroundMusicVolume = 0.1;
 async function gameInit() {
   await loadLevel(1);
   updateWorldCamera();
+  background.updatePos(cameraPos);
+  foreground.updatePos(cameraPos);
   gravity.y = -0.01;
 
   backgroundMusic = new ZzFXMusic(THEME);
@@ -27,6 +29,8 @@ async function gameInit() {
 function gameUpdate() {
   worldScale = min(mainCanvasSize.x / VIEW_WIDTH, mainCanvasSize.y / VIEW_HEIGHT);
   updateWorldCamera();
+  background.updatePos(cameraPos);
+  foreground.updatePos(cameraPos);
   if (backgroundMusic) {
     backgroundMusic.setVolume(backgroundMusicVolume);
   }

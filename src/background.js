@@ -47,6 +47,8 @@ const SKY_CLOUD_MAX_SCALE = 1.2;
 class Background extends EngineObject {
   constructor(sceneTheme) {
     super(vec2(), vec2(), undefined, 0, new Color, RENDER_ORDER_BACKGROUND);
+    this.mass = 0;
+    this.gravityScale = 0;
     if (sceneTheme == THEME_INDEX_ROCK) {
       this.colorTheme = BACKGROUND_COLOR_THEME_NIGHT;
     } else {
@@ -74,15 +76,20 @@ class Background extends EngineObject {
     this.drawSky();
   }
 
+  updatePos(pos) {
+    this.pos = pos.copy();
+  }
+
   drawSky() {
-    drawTile(vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2), vec2(VIEW_WIDTH, VIEW_HEIGHT), this.skyTileInfo);
+    const viewMin = this.pos.subtract(vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2));
+    drawTile(this.pos, vec2(VIEW_WIDTH, VIEW_HEIGHT), this.skyTileInfo);
     if (this.stars) {
       for (const star of this.stars) {
-        drawRect(star.pos, vec2(star.size), star.color);
+        drawRect(viewMin.add(star.pos), vec2(star.size), star.color);
       }
     }
     for (const cloud of this.clouds) {
-      this.drawCloud(cloud);
+      this.drawCloud(cloud, viewMin);
     }
   }
 
@@ -112,17 +119,17 @@ class Background extends EngineObject {
     this.skyTileInfo = new TileInfo(vec2(), vec2(canvas.width, canvas.height), textureInfo, 0);
   }
 
-  drawCloud(cloud) {
+  drawCloud(cloud, viewMin) {
     // Adjust parallax, scroll speed, alpha and blur value according to layer depth.
     const layerDepth = cloud.layer / (BACKGROUND_LAYER_COUNT - 1);
     const layerParallax = SKY_CLOUD_PARALLAX * (0.45 + layerDepth * 0.75);
-    const basePos = cloud.pos.add(cameraPos.subtract(vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2)).scale(layerParallax));
+    const basePos = cloud.pos.add(this.pos.subtract(vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2)).scale(layerParallax));
     const width = cloud.canvas.width * SKY_CLOUD_PIXEL_SIZE * cloud.scale;
     const height = cloud.canvas.height * SKY_CLOUD_PIXEL_SIZE * cloud.scale;
     const loopWidth = VIEW_WIDTH + width;
     const scrollX = time * SKY_CLOUD_SCROLL_SPEED * cloud.speed * (0.55 + layerDepth * 0.45);
     const x = backgroundWrap(basePos.x + cloud.minX * cloud.scale - scrollX, loopWidth) - width;
-    const cloudPos = vec2(x + width / 2, basePos.y + cloud.minY * cloud.scale + height / 2);
+    const cloudPos = viewMin.add(vec2(x + width / 2, basePos.y + cloud.minY * cloud.scale + height / 2));
     const cloudColor = new Color(1, 1, 1, 0.65 + layerDepth * 0.35);
     drawTile(cloudPos, vec2(width, height), cloud.tileInfo, cloudColor);
   }

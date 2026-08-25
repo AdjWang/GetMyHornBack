@@ -5,8 +5,11 @@ const FOREGROUND_LARGE_LEAF_ALPHA = 0.35;
 
 class Foreground extends EngineObject {
   constructor(sceneTheme) {
-    super()
+    super(vec2(), vec2());
     this.renderOrder = RENDER_ORDER_FOREGROUND;
+    this.mass = 0;
+    this.gravityScale = 0;
+    this.emitters = [];
     if (sceneTheme == THEME_INDEX_GRASS) {
       const color = new Color(1, 1, 1);
       const leafEmitter = new ParticleEmitter(
@@ -40,11 +43,12 @@ class Foreground extends EngineObject {
           particle.colorStart.a *= FOREGROUND_LARGE_LEAF_ALPHA;
         }
       };
+      this.emitters.push(leafEmitter);
     } else if (sceneTheme == THEME_INDEX_ROCK) {
       const colorA = new Color(0.827, 0.808, 0.192, 0.5);
       const colorB = new Color(0.918, 0.957, 0.784, 0.5);
       // Firefly.
-      new ParticleEmitter(
+      const fireflyEmitter = new ParticleEmitter(
         vec2(),               // position
         0,                    // angle
         100,                  // emitSize
@@ -70,6 +74,15 @@ class Foreground extends EngineObject {
         false,                // collideTiles
         false                 // additive
       );
+      this.emitters.push(fireflyEmitter);
+    }
+  }
+
+  updatePos(pos) {
+    this.pos = pos.copy();
+    for (const emitter of this.emitters) {
+      emitter.pos = this.pos;
+      emitter.emitSize = vec2(VIEW_WIDTH, VIEW_HEIGHT);
     }
   }
 }
