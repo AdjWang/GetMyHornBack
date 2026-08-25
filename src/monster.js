@@ -12,6 +12,8 @@ const SLIME_DASH_SPEED = 0.28;
 const SLIME_HIT_KNOCKBACK_CELLS = 6;
 const SLIME_SIGHT_HEIGHT = 1.2;
 const SLIME_HINT_COLOR = new Color(1, 0.45, 0.45);
+const SLIME_GHOST_COUNT = 5;
+const SLIME_GHOST_ALPHA = 0.45;
 
 class Dragon extends EngineObject {
   constructor(pos) {
@@ -66,6 +68,7 @@ class Slime extends EngineObject {
     this._caughtObject = undefined;
     this._caughtPos = undefined;
     this._dashDirection = 0;
+    this._ghosts = [];
     this.mirror = false;
     this.mass = 1;
     this.damping = 1;
@@ -77,6 +80,7 @@ class Slime extends EngineObject {
     this._updateBehavior();
     super.update();
     if (this._state == SLIME_STATE_DASH) {
+      this._addGhost();
       this._stopDashAtCaughtPos();
     }
     if (this.pos.y < -this.size.y) {
@@ -92,6 +96,11 @@ class Slime extends EngineObject {
   render() {
     const size = vec2(this.size.x, this.size.y * this._scaleOffsetY[this._currentFrame]);
     const pos = this.pos.add(vec2(0, (size.y - this.size.y) / 2));
+    for (let i = 0; i < this._ghosts.length; ++i) {
+      const ghost = this._ghosts[i];
+      const alpha = (i + 1) / (this._ghosts.length + 1) * SLIME_GHOST_ALPHA;
+      drawTile(ghost.pos, ghost.size, this.tileInfo, new Color(1, 1, 1, alpha), ghost.angle, ghost.mirror);
+    }
     drawTile(pos, size, this.tileInfo, this.color, this.angle, this.mirror);
   }
 
@@ -166,7 +175,22 @@ class Slime extends EngineObject {
     this._dashDirection = dashDirection;
     this.mirror = dashDirection > 0;
     this.velocity.x = dashDirection * SLIME_DASH_SPEED;
+    this._ghosts = [];
     this._state = SLIME_STATE_DASH;
+  }
+
+  _addGhost() {
+    const size = vec2(this.size.x, this.size.y * this._scaleOffsetY[this._currentFrame]);
+    const pos = this.pos.add(vec2(0, (size.y - this.size.y) / 2));
+    this._ghosts.push({
+      pos: pos.copy(),
+      size,
+      angle: this.angle,
+      mirror: this.mirror,
+    });
+    if (this._ghosts.length > SLIME_GHOST_COUNT) {
+      this._ghosts.shift();
+    }
   }
 
   _stopDashAtCaughtPos() {
@@ -194,6 +218,7 @@ class Slime extends EngineObject {
     this._caughtObject = undefined;
     this._caughtPos = undefined;
     this._dashDirection = 0;
+    this._ghosts = [];
     this._state = SLIME_STATE_GUARD;
   }
 }
