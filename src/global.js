@@ -2,7 +2,7 @@
 
 const TILE_SIZE = 16;  // pixels
 
-const VIEW_WIDTH = 24;  // cells
+const VIEW_WIDTH = 28;  // cells
 const VIEW_HEIGHT = 16;  // cells
 
 const IMAGE_SOURCES = [

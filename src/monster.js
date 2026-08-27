@@ -15,6 +15,8 @@ const SLIME_SIGHT_HEIGHT = 1.2;
 const SLIME_HINT_COLOR = new Color(1, 0.45, 0.45);
 const SLIME_GHOST_COUNT = 5;
 const SLIME_GHOST_ALPHA = 0.45;
+const JUMP_SLIME_JUMP_TIME = 1.2;
+const JUMP_SLIME_JUMP_HEIGHT = 3.0;
 
 class Dragon extends EngineObject {
   constructor(pos) {
@@ -55,7 +57,7 @@ class Dragon extends EngineObject {
   }
 }
 
-class Slime extends EngineObject {
+class DashSlime extends EngineObject {
   constructor(pos, sight = 0) {
     const colliderSize = vec2(0.9, 0.9);
     const anim = tile(0, 16, TEXTURE_INDEX_SLIME, 0);
@@ -224,5 +226,65 @@ class Slime extends EngineObject {
     this._dashDirection = 0;
     this._ghosts = [];
     this._state = SLIME_STATE_GUARD;
+  }
+}
+
+class JumpSlime extends EngineObject {
+  constructor(pointA, pointB, timeGap = 1.0) {
+    const colliderSize = vec2(0.9, 0.9);
+    const anim = tile(0, 16, TEXTURE_INDEX_SLIME, 0);
+    super(pointA, colliderSize, anim, 0, new Color, RENDER_ORDER_CHARACTER);
+    this._pointA = pointA.copy();
+    this._pointB = pointB.copy();
+    this._from = this._pointA;
+    this._to = this._pointB;
+    this._timeGap = timeGap;
+    this._waitTimer = new Timer(timeGap);
+    this._jumpTimer = new Timer;
+    this._jumpTimer.unset();
+    this._jumping = false;
+    this.mirror = this._pointB.x > this._pointA.x;
+    this.mass = 0;
+    this.damping = 1;
+    this.friction = 1;
+    this.gravityScale = 0;
+    this.setCollision(true, true, false);
+  }
+
+  update() {
+    const oldPos = this.pos.copy();
+    if (this._jumping) {
+      this._updateJump();
+    } else if (this._waitTimer.elapsed()) {
+      this._startJump();
+    }
+    this.velocity = this.pos.subtract(oldPos);
+  }
+
+  collideWithObject(o) {
+    if (o == player && o.velocity.y <= 0 && o.pos.y > this.pos.y) {
+      o.groundObject = this;
+    }
+    return true;
+  }
+
+  _startJump() {
+    this._jumping = true;
+    this._jumpTimer.set(JUMP_SLIME_JUMP_TIME);
+    this.mirror = this._to.x > this._from.x;
+  }
+
+  _updateJump() {
+    const p = clamp(this._jumpTimer.getPercent(), 0, 1);
+    this.pos = this._from.lerp(this._to, p);
+    this.pos.y += JUMP_SLIME_JUMP_HEIGHT * 4 * p * (1 - p);
+    if (this._jumpTimer.elapsed()) {
+      this.pos = this._to.copy();
+      const nextFrom = this._to;
+      this._to = this._from;
+      this._from = nextFrom;
+      this._jumping = false;
+      this._waitTimer.set(this._timeGap);
+    }
   }
 }

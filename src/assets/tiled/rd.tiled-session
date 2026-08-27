@@ -39,11 +39,11 @@
             }
         },
         "level1.tmx": {
-            "scale": 0.5,
-            "selectedLayer": 0,
+            "scale": 2,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 2164,
-                "y": 82
+                "x": 1352,
+                "y": 200
             }
         },
         "level2.tmx": {
