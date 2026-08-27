@@ -29,6 +29,7 @@ async function gameInit() {
 function gameUpdate() {
   worldScale = min(mainCanvasSize.x / VIEW_WIDTH, mainCanvasSize.y / VIEW_HEIGHT);
   updateWorldCamera();
+  updateLevelEvent();
   background.updatePos(cameraPos);
   foreground.updatePos(cameraPos);
   if (backgroundMusic) {
