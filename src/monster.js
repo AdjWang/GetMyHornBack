@@ -6,11 +6,12 @@ const DRAGON_DRAW_Y_OFFSETS = [0.0, 0.2];
 // Gain when unicorn jump over slime.
 const SLIME_JUMP_GAIN = 1.2;
 const SLIME_ANIM_SPEED = 12;  // frame/sec
-const SLIME_STATE_GUARD = 0;
+const SLIME_STATE_PATROL = 0;
 const SLIME_STATE_MANIFEST = 1;
 const SLIME_STATE_DASH = 2;
 const SLIME_MANIFEST_TIME = 0.33;
 const SLIME_DASH_SPEED = 0.28;
+const SLIME_PATROL_SPEED = 0.02;  // cells
 const SLIME_DASH_MAX_DISTANCE = 4;
 const SLIME_HIT_KNOCKBACK_CELLS = 6;
 const SLIME_SIGHT_HEIGHT = 0.95;
@@ -60,7 +61,7 @@ class Dragon extends EngineObject {
 }
 
 class DashSlime extends EngineObject {
-  constructor(pos, sight = 0) {
+  constructor(pos, patrolSight = 0, dashSight = 0) {
     const colliderSize = vec2(0.9, 0.9);
     const anim = tile(0, 16, TEXTURE_INDEX_SLIME, 0);
     super(pos, colliderSize, anim, 0, new Color, RENDER_ORDER_CHARACTER);
@@ -68,12 +69,15 @@ class DashSlime extends EngineObject {
     this._manifestTimer = new Timer;
     this._currentFrame = 0;
     this._scaleOffsetY = [1.0, 0.9, 0.8, 0.7, 0.7, 0.8, 0.9, 1.0];
-    this._sight = sight;
-    this._state = SLIME_STATE_GUARD;
+    this._patrolSight = patrolSight;
+    this._dashSight = dashSight;
+    this._state = SLIME_STATE_PATROL;
     this._caughtObject = undefined;
     this._caughtPos = undefined;
     this._dashDirection = 0;
     this._ghosts = [];
+    this._patrolCenterX = pos.x;
+    this._patrolTargetX = pos.x + patrolSight;
     this.mirror = false;
     this.mass = 1;
     this.damping = 1;
@@ -125,16 +129,21 @@ class DashSlime extends EngineObject {
   }
 
   _updateBehavior() {
-    if (this._state == SLIME_STATE_GUARD) {
+    if (this._state == SLIME_STATE_PATROL) {
       this.color = new Color;
-      this.velocity.x = 0;
+      if (!this._patrolSight && !this._dashSight) {
+        this.velocity.x = 0;
+        return;
+      }
       const caughtObject = this._getCaughtObject();
       if (caughtObject) {
         this._caughtObject = caughtObject;
         this._caughtPos = caughtObject.pos.copy();
         this._manifestTimer.set(SLIME_MANIFEST_TIME);
         this._state = SLIME_STATE_MANIFEST;
+        return;
       }
+      this._updatePatrol();
       return;
     }
     if (this._state == SLIME_STATE_MANIFEST) {
@@ -150,13 +159,47 @@ class DashSlime extends EngineObject {
     }
   }
 
+  _updatePatrol() {
+    if (!this._patrolSight) {
+      this.velocity.x = 0;
+      return;
+    }
+    const leftX = this._patrolCenterX - this._patrolSight;
+    const rightX = this._patrolCenterX + this._patrolSight;
+    const patrolDirection = sign(this._patrolTargetX - this.pos.x) || (this.mirror ? 1 : -1) || 1;
+    if (this._shouldTurnBack(patrolDirection)) {
+      this._patrolTargetX = this._patrolTargetX == rightX ? leftX : rightX;
+    }
+    if (abs(this.pos.x - this._patrolTargetX) <= SLIME_PATROL_SPEED) {
+      this.pos.x = this._patrolTargetX;
+      this._patrolTargetX = this._patrolTargetX == rightX ? leftX : rightX;
+    }
+    const moveDirection = sign(this._patrolTargetX - this.pos.x) || patrolDirection;
+    this.velocity.x = moveDirection * SLIME_PATROL_SPEED;
+    this.mirror = moveDirection > 0;
+  }
+
+  _shouldTurnBack(patrolDirection) {
+    const nextPos = this.pos.add(vec2(patrolDirection * SLIME_PATROL_SPEED, 0));
+    const objects = engineObjectsCollect(nextPos, this.size);
+    for (const o of objects) {
+      if (o == this || !o.mass || !o.collideSolidObjects || !o.isSolid) {
+        continue;
+      }
+      return true;
+    }
+    const frontX = this.pos.x + patrolDirection * (this.size.x / 2 + SLIME_PATROL_SPEED);
+    const footY = this.pos.y - this.size.y / 2 - .01;
+    return !getTileCollisionData(vec2(frontX, footY));
+  }
+
   _getCaughtObject() {
-    if (!this._sight) {
+    if (!this._dashSight) {
       return undefined;
     }
-    const sightSize = vec2(this._sight, SLIME_SIGHT_HEIGHT);
-    const leftSightPos = this.pos.add(vec2(-(this.size.x + this._sight) / 2, 0));
-    const rightSightPos = this.pos.add(vec2((this.size.x + this._sight) / 2, 0));
+    const sightSize = vec2(this._dashSight, SLIME_SIGHT_HEIGHT);
+    const leftSightPos = this.pos.add(vec2(-(this.size.x + this._dashSight) / 2, 0));
+    const rightSightPos = this.pos.add(vec2((this.size.x + this._dashSight) / 2, 0));
     const objects = engineObjectsCollect(leftSightPos, sightSize)
       .concat(engineObjectsCollect(rightSightPos, sightSize));
     let caughtObject;
@@ -231,7 +274,8 @@ class DashSlime extends EngineObject {
     this._caughtPos = undefined;
     this._dashDirection = 0;
     this._ghosts = [];
-    this._state = SLIME_STATE_GUARD;
+    this._patrolTargetX = this._patrolCenterX + this._patrolSight;
+    this._state = SLIME_STATE_PATROL;
   }
 }
 
