@@ -93,7 +93,7 @@ class Dragon extends EngineObject {
   constructor(pos) {
     const colliderSize = vec2(0.9, 0.9);
     super(pos, colliderSize, undefined, 0, new Color, RENDER_ORDER_CHARACTER);
-    const res = createAsepriteResource(dragonAsepriteData, TEXTURE_INDEX_SLIME, ['body', 'wing']);
+    const res = createAsepriteResource(slimeAsepriteData, TEXTURE_INDEX_SLIME, ['body', 'wing']);
     this._frameInfoWing = res.wing;
     this._frameInfoBody = res.body;
     this._currentFrame = 0;

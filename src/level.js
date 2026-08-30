@@ -80,24 +80,24 @@ const LEVELS_SIZE = [
   vec2(256, 16),
 ];
 
-function screenToWorld(pos) {
+function tiledScreenToWorld(pos) {
   return vec2(pos.x  / 16 + 0.5, 16 - pos.y / 16 - 0.5);
 }
 
 const LEVELS_OBJS = [
   [],
   [
-    [ DashSlime, screenToWorld(vec2(576, 224)), 3, 2 ],
-    [ DashSlime, screenToWorld(vec2(432, 176)), 3, 2 ],
-    [ DashSlime, screenToWorld(vec2(512, 112)), 3, 2 ],
-    [ DashSlime, screenToWorld(vec2(1968, 128)), 3, 2 ],
-    [ DashSlime, screenToWorld(vec2(2224, 128)), 3, 2 ],
-    [ DashSlime, screenToWorld(vec2(2320, 96)), 3, 2 ],
-    [ DashSlime, screenToWorld(vec2(2128, 160)), 3, 2 ],
-    [ DashSlime, screenToWorld(vec2(2912, 112)), 3, 2 ],
-    [ DashSlime, screenToWorld(vec2(2800, 144)), 3, 2 ],
-    [ DashSlime, screenToWorld(vec2(2640, 144)), 3, 2 ],
-    [ DashSlime, screenToWorld(vec2(2464, 112)), 3, 2 ]
+    [ DashSlime, tiledScreenToWorld(vec2(576, 224)), 3, 2 ],
+    [ DashSlime, tiledScreenToWorld(vec2(432, 176)), 3, 2 ],
+    [ DashSlime, tiledScreenToWorld(vec2(512, 112)), 3, 2 ],
+    [ DashSlime, tiledScreenToWorld(vec2(1968, 128)), 3, 2 ],
+    [ DashSlime, tiledScreenToWorld(vec2(2224, 128)), 3, 2 ],
+    [ DashSlime, tiledScreenToWorld(vec2(2320, 96)), 3, 2 ],
+    [ DashSlime, tiledScreenToWorld(vec2(2128, 160)), 3, 2 ],
+    [ DashSlime, tiledScreenToWorld(vec2(2912, 112)), 3, 2 ],
+    [ DashSlime, tiledScreenToWorld(vec2(2800, 144)), 3, 2 ],
+    [ DashSlime, tiledScreenToWorld(vec2(2640, 144)), 3, 2 ],
+    [ DashSlime, tiledScreenToWorld(vec2(2464, 112)), 3, 2 ]
   ],
   [],
 ];
@@ -222,6 +222,7 @@ async function loadLevel(idx) {
 
   // new DashSlime(vec2(86.5, 6.5), 3);
   // new DashSlime(vec2(96.5, 6.5), 3);
+  new Dragon(vec2(110.5, 9.5));
 }
 
 function updateLevelEvent() {
