@@ -258,15 +258,17 @@ class FireBall extends EngineObject {
 }
 
 class Laser extends EngineObject {
-  constructor(pos, length = 2 * VIEW_WIDTH) {
+  constructor(pos, length = 2 * VIEW_WIDTH, aimTime = LASER_AIM_TIME, fireTime = LASER_FIRE_TIME) {
     super(pos, vec2(0.1, 0.1));
     this._startPos = pos.copy();
     this._length = abs(length);
     this._direction = sign(length) || 1;
+    this._aimTime = aimTime;
+    this._fireTime = fireTime;
     this._endPos = this._startPos.add(vec2(this._length * this._direction, 0));
     this._midPos = this._startPos.add(this._endPos).scale(0.5);
     this._stage = 0;
-    this._stageTimer = new Timer(LASER_AIM_TIME);
+    this._stageTimer = new Timer(this._aimTime);
     this._lineEmitter = undefined;
     this.mass = 0;
     this.damping = 1;
@@ -276,10 +278,10 @@ class Laser extends EngineObject {
   }
 
   update() {
-    super.update();
+    this._refreshGeometry();
     if (this._stage == 0 && this._stageTimer.elapsed()) {
       this._stage = 1;
-      this._stageTimer.set(LASER_FIRE_TIME);
+      this._stageTimer.set(this._fireTime);
       this._startDissipateEmitter();
     }
     else if (this._stage == 1) {
@@ -293,11 +295,21 @@ class Laser extends EngineObject {
   }
 
   render() {
+    this._refreshGeometry();
     if (this._stage == 0) {
       this._renderAim();
       return;
     }
     this._renderFire();
+  }
+
+  _refreshGeometry() {
+    this._startPos = this.pos.copy();
+    this._endPos = this._startPos.add(vec2(this._length * this._direction, 0));
+    this._midPos = this._startPos.add(this._endPos).scale(0.5);
+    if (this._lineEmitter) {
+      this._lineEmitter.pos = this._midPos.copy();
+    }
   }
 
   _renderAim() {

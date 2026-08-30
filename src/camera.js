@@ -6,11 +6,45 @@ const CAMERA_MASS = 1.0;
 const CAMERA_SPRING = 0.04;
 const CAMERA_DAMPING = 0.4;
 const CAMERA_MAX_VELOCITY = vec2(10, 10);
-let cameraVelocity = vec2(0, 0);
+const cameraSpringObject = {
+  get pos() { return cameraPos; },
+  set pos(value) { cameraPos = value; },
+};
+
+class SpringDamping {
+  constructor(obj, mass, spring, damping, maxVelocity, getAxis = obj => obj.x, setAxis = (obj, value) => { obj.x = value; }) {
+    this.obj = obj;
+    this.mass = mass;
+    this.spring = spring;
+    this.damping = damping;
+    this.maxVelocity = maxVelocity;
+    this._getAxis = getAxis;
+    this._setAxis = setAxis;
+    this.velocity = vec2();
+  }
+
+  update(targetPos) {
+    const frameScale = timeDelta * 60;
+    const pos = this.obj.pos;
+    const axis = this._getAxis(pos);
+    const targetAxis = this._getAxis(targetPos);
+    const axisVelocity = this._getAxis(this.velocity);
+    const maxAxisVelocity = this._getAxis(this.maxVelocity);
+    const springForce = (targetAxis - axis) * this.spring;
+    const dampingForce = -axisVelocity * this.damping;
+    const acceleration = (springForce + dampingForce) / this.mass;
+    const nextVelocity = clamp((axisVelocity + acceleration * frameScale) * frameScale, -maxAxisVelocity, maxAxisVelocity);
+    this._setAxis(this.velocity, nextVelocity);
+    this._setAxis(pos, axis + nextVelocity);
+  }
+}
+
+let cameraSpringDamping;
 
 function initWorldCamera() {
   const targetPos = vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2);
   cameraPos = targetPos;
+  cameraSpringDamping = new SpringDamping(cameraSpringObject, CAMERA_MASS, CAMERA_SPRING, CAMERA_DAMPING, CAMERA_MAX_VELOCITY, o => o.x, (o, v) => { o.x = v; });
 }
 
 function updateWorldCamera() {
@@ -21,19 +55,10 @@ function updateWorldCamera() {
     motionOffset = MOTION_OFFSET_X_FACTOR * Math.abs(player.velocity.x) * player.getFacingX();
     motionOffset = Math.min(motionOffset, MOTION_OFFSET_X_MAX);
   }
-  const targetCameraPos = targetPos.add(vec2(motionOffset, 0));
-  const frameScale = timeDelta * 60;
-  const springForce = targetCameraPos.subtract(cameraPos).scale(CAMERA_SPRING);
-  const dampingForce = cameraVelocity.scale(-CAMERA_DAMPING);
-  const acceleration = springForce.add(dampingForce).scale(1 / CAMERA_MASS);
-  cameraVelocity = cameraVelocity.add(acceleration.scale(frameScale));
-  cameraVelocity = cameraVelocity.scale(frameScale);
-  cameraVelocity.x = clamp(cameraVelocity.x, -CAMERA_MAX_VELOCITY.x, CAMERA_MAX_VELOCITY.x);
-  cameraVelocity.y = clamp(cameraVelocity.y, -CAMERA_MAX_VELOCITY.y, CAMERA_MAX_VELOCITY.y);
-  cameraPos = cameraPos.add(cameraVelocity);
+  cameraSpringDamping.update(targetPos.add(vec2(motionOffset, 0)));
   if (cameraPos.x < VIEW_WIDTH / 2) {
     cameraPos.x = VIEW_WIDTH / 2;
-    cameraVelocity.x = max(0, cameraVelocity.x);
+    cameraSpringDamping.velocity.x = max(0, cameraSpringDamping.velocity.x);
   }
   cameraScale = worldScale;
 }

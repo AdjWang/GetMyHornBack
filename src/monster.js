@@ -4,6 +4,9 @@ const DRAGON_ANIM_SPEED = 4;  // frame/sec
 const DRAGON_FRAME_COUNT = 2;
 const DRAGON_DRAW_X_OFFSETS = [0.3, 0.3];
 const DRAGON_DRAW_Y_OFFSETS = [-0.1, 0.1];
+const DRAGON_SLIME_ATTACK_DISTANCE = 4;
+const DRAGON_SLIME_ATTACH_AIM = 0.8;
+const DRAGON_SLIME_VELOCITY = vec2(0.1, 0.1);
 // Gain when unicorn jump over slime.
 const SLIME_JUMP_GAIN = 1.2;
 const SLIME_ANIM_SPEED = 12;  // frame/sec
@@ -100,16 +103,38 @@ class DragonSlime extends EngineObject {
     this._currentFrame = 0;
     this._offsetFrame = 0;
     this._frameTimer = new Timer(1.0 / DRAGON_ANIM_SPEED);
+    this._caughtObject = undefined;
+    this._caughtSide = 1;
+    this._attackAimTimer = new Timer;
+    this._laser = undefined;
+    this._springHorizontal = new SpringDamping(this, 1, 0.06, 0.4, DRAGON_SLIME_VELOCITY, o => o.x, (o, v) => { o.x = v; });
+    this._springVertical = new SpringDamping(this, 1, 0.06, 0.4, DRAGON_SLIME_VELOCITY, o => o.y, (o, v) => { o.y = v; });
     this.gravityScale = 0.0;
     this.mirror = false;
     this.mass = 0;
     this.damping = 1;
     this.friction = 1;
-    this.setCollision();
+    this.setCollision(true, true, false);
   }
 
   update() {
+    if (this._caughtObject && !this._caughtObject.destroyed) {
+      const targetPos = this._getTargetPos();
+      this._springHorizontal.update(targetPos);
+      this._springVertical.update(targetPos);
+      if (!this._attackAimTimer.active() && this._isAtTarget(targetPos)) {
+        this._attackAimTimer.set(DRAGON_SLIME_ATTACH_AIM);
+      }
+      else if (this._attackAimTimer.active() && this._attackAimTimer.elapsed()) {
+        this._fireLaser();
+      }
+    }
+    if (this._laser) {
+      this._laser.pos = this.pos.copy();
+    }
+
     super.update();
+
     if (this._frameTimer.elapsed()) {
       this._frameTimer.set(1.0 / DRAGON_ANIM_SPEED);
       this._currentFrame = (this._currentFrame + 1) % DRAGON_FRAME_COUNT;
@@ -130,10 +155,43 @@ class DragonSlime extends EngineObject {
   }
 
   collideWithObject(o) {
+    if (o == player && !this._caughtObject) {
+      this._setTargetObject(o);
+      return false;
+    }
+    if (o == this._caughtObject) {
+      return false;
+    }
     if (o == player && o.velocity.y <= 0 && o.pos.y > this.pos.y) {
       o.groundObject = this;
     }
     return true;
+  }
+
+  _setTargetObject(o) {
+    this._caughtObject = o;
+    this._caughtSide = sign(o.pos.x - this.pos.x) || (o.getFacingX ? o.getFacingX() : 1);
+    this.setCollision(false, false, false, false);
+  }
+
+  _getTargetPos() {
+    return vec2(
+      this._caughtObject.pos.x - this._caughtSide * DRAGON_SLIME_ATTACK_DISTANCE,
+      this._caughtObject.pos.y
+    );
+  }
+
+  _isAtTarget(targetPos) {
+    return abs(this.pos.x - targetPos.x) <= DRAGON_SLIME_VELOCITY.x &&
+      abs(this.pos.y - targetPos.y) <= DRAGON_SLIME_VELOCITY.y;
+  }
+
+  _fireLaser() {
+    if (this._laser) {
+      return;
+    }
+    this._laser = new Laser(this.pos.copy(), this._caughtSide * VIEW_WIDTH * 2, 0, LASER_FIRE_TIME);
+    this.addChild(this._laser, vec2());
   }
 }
 
