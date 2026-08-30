@@ -90,7 +90,6 @@ class DashSlime extends EngineObject {
     super.update();
     if (this._state == SLIME_STATE_DASH) {
       this._addGhost();
-      this._stopDashAtCaughtPos();
     }
     if (this.pos.y < -this.size.y) {
       this.destroy();
@@ -143,7 +142,13 @@ class DashSlime extends EngineObject {
         this._state = SLIME_STATE_MANIFEST;
         return;
       }
-      this._updatePatrol();
+      const move = this._updateMoveToTarget(this._patrolTargetX, SLIME_PATROL_SPEED);
+      if (move.blocked || move.cliff) {
+        this._patrolTargetX = this._patrolTargetX == this._patrolCenterX + this._patrolSight ?
+          this._patrolCenterX - this._patrolSight :
+          this._patrolCenterX + this._patrolSight;
+        this._updateMoveToTarget(this._patrolTargetX, SLIME_PATROL_SPEED);
+      }
       return;
     }
     if (this._state == SLIME_STATE_MANIFEST) {
@@ -156,41 +161,20 @@ class DashSlime extends EngineObject {
     }
     if (this._state == SLIME_STATE_DASH) {
       this.color = new Color;
-    }
-  }
-
-  _updatePatrol() {
-    if (!this._patrolSight) {
-      this.velocity.x = 0;
-      return;
-    }
-    const leftX = this._patrolCenterX - this._patrolSight;
-    const rightX = this._patrolCenterX + this._patrolSight;
-    const patrolDirection = sign(this._patrolTargetX - this.pos.x) || (this.mirror ? 1 : -1) || 1;
-    if (this._shouldTurnBack(patrolDirection)) {
-      this._patrolTargetX = this._patrolTargetX == rightX ? leftX : rightX;
-    }
-    if (abs(this.pos.x - this._patrolTargetX) <= SLIME_PATROL_SPEED) {
-      this.pos.x = this._patrolTargetX;
-      this._patrolTargetX = this._patrolTargetX == rightX ? leftX : rightX;
-    }
-    const moveDirection = sign(this._patrolTargetX - this.pos.x) || patrolDirection;
-    this.velocity.x = moveDirection * SLIME_PATROL_SPEED;
-    this.mirror = moveDirection > 0;
-  }
-
-  _shouldTurnBack(patrolDirection) {
-    const nextPos = this.pos.add(vec2(patrolDirection * SLIME_PATROL_SPEED, 0));
-    const objects = engineObjectsCollect(nextPos, this.size);
-    for (const o of objects) {
-      if (o == this || !o.mass || !o.collideSolidObjects || !o.isSolid) {
-        continue;
+      if (!this._caughtPos) {
+        this._resetGuard();
+        return;
       }
-      return true;
+      const move = this._updateMoveToTarget(this._caughtPos.x, SLIME_DASH_SPEED);
+      if (move.blocked || move.cliff) {
+        this._resetGuard();
+        return;
+      }
+      if (move.reached) {
+        this.pos.x = this._caughtPos.x;
+        this._resetGuard();
+      }
     }
-    const frontX = this.pos.x + patrolDirection * (this.size.x / 2 + SLIME_PATROL_SPEED);
-    const footY = this.pos.y - this.size.y / 2 - .01;
-    return !getTileCollisionData(vec2(frontX, footY));
   }
 
   _getCaughtObject() {
@@ -226,12 +210,25 @@ class DashSlime extends EngineObject {
     this._caughtPos.x = clamp(this._caughtPos.x,
       this.pos.x - SLIME_DASH_MAX_DISTANCE,
       this.pos.x + SLIME_DASH_MAX_DISTANCE);
-    const dashDirection = sign(this._caughtPos.x - this.pos.x) || (this.mirror ? 1 : -1);
-    this._dashDirection = dashDirection;
-    this.mirror = dashDirection > 0;
-    this.velocity.x = dashDirection * SLIME_DASH_SPEED;
+    this._dashDirection = sign(this._caughtPos.x - this.pos.x) || (this.mirror ? 1 : -1);
+    this.mirror = this._dashDirection > 0;
+    this.velocity.x = 0;
     this._ghosts = [];
     this._state = SLIME_STATE_DASH;
+  }
+
+  _updateMoveToTarget(targetX, speed) {
+    const direction = sign(targetX - this.pos.x) || (this.mirror ? 1 : -1) || 1;
+    const nextPos = this.pos.add(vec2(direction * speed, 0));
+    const nextFootY = this.pos.y - this.size.y / 2 - .01;
+    const nextFootX = nextPos.x + direction * this.size.x / 2;
+    const blocked = engineObjectsCollect(nextPos, this.size).some(o =>
+      o != this && o.mass && o.collideSolidObjects && o.isSolid);
+    const cliff = !getTileCollisionData(vec2(nextFootX, nextFootY));
+    const reached = abs(this.pos.x - targetX) <= speed;
+    this.velocity.x = blocked || cliff ? 0 : reached ? targetX - this.pos.x : direction * speed;
+    this.mirror = direction > 0;
+    return {blocked, cliff, reached};
   }
 
   _addGhost() {
@@ -245,17 +242,6 @@ class DashSlime extends EngineObject {
     });
     if (this._ghosts.length > SLIME_GHOST_COUNT) {
       this._ghosts.shift();
-    }
-  }
-
-  _stopDashAtCaughtPos() {
-    if (!this._caughtPos) {
-      this._resetGuard();
-      return;
-    }
-    if ((this.pos.x - this._caughtPos.x) * this._dashDirection >= 0) {
-      this.pos.x = this._caughtPos.x;
-      this._resetGuard();
     }
   }
 
