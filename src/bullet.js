@@ -4,8 +4,6 @@ const BULLET_TRAIL_POINT_COUNT = 8;
 const BULLET_TRAIL_THICKNESS = 0.05;
 const BULLET_TRAIL_TIME = 0.25;
 const RAINBOW_BULLET_COLOR_SPACING = 0.05;
-const LASER_AIM_TIME = 1.0;
-const LASER_FIRE_TIME = 0.14;
 const LASER_AIM_THICKNESS_OUTER = 1.0;
 const LASER_AIM_THICKNESS_INNER = 0.12;
 const LASER_FIRE_THICKNESS_OUTER = 0.24;
@@ -258,7 +256,7 @@ class FireBall extends EngineObject {
 }
 
 class Laser extends EngineObject {
-  constructor(pos, length = 2 * VIEW_WIDTH, aimTime = LASER_AIM_TIME, fireTime = LASER_FIRE_TIME) {
+  constructor(pos, length = 2 * VIEW_WIDTH, aimTime, fireTime) {
     super(pos, vec2(0.1, 0.1));
     this._startPos = pos.copy();
     this._length = abs(length);
@@ -340,7 +338,7 @@ class Laser extends EngineObject {
       this._midPos.copy(),                         // position
       0,                                           // angle
       vec2(this._length, 0.22),                    // emitSize
-      LASER_FIRE_TIME,                             // emitTime
+      this._fireTime,                             // emitTime
       100,                                         // emitRate
       PI,                                          // emitConeAngle
       undefined,                                   // tileInfo

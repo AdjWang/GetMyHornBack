@@ -5,6 +5,7 @@ const DRAGON_FRAME_COUNT = 2;
 const DRAGON_DRAW_X_OFFSETS = [0.3, 0.3];
 const DRAGON_DRAW_Y_OFFSETS = [-0.1, 0.1];
 const DRAGON_SLIME_ATTACK_DISTANCE = 4;
+const DRAGON_SLIME_LOCK_DISTANCE = 0.5;
 const DRAGON_SLIME_AIM_TIME = 2.0;
 const DRAGON_SLIME_VELOCITY = vec2(0.3, 0.1);
 const DRAGON_SLIME_STAGE_AIM = 0;
@@ -55,21 +56,28 @@ class DragonSlime extends EngineObject {
 
   update() {
     this._updateCaughtSide();
-    if (this._caughtObject && !this._caughtObject.destroyed) {
+    if (this._caughtObject) {
       const targetPos = this._getTargetPos();
       this._springHorizontal.update(targetPos);
       this._springVertical.update(targetPos);
       if (this._stage == DRAGON_SLIME_STAGE_AIM) {
-        if (!this._aimTimer.isSet() && this._isAtTarget(targetPos)) {
-          this._aimTimer.set(DRAGON_SLIME_AIM_TIME);
-        } else if (this._aimTimer.elapsed()) {
+        if (this._isLockTarget(targetPos)) {
+          if (!this._aimTimer.isSet()) {
+            this._aimTimer.set(DRAGON_SLIME_AIM_TIME);
+          }
+        } else {
+          this._aimTimer.unset();
+        }
+        if (this._aimTimer.elapsed()) {
           this._stage = DRAGON_SLIME_STAGE_FIRE;
           this._aimTimer.unset();
           this._fireLaser();
         }
-      } else if (!this._isFiring()) {
-        this._laser = undefined;
-        this._stage = DRAGON_SLIME_STAGE_AIM;
+      } else if (this._stage == DRAGON_SLIME_STAGE_FIRE) {
+        if (!this._isFiring()) {
+          this._laser = undefined;
+          this._stage = DRAGON_SLIME_STAGE_AIM;
+        }
       }
     }
 
@@ -130,8 +138,8 @@ class DragonSlime extends EngineObject {
     }
   }
 
-  _isAtTarget(targetPos) {
-    return abs(this.pos.y - targetPos.y) <= 0.01;
+  _isLockTarget(targetPos) {
+    return abs(this.pos.y - targetPos.y) <= DRAGON_SLIME_LOCK_DISTANCE;
   }
 
   _isFiring() {
@@ -139,7 +147,10 @@ class DragonSlime extends EngineObject {
   }
 
   _fireLaser() {
-    this._laser = new Laser(this.pos.copy(), this._caughtSide * VIEW_WIDTH * 2, 0, LASER_FIRE_TIME);
+    const LASER_CHARGE_TIME = 1.0;
+    const LASER_FIRE_TIME = 0.14;
+    this._laser = new Laser(this.pos.copy(), this._caughtSide * VIEW_WIDTH * 2,
+      LASER_CHARGE_TIME, LASER_FIRE_TIME);
     this.addChild(this._laser, vec2());
   }
 }
