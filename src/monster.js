@@ -2,7 +2,8 @@
 
 const DRAGON_ANIM_SPEED = 4;  // frame/sec
 const DRAGON_FRAME_COUNT = 2;
-const DRAGON_DRAW_Y_OFFSETS = [0.0, 0.2];
+const DRAGON_DRAW_X_OFFSETS = [0.3, 0.3];
+const DRAGON_DRAW_Y_OFFSETS = [-0.1, 0.1];
 // Gain when unicorn jump over slime.
 const SLIME_JUMP_GAIN = 1.2;
 const SLIME_ANIM_SPEED = 12;  // frame/sec
@@ -120,9 +121,10 @@ class DragonSlime extends EngineObject {
     const currentFrame = this._currentFrame;
     const nextFrame = (currentFrame + 1) % DRAGON_FRAME_COUNT;
     const framePercent = smoothStep(this._offsetFrame - currentFrame);
+    const drawXOffset = lerp(DRAGON_DRAW_X_OFFSETS[nextFrame], DRAGON_DRAW_X_OFFSETS[currentFrame], framePercent);
     const drawYOffset = lerp(DRAGON_DRAW_Y_OFFSETS[nextFrame], DRAGON_DRAW_Y_OFFSETS[currentFrame], framePercent);
     const scaleY = 1;
-    const drawPos = this.pos.add(vec2(0.0, drawYOffset));
+    const drawPos = this.pos.add(vec2(drawXOffset, drawYOffset));
     drawAsepriteFrame(this._frameInfoWing[currentFrame], drawPos, scaleY, undefined, 0, this.mirror);
     drawAsepriteFrame(this._frameInfoBody[currentFrame], drawPos, scaleY, undefined, 0, this.mirror);
   }
