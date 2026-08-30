@@ -203,6 +203,7 @@ class DashSlime extends EngineObject {
       if (caughtObject) {
         this._caughtObject = caughtObject;
         this._caughtPos = caughtObject.pos.copy();
+        this._faceTargetX(this._caughtPos.x);
         this._manifestTimer.set(SLIME_MANIFEST_TIME);
         this._state = SLIME_STATE_MANIFEST;
         return;
@@ -279,7 +280,7 @@ class DashSlime extends EngineObject {
       this.pos.x - SLIME_DASH_MAX_DISTANCE,
       this.pos.x + SLIME_DASH_MAX_DISTANCE);
     this._dashDirection = sign(this._caughtPos.x - this.pos.x) || (this.mirror ? 1 : -1);
-    this.mirror = this._dashDirection > 0;
+    this._faceTargetX(this._caughtPos.x);
     this.velocity.x = 0;
     this._ghostTrail.attach(this);
     this._state = SLIME_STATE_DASH;
@@ -307,6 +308,10 @@ class DashSlime extends EngineObject {
       o.takeKnockback(forceDirection * SLIME_HIT_KNOCKBACK_CELLS);
     }
     this._resetGuard();
+  }
+
+  _faceTargetX(targetX) {
+    this.mirror = targetX > this.pos.x;
   }
 
   _resetGuard() {
