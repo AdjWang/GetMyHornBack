@@ -86,7 +86,19 @@ function screenToWorld(pos) {
 
 const LEVELS_OBJS = [
   [],
-  [],
+  [
+    [ DashSlime, screenToWorld(vec2(576, 224)), 3, 2 ],
+    [ DashSlime, screenToWorld(vec2(432, 176)), 3, 2 ],
+    [ DashSlime, screenToWorld(vec2(512, 112)), 3, 2 ],
+    [ DashSlime, screenToWorld(vec2(1968, 128)), 3, 2 ],
+    [ DashSlime, screenToWorld(vec2(2224, 128)), 3, 2 ],
+    [ DashSlime, screenToWorld(vec2(2320, 96)), 3, 2 ],
+    [ DashSlime, screenToWorld(vec2(2128, 160)), 3, 2 ],
+    [ DashSlime, screenToWorld(vec2(2912, 112)), 3, 2 ],
+    [ DashSlime, screenToWorld(vec2(2800, 144)), 3, 2 ],
+    [ DashSlime, screenToWorld(vec2(2640, 144)), 3, 2 ],
+    [ DashSlime, screenToWorld(vec2(2464, 112)), 3, 2 ]
+  ],
   [],
 ];
 

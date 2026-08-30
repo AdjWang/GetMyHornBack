@@ -61,81 +61,77 @@ function parseLevelTiles(text, fileName) {
 }
 
 function parseLevelObjects(text, level) {
-  try {
-    return parseLevelObjectsStrict(text, level);
-  } catch (error) {
-    console.error(error.message);
-    return [];
-  }
+  return parseLevelObjectsStrict(text, level);
 }
 
 function parseLevelObjectsStrict(text, level) {
   const objects = [];
-  const objectGroupRegex = /<objectgroup\b[^>]*>([\s\S]*?)<\/objectgroup>/g;
-  for (const groupMatch of text.matchAll(objectGroupRegex)) {
-    const groupText = groupMatch[1];
-    const objectRegex = /<object\b([^>]*?)(?:\/>|>([\s\S]*?)<\/object>)/g;
-    for (const objectMatch of groupText.matchAll(objectRegex)) {
-      objects.push(parseObject(objectMatch[1], objectMatch[2] || '', level.fileName));
-    }
+  const objectRegex = /<object\b([^>]*?)(?:\/>|>([\s\S]*?)<\/object>)/g;
+  for (const objectMatch of text.matchAll(objectRegex)) {
+    const lineNumber = getLineNumber(text, objectMatch.index);
+    objects.push(parseObject(objectMatch[1], objectMatch[2] || '', level.fileName, lineNumber));
   }
   return objects;
 }
 
-function parseObject(attributes, body, fileName) {
+function parseObject(attributes, body, fileName, lineNumber) {
+  const linePrefix = lineNumber ? `${fileName}:${lineNumber}` : fileName;
+  if (!/\btype="[^"]+"/.test(attributes)) {
+    throw new Error(`${linePrefix}: missing type`);
+  }
   const type = readXmlString(attributes, 'type', fileName);
   const spec = OBJECT_SPECS[type];
   if (!spec) {
-    throw new Error(`${fileName}: unsupported object type ${type}`);
+    throw new Error(`${linePrefix}: unsupported object type ${type}`);
   }
-  const x = readXmlNumber(attributes, 'x', fileName);
-  const y = readXmlNumber(attributes, 'y', fileName);
-  const properties = parseObjectProperties(body, fileName);
+  const x = readXmlNumber(attributes, 'x', fileName, linePrefix);
+  const y = readXmlNumber(attributes, 'y', fileName, linePrefix);
+  const properties = parseObjectProperties(body, fileName, linePrefix);
   const unexpected = Object.keys(properties).filter(name => !spec.includes(name));
   if (unexpected.length) {
-    throw new Error(`${fileName}: ${type} has unexpected properties ${unexpected.join(', ')}`);
+    throw new Error(`${linePrefix}: ${type} has unexpected properties ${unexpected.join(', ')}`);
   }
   const missing = spec.filter(name => !(name in properties));
   if (missing.length) {
-    throw new Error(`${fileName}: ${type} missing properties ${missing.join(', ')}`);
+    throw new Error(`${linePrefix}: ${type} missing properties ${missing.join(', ')}`);
   }
   return { type, x, y, properties };
 }
 
-function parseObjectProperties(body, fileName) {
+function parseObjectProperties(body, fileName, linePrefix) {
   const properties = {};
   const propertyRegex = /<property\b([^>]*)\/>/g;
   for (const match of body.matchAll(propertyRegex)) {
     const attributes = match[1];
-    const name = readXmlString(attributes, 'name', fileName);
-    const type = readXmlString(attributes, 'type', fileName);
-    const value = readXmlString(attributes, 'value', fileName);
-    properties[name] = parseXmlValue(value, type, fileName, name);
+    const name = readXmlString(attributes, 'name', fileName, linePrefix);
+    const type = readXmlString(attributes, 'type', fileName, linePrefix);
+    const value = readXmlString(attributes, 'value', fileName, linePrefix);
+    properties[name] = parseXmlValue(value, type, fileName, name, linePrefix);
   }
   return properties;
 }
 
-function readXmlNumber(attributes, name, fileName) {
+function readXmlNumber(attributes, name, fileName, linePrefix) {
   const match = attributes.match(new RegExp(`\\b${name}="([-+]?\\d+(?:\\.\\d+)?)"`));
   if (!match) {
-    throw new Error(`${fileName}: missing ${name}`);
+    throw new Error(`${linePrefix}: missing ${name}`);
   }
   return Number(match[1]);
 }
 
-function readXmlString(attributes, name, fileName) {
+function readXmlString(attributes, name, fileName, linePrefix) {
   const match = attributes.match(new RegExp(`\\b${name}="([^"]*)"`));
   if (!match) {
-    throw new Error(`${fileName}: missing ${name}`);
+    throw new Error(`${linePrefix}: missing ${name}`);
   }
   return match[1];
 }
 
-function parseXmlValue(value, type, fileName, name) {
+function parseXmlValue(value, type, fileName, name, linePrefix) {
   if (type == 'int' || type == 'float') {
     const number = Number(value);
     if (!Number.isFinite(number)) {
-      throw new Error(`${fileName}: invalid value for ${name}`);
+      throw new Error(`${linePrefix}: invalid value for ${name}`);
     }
     return number;
   }
@@ -143,6 +139,10 @@ function parseXmlValue(value, type, fileName, name) {
     return value == 'true';
   }
   return value;
+}
+
+function getLineNumber(text, index) {
+  return text.slice(0, index).split('\n').length;
 }
 
 function writeTileLevel(level) {
