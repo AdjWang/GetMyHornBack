@@ -6,9 +6,9 @@ const DRAGON_DRAW_X_OFFSETS = [0.3, 0.3];
 const DRAGON_DRAW_Y_OFFSETS = [-0.1, 0.1];
 const DRAGON_SLIME_ATTACK_DISTANCE = 4;
 const DRAGON_SLIME_LOCK_DISTANCE = 0.5;
-const DRAGON_SLIME_AIM_TIME = 2.0;
+const DRAGON_SLIME_LOCK_TIME = 2.0;
 const DRAGON_SLIME_VELOCITY = vec2(0.3, 0.1);
-const DRAGON_SLIME_STAGE_AIM = 0;
+const DRAGON_SLIME_STAGE_LOCK = 0;
 const DRAGON_SLIME_STAGE_FIRE = 1;
 // Gain when unicorn jump over slime.
 const SLIME_JUMP_GAIN = 1.2;
@@ -40,9 +40,9 @@ class DragonSlime extends EngineObject {
     this._frameTimer = new Timer(1.0 / DRAGON_ANIM_SPEED);
     this._caughtObject = undefined;
     this._caughtSide = 1;
-    this._stage = DRAGON_SLIME_STAGE_AIM;
-    this._aimTimer = new Timer;
-    this._aimTimer.unset();
+    this._stage = DRAGON_SLIME_STAGE_LOCK;
+    this._lockTimer = new Timer;
+    this._lockTimer.unset();
     this._laser = undefined;
     this._springHorizontal = new SpringDamping(this, 1, 0.06, 0.4, DRAGON_SLIME_VELOCITY, o => o.x, (o, v) => { o.x = v; });
     this._springVertical = new SpringDamping(this, 1, 0.06, 0.4, DRAGON_SLIME_VELOCITY, o => o.y, (o, v) => { o.y = v; });
@@ -60,23 +60,23 @@ class DragonSlime extends EngineObject {
       const targetPos = this._getTargetPos();
       this._springHorizontal.update(targetPos);
       this._springVertical.update(targetPos);
-      if (this._stage == DRAGON_SLIME_STAGE_AIM) {
+      if (this._stage == DRAGON_SLIME_STAGE_LOCK) {
         if (this._isLockTarget(targetPos)) {
-          if (!this._aimTimer.isSet()) {
-            this._aimTimer.set(DRAGON_SLIME_AIM_TIME);
+          if (!this._lockTimer.isSet()) {
+            this._lockTimer.set(DRAGON_SLIME_LOCK_TIME);
           }
         } else {
-          this._aimTimer.unset();
+          this._lockTimer.unset();
         }
-        if (this._aimTimer.elapsed()) {
+        if (this._lockTimer.elapsed()) {
           this._stage = DRAGON_SLIME_STAGE_FIRE;
-          this._aimTimer.unset();
+          this._lockTimer.unset();
           this._fireLaser();
         }
       } else if (this._stage == DRAGON_SLIME_STAGE_FIRE) {
         if (!this._isFiring()) {
           this._laser = undefined;
-          this._stage = DRAGON_SLIME_STAGE_AIM;
+          this._stage = DRAGON_SLIME_STAGE_LOCK;
         }
       }
     }
@@ -120,8 +120,8 @@ class DragonSlime extends EngineObject {
 
   _setTargetObject(o) {
     this._caughtObject = o;
-    this._stage = DRAGON_SLIME_STAGE_AIM;
-    this._aimTimer.unset();
+    this._stage = DRAGON_SLIME_STAGE_LOCK;
+    this._lockTimer.unset();
   }
 
   _getTargetPos() {

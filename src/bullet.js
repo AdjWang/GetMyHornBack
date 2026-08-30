@@ -4,11 +4,11 @@ const BULLET_TRAIL_POINT_COUNT = 8;
 const BULLET_TRAIL_THICKNESS = 0.05;
 const BULLET_TRAIL_TIME = 0.25;
 const RAINBOW_BULLET_COLOR_SPACING = 0.05;
-const LASER_AIM_THICKNESS_OUTER = 1.0;
-const LASER_AIM_THICKNESS_INNER = 0.12;
+const LASER_CHARGE_THICKNESS_OUTER = 1.0;
+const LASER_CHARGE_THICKNESS_INNER = 0.12;
 const LASER_FIRE_THICKNESS_OUTER = 0.24;
 const LASER_FIRE_THICKNESS_INNER = 0.10;
-const LASER_AIM_ALPHA = 0.2;
+const LASER_CHARGE_ALPHA = 0.2;
 const LASER_FIRE_ALPHA = 0.7;
 const SOUND_RAINBOW_HIT = new Sound([1.3,.15,224,.01,,.16,,1.5,-8,-13,,,,.2,,.3,,.64,.01,,868]);
 const SOUND_RAINBOW_HIT_VOLUME = 0.7;
@@ -256,19 +256,19 @@ class FireBall extends EngineObject {
 }
 
 class Laser extends EngineObject {
-  constructor(pos, length = 2 * VIEW_WIDTH, aimTime, fireTime) {
+  constructor(pos, length = 2 * VIEW_WIDTH, chargeTime, fireTime) {
     super(pos, vec2(0.1, 0.1));
     this._startPos = pos.copy();
     this._length = abs(length);
     this._direction = sign(length) || 1;
-    this._aimTime = aimTime;
+    this._chargeTime = chargeTime;
     this._fireTime = fireTime;
     this._endPos = this._startPos.add(vec2(this._length * this._direction, 0));
     this._midPos = this._startPos.add(this._endPos).scale(0.5);
     this.STAGE_CHARGE = 0;
     this.STAGE_FIRE = 1;
     this._stage = this.STAGE_CHARGE;
-    this._stageTimer = new Timer(this._aimTime);
+    this._stageTimer = new Timer(this._chargeTime);
     this._lineEmitter = undefined;
     this.mass = 0;
     this.damping = 1;
@@ -296,7 +296,7 @@ class Laser extends EngineObject {
   render() {
     this._refreshGeometry();
     if (this._stage == this.STAGE_CHARGE) {
-      this._renderAim();
+      this._renderCharge();
       return;
     }
     this._renderFire();
@@ -311,11 +311,11 @@ class Laser extends EngineObject {
     }
   }
 
-  _renderAim() {
+  _renderCharge() {
     const p = smoothStep(this._stageTimer.getPercent());
-    const outerThickness = lerp(LASER_AIM_THICKNESS_OUTER, LASER_AIM_THICKNESS_INNER, p);
-    const laserColor = new Color(1, 1 - p, 1 - p, LASER_AIM_ALPHA);
-    this._drawLaser(LASER_AIM_ALPHA, outerThickness, LASER_AIM_THICKNESS_INNER, laserColor);
+    const outerThickness = lerp(LASER_CHARGE_THICKNESS_OUTER, LASER_CHARGE_THICKNESS_INNER, p);
+    const laserColor = new Color(1, 1 - p, 1 - p, LASER_CHARGE_ALPHA);
+    this._drawLaser(LASER_CHARGE_ALPHA, outerThickness, LASER_CHARGE_THICKNESS_INNER, laserColor);
   }
 
   _renderFire() {
