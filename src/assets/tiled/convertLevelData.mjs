@@ -9,6 +9,7 @@ const watchMode = process.argv.includes('--watch');
 
 const OBJECT_SPECS = {
   DashSlime: ['patrolSight', 'dashSight'],
+  DragonSlime: [],
 };
 
 function readLevels() {
@@ -169,7 +170,7 @@ function formatLevelObjectList(level) {
 function formatObjectEntry(object) {
   const spec = OBJECT_SPECS[object.type];
   const args = [
-    `screenToWorld(vec2(${object.x}, ${object.y}))`,
+    `tiledScreenToWorld(vec2(${object.x}, ${object.y}))`,
     ...spec.map(name => formatLiteral(object.properties[name])),
   ];
   return `    [ ${object.type}, ${args.join(', ')} ]`;

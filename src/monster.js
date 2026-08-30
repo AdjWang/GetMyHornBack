@@ -89,7 +89,7 @@ class GhostTrail extends EngineObject {
   }
 }
 
-class Dragon extends EngineObject {
+class DragonSlime extends EngineObject {
   constructor(pos) {
     const colliderSize = vec2(0.9, 0.9);
     super(pos, colliderSize, undefined, 0, new Color, RENDER_ORDER_CHARACTER);
@@ -99,7 +99,9 @@ class Dragon extends EngineObject {
     this._currentFrame = 0;
     this._offsetFrame = 0;
     this._frameTimer = new Timer(1.0 / DRAGON_ANIM_SPEED);
+    this.gravityScale = 0.0;
     this.mirror = false;
+    this.mass = 1;
     this.damping = 1;
     this.friction = 1;
     this.setCollision();
