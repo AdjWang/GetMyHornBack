@@ -267,7 +267,9 @@ class Laser extends EngineObject {
     this._fireTime = fireTime;
     this._endPos = this._startPos.add(vec2(this._length * this._direction, 0));
     this._midPos = this._startPos.add(this._endPos).scale(0.5);
-    this._stage = 0;
+    this.STAGE_CHARGE = 0;
+    this.STAGE_FIRE = 1;
+    this._stage = this.STAGE_CHARGE;
     this._stageTimer = new Timer(this._aimTime);
     this._lineEmitter = undefined;
     this.mass = 0;
@@ -279,12 +281,11 @@ class Laser extends EngineObject {
 
   update() {
     this._refreshGeometry();
-    if (this._stage == 0 && this._stageTimer.elapsed()) {
-      this._stage = 1;
+    if (this._stage == this.STAGE_CHARGE && this._stageTimer.elapsed()) {
+      this._stage = this.STAGE_FIRE;
       this._stageTimer.set(this._fireTime);
-      this._startDissipateEmitter();
-    }
-    else if (this._stage == 1) {
+      this._updateDissipateEmitter();
+    } else if (this._stage == this.STAGE_FIRE) {
       if (this._lineEmitter) {
         this._lineEmitter.emitParticle();
       }
@@ -296,7 +297,7 @@ class Laser extends EngineObject {
 
   render() {
     this._refreshGeometry();
-    if (this._stage == 0) {
+    if (this._stage == this.STAGE_CHARGE) {
       this._renderAim();
       return;
     }
@@ -331,7 +332,7 @@ class Laser extends EngineObject {
     drawLine(this._startPos, this._endPos, innerThickness, innerColor);
   }
 
-  _startDissipateEmitter() {
+  _updateDissipateEmitter() {
     if (this._lineEmitter) {
       return;
     }
