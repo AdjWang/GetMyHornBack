@@ -100,7 +100,7 @@ const LEVELS_OBJS = [
     [ DashSlime, tiledScreenToWorld(vec2(2464, 112)), 3, 2 ],
     [ DragonSlime, tiledScreenToWorld(vec2(3072, 128)) ],
     [ DragonSlime, tiledScreenToWorld(vec2(3344, 160)) ],
-    [ DragonSlime, tiledScreenToWorld(vec2(3200, 192)) ]
+    [ DragonSlime, tiledScreenToWorld(vec2(3216, 176)) ]
   ],
   [],
 ];

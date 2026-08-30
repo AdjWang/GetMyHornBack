@@ -101,7 +101,7 @@ class DragonSlime extends EngineObject {
     this._frameTimer = new Timer(1.0 / DRAGON_ANIM_SPEED);
     this.gravityScale = 0.0;
     this.mirror = false;
-    this.mass = 1;
+    this.mass = 0;
     this.damping = 1;
     this.friction = 1;
     this.setCollision();
@@ -125,6 +125,13 @@ class DragonSlime extends EngineObject {
     const drawPos = this.pos.add(vec2(0.0, drawYOffset));
     drawAsepriteFrame(this._frameInfoWing[currentFrame], drawPos, scaleY, undefined, 0, this.mirror);
     drawAsepriteFrame(this._frameInfoBody[currentFrame], drawPos, scaleY, undefined, 0, this.mirror);
+  }
+
+  collideWithObject(o) {
+    if (o == player && o.velocity.y <= 0 && o.pos.y > this.pos.y) {
+      o.groundObject = this;
+    }
+    return true;
   }
 }
 
