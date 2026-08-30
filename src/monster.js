@@ -48,7 +48,7 @@ class DragonSlime extends EngineObject {
     this._springHorizontal = new SpringDamping(this, 1, 0.06, 0.4, DRAGON_SLIME_VELOCITY, o => o.x, (o, v) => { o.x = v; });
     this._springVertical = new SpringDamping(this, 1, 0.06, 0.4, DRAGON_SLIME_VELOCITY, o => o.y, (o, v) => { o.y = v; });
     this.gravityScale = 0.0;
-    this.mirror = false;
+    this.mirror = true;
     this.mass = 0;
     this.damping = 1;
     this.friction = 1;
@@ -56,7 +56,6 @@ class DragonSlime extends EngineObject {
   }
 
   update() {
-    this._updateCaughtSide();
     if (this._caughtObject) {
       const lockTargetPos = this._getTargetPos();
       const motionTargetPos = this._stage == DRAGON_SLIME_STAGE_FIRE && this._fireLockY !== undefined ?
@@ -137,14 +136,6 @@ class DragonSlime extends EngineObject {
       this._caughtObject.pos.x - this._caughtSide * DRAGON_SLIME_ATTACK_DISTANCE,
       this._caughtObject.pos.y
     );
-  }
-
-  _updateCaughtSide() {
-    if (this._caughtObject) {
-      const o = this._caughtObject;
-      this._caughtSide = sign(o.pos.x - this.pos.x) || (o.getFacingX ? o.getFacingX() : 1);
-      this.mirror = this._caughtSide > 0;
-    }
   }
 
   _isLockTarget(targetPos) {
