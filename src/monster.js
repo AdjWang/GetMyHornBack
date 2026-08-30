@@ -100,7 +100,8 @@ class DragonSlime extends EngineObject {
     const currentFrame = this._currentFrame;
     const nextFrame = (currentFrame + 1) % DRAGON_SLIME_FRAME_COUNT;
     const framePercent = smoothStep(this._offsetFrame - currentFrame);
-    const drawXOffset = lerp(DRAGON_SLIME_DRAW_X_OFFSETS[nextFrame], DRAGON_SLIME_DRAW_X_OFFSETS[currentFrame], framePercent);
+    const drawXOffset = lerp(DRAGON_SLIME_DRAW_X_OFFSETS[nextFrame], DRAGON_SLIME_DRAW_X_OFFSETS[currentFrame], framePercent)
+      * (this.mirror ? -1 : 1);
     const drawYOffset = lerp(DRAGON_SLIME_DRAW_Y_OFFSETS[nextFrame], DRAGON_SLIME_DRAW_Y_OFFSETS[currentFrame], framePercent);
     const scaleY = 1;
     const drawPos = this.pos.add(vec2(drawXOffset, drawYOffset));
@@ -142,6 +143,7 @@ class DragonSlime extends EngineObject {
     if (this._caughtObject) {
       const o = this._caughtObject;
       this._caughtSide = sign(o.pos.x - this.pos.x) || (o.getFacingX ? o.getFacingX() : 1);
+      this.mirror = this._caughtSide > 0;
     }
   }
 

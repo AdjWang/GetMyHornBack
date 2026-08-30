@@ -297,9 +297,9 @@ class Laser extends EngineObject {
     this._refreshGeometry();
     if (this._stage == this.STAGE_CHARGE) {
       this._renderCharge();
-      return;
+    } else if (this._stage == this.STAGE_FIRE) {
+      this._renderFire();
     }
-    this._renderFire();
   }
 
   _refreshGeometry() {
