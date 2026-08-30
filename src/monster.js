@@ -44,6 +44,7 @@ class DragonSlime extends EngineObject {
     this._lockTimer = new Timer;
     this._lockTimer.unset();
     this._laser = undefined;
+    this._fireLockY = undefined;
     this._springHorizontal = new SpringDamping(this, 1, 0.06, 0.4, DRAGON_SLIME_VELOCITY, o => o.x, (o, v) => { o.x = v; });
     this._springVertical = new SpringDamping(this, 1, 0.06, 0.4, DRAGON_SLIME_VELOCITY, o => o.y, (o, v) => { o.y = v; });
     this.gravityScale = 0.0;
@@ -57,11 +58,14 @@ class DragonSlime extends EngineObject {
   update() {
     this._updateCaughtSide();
     if (this._caughtObject) {
-      const targetPos = this._getTargetPos();
-      this._springHorizontal.update(targetPos);
-      this._springVertical.update(targetPos);
+      const lockTargetPos = this._getTargetPos();
+      const motionTargetPos = this._stage == DRAGON_SLIME_STAGE_FIRE && this._fireLockY !== undefined ?
+        vec2(lockTargetPos.x, this._fireLockY) :
+        lockTargetPos;
+      this._springHorizontal.update(motionTargetPos);
+      this._springVertical.update(motionTargetPos);
       if (this._stage == DRAGON_SLIME_STAGE_LOCK) {
-        if (this._isLockTarget(targetPos)) {
+        if (this._isLockTarget(lockTargetPos)) {
           if (!this._lockTimer.isSet()) {
             this._lockTimer.set(DRAGON_SLIME_LOCK_TIME);
           }
@@ -71,12 +75,14 @@ class DragonSlime extends EngineObject {
         if (this._lockTimer.elapsed()) {
           this._stage = DRAGON_SLIME_STAGE_FIRE;
           this._lockTimer.unset();
+          this._fireLockY = this.pos.y;
           this._fireLaser();
         }
       } else if (this._stage == DRAGON_SLIME_STAGE_FIRE) {
         if (!this._isFiring()) {
           this._laser = undefined;
           this._stage = DRAGON_SLIME_STAGE_LOCK;
+          this._fireLockY = undefined;
         }
       }
     }
@@ -122,6 +128,7 @@ class DragonSlime extends EngineObject {
     this._caughtObject = o;
     this._stage = DRAGON_SLIME_STAGE_LOCK;
     this._lockTimer.unset();
+    this._fireLockY = undefined;
   }
 
   _getTargetPos() {
