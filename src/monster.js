@@ -3,6 +3,8 @@
 const DRAGON_ANIM_SPEED = 4;  // frame/sec
 const DRAGON_FRAME_COUNT = 2;
 const DRAGON_DRAW_Y_OFFSETS = [0.0, 0.2];
+// Gain when unicorn jump over slime.
+const SLIME_JUMP_GAIN = 1.2;
 const SLIME_ANIM_SPEED = 12;  // frame/sec
 const SLIME_STATE_GUARD = 0;
 const SLIME_STATE_MANIFEST = 1;
@@ -116,6 +118,10 @@ class DashSlime extends EngineObject {
       return false;
     }
     return true;
+  }
+
+  get_jump_gain() {
+    return SLIME_JUMP_GAIN;
   }
 
   _updateBehavior() {

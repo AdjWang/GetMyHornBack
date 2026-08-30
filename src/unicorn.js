@@ -378,14 +378,14 @@ class Unicorn extends EngineObject {
   }
 
   _startJump(clearGroundObject) {
-    destroyOneShotCellsAtFoot(this.pos, this.size);
-    this.velocity.y = UNICORN_JUMP_INITIAL_SPEED;
-    this._jumpNeedsCornerRestore = true;
-    // DEBUG
-    console.log(this.groundObject);
+    const groundObject = this.groundObject;
+    const jumpGain = groundObject && groundObject.get_jump_gain ? groundObject.get_jump_gain() : 1;
     if (clearGroundObject) {
       this.groundObject = 0;
     }
+    destroyOneShotCellsAtFoot(this.pos, this.size);
+    this.velocity.y = UNICORN_JUMP_INITIAL_SPEED * jumpGain;
+    this._jumpNeedsCornerRestore = true;
     this._jumpBufferTimer.unset();
     this._coyoteTimer.unset();
     this._emitDust();
