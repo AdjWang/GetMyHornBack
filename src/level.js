@@ -189,18 +189,8 @@ async function loadLevel(idx) {
   tileLayer.tileInfo = tile(0, 16, TEXTURE_INDEX_TILESET, 0);
   tileLayer.redraw();
 
-  // DEBUG
   LEVELS_OBJS[idx].forEach(objArgs => {
-    if (!Array.isArray(objArgs) || !objArgs.length) {
-      throw new Error(`LEVELS_OBJS[${idx}] has an invalid object entry`);
-    }
     const [Constructor, ...args] = objArgs;
-    if (typeof Constructor != 'function') {
-      throw new Error(`LEVELS_OBJS[${idx}] has an invalid constructor`);
-    }
-    if (args.some(arg => arg === undefined)) {
-      throw new Error(`LEVELS_OBJS[${idx}] ${Constructor.name} has undefined argument`);
-    }
     new Constructor(...args);
   });
   // new DashSlime(vec2(576/16 + 0.5, 16 - 224/16 - 0.5), 3, 2);
