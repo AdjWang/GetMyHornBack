@@ -25,8 +25,8 @@
   "scripts": {
     "start": "npx http-server -p 8000 src",
     "build:res": "node src/convertAseprite.mjs",
-    "build:level": "node src/assets/tiled/levelData.mjs",
-    "watch:level": "node src/assets/tiled/levelData.mjs --watch",
+    "build:level": "node src/assets/tiled/convertLevelData.mjs",
+    "watch:level": "node src/assets/tiled/convertLevelData.mjs --watch",
     "build": "node src/build.mjs",
     "build:engine": "node src/engine/engineBuild.mjs"
   },
