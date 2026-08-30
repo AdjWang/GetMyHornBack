@@ -189,11 +189,11 @@ async function loadLevel(idx) {
     for (let x = 0; x < tileCollisionSize.x; x++) {
       let pos = vec2(x, tileCollisionSize.y - y - 1);
       // set tile data
-      const tile_id = LEVELS[idx][y * levelSize.x + pos.x];
-      if (tile_id == 0) {
+      const tileId = LEVELS[idx][y * levelSize.x + pos.x];
+      if (tileId == 0) {
         continue;
       }
-      const data = decodeTiledTile(tile_id);
+      const data = decodeTiledTile(tileId);
       tileLayer.setData(pos, data);
       setTileCollisionData(pos, 1);
     }

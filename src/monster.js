@@ -147,11 +147,26 @@ class DragonSlime extends EngineObject {
   }
 
   _fireLaser() {
+    const LASER_LENGTH = 25;
     const LASER_CHARGE_TIME = 1.0;
     const LASER_FIRE_TIME = 0.14;
-    this._laser = new Laser(this.pos.copy(), this._caughtSide * VIEW_WIDTH * 2,
-      LASER_CHARGE_TIME, LASER_FIRE_TIME);
+    this._laser = new Laser(this.pos.copy(), LASER_LENGTH, LASER_CHARGE_TIME, LASER_FIRE_TIME,
+      this._fireLaserCollide);
     this.addChild(this._laser, vec2());
+  }
+
+  _fireLaserCollide(o) {
+  // TODO: fix
+  //   if (!tileLayer || !o || !o.arrayCheck(tileLayer.size)) {
+  //     return;
+  //   }
+  //   const data = tileLayer.getData(o);
+  //   if (!data || data.tile != SPIKEWEED_TILE_ID) {
+  //     return;
+  //   }
+  //   tileLayer.setData(o, new TileLayerData);
+  //   setTileCollisionData(o, 0);
+  //   tileLayer.redraw();
   }
 }
 

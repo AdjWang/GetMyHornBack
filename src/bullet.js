@@ -256,13 +256,14 @@ class FireBall extends EngineObject {
 }
 
 class Laser extends EngineObject {
-  constructor(pos, length = 2 * VIEW_WIDTH, chargeTime, fireTime) {
+  constructor(pos, length, chargeTime, fireTime, fireCollide = (obj) => { }) {
     super(pos, vec2(0.1, 0.1));
     this._startPos = pos.copy();
     this._length = abs(length);
     this._direction = sign(length) || 1;
     this._chargeTime = chargeTime;
     this._fireTime = fireTime;
+    this._fireCollide = fireCollide;
     this._endPos = this._startPos.add(vec2(this._length * this._direction, 0));
     this._midPos = this._startPos.add(this._endPos).scale(0.5);
     this.STAGE_CHARGE = 0;
@@ -284,6 +285,7 @@ class Laser extends EngineObject {
       this._stageTimer.set(this._fireTime);
       this._updateDissipateEmitter();
     } else if (this._stage == this.STAGE_FIRE) {
+      this._raycastFireCollide();
       if (this._lineEmitter) {
         this._lineEmitter.emitParticle();
       }
@@ -364,6 +366,20 @@ class Laser extends EngineObject {
       false                                        // localSpace
     );
     this._lineEmitter.trailScale = 0.5;
+  }
+
+  _raycastFireCollide() {
+    const hitObjects = engineObjectsRaycast(this._startPos, this._endPos);
+    for (const o of hitObjects) {
+      if (o == this || o == this.parent || o == this._lineEmitter) {
+        continue;
+      }
+      this._fireCollide(o);
+    }
+    const hitTilePos = tileCollisionRaycast(this._startPos, this._endPos);
+    if (hitTilePos) {
+      this._fireCollide(hitTilePos);
+    }
   }
 
   destroy() {
