@@ -166,7 +166,11 @@ class DashSlime extends EngineObject {
         return;
       }
       const move = this._updateMoveToTarget(this._caughtPos.x, SLIME_DASH_SPEED);
-      if (move.blocked || move.cliff) {
+      if (move.blocked) {
+        this._hitCaughtObject(this._caughtObject);
+        return;
+      }
+      if (move.cliff) {
         this._resetGuard();
         return;
       }
@@ -223,7 +227,7 @@ class DashSlime extends EngineObject {
     const nextFootY = this.pos.y - this.size.y / 2 - .01;
     const nextFootX = nextPos.x + direction * this.size.x / 2;
     const blocked = engineObjectsCollect(nextPos, this.size).some(o =>
-      o != this && o.mass && o.collideSolidObjects && o.isSolid);
+      o != this && o != this._caughtObject && o.mass && o.collideSolidObjects && o.isSolid);
     const cliff = !getTileCollisionData(vec2(nextFootX, nextFootY));
     const reached = abs(this.pos.x - targetX) <= speed;
     this.velocity.x = blocked || cliff ? 0 : reached ? targetX - this.pos.x : direction * speed;
@@ -246,7 +250,9 @@ class DashSlime extends EngineObject {
   }
 
   _hitCaughtObject(o) {
-    if (o.takeKnockback) {
+    const verticalDelta = abs(o.pos.y - this.pos.y);
+    const verticalThreshold = this.size.y / 2 - this.size.y * 0.05;
+    if (o.takeKnockback && verticalDelta < verticalThreshold) {
       const forceDirection = sign(o.pos.x - this.pos.x) || sign(this.velocity.x) || 1;
       o.takeKnockback(forceDirection * SLIME_HIT_KNOCKBACK_CELLS);
     }
