@@ -147,7 +147,6 @@ class DashSlime extends EngineObject {
         this._patrolTargetX = this._patrolTargetX == this._patrolCenterX + this._patrolSight ?
           this._patrolCenterX - this._patrolSight :
           this._patrolCenterX + this._patrolSight;
-        this._updateMoveToTarget(this._patrolTargetX, SLIME_PATROL_SPEED);
       }
       return;
     }
@@ -226,7 +225,7 @@ class DashSlime extends EngineObject {
     const nextPos = this.pos.add(vec2(direction * speed, 0));
     const nextFootY = this.pos.y - this.size.y / 2 - .01;
     const nextFootX = nextPos.x + direction * this.size.x / 2;
-    const blocked = engineObjectsCollect(nextPos, this.size).some(o =>
+    const blocked = engineObjectsRaycast(this.pos, nextPos).some(o =>
       o != this && o != this._caughtObject && o.mass && o.collideSolidObjects && o.isSolid);
     const cliff = !getTileCollisionData(vec2(nextFootX, nextFootY));
     const reached = abs(this.pos.x - targetX) <= speed;
