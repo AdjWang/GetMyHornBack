@@ -82,8 +82,13 @@ class DragonSlime extends EngineObject {
     const drawYOffset = lerp(DRAGON_DRAW_Y_OFFSETS[nextFrame], DRAGON_DRAW_Y_OFFSETS[currentFrame], framePercent);
     const scaleY = 1;
     const drawPos = this.pos.add(vec2(drawXOffset, drawYOffset));
-    drawAsepriteFrame(this._frameInfoWing[currentFrame], drawPos, scaleY, undefined, 0, this.mirror);
-    drawAsepriteFrame(this._frameInfoBody[currentFrame], drawPos, scaleY, undefined, 0, this.mirror);
+    if (currentFrame == 0) {
+      drawAsepriteFrame(this._frameInfoWing[currentFrame], drawPos, scaleY, undefined, 0, this.mirror);
+      drawAsepriteFrame(this._frameInfoBody[currentFrame], drawPos, scaleY, undefined, 0, this.mirror);
+    } else {
+      drawAsepriteFrame(this._frameInfoBody[currentFrame], drawPos, scaleY, undefined, 0, this.mirror);
+      drawAsepriteFrame(this._frameInfoWing[currentFrame], drawPos, scaleY, undefined, 0, this.mirror);
+    }
   }
 
   collideWithObject(o) {
