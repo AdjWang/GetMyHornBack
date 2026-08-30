@@ -9,7 +9,7 @@
 
 // game variables
 let backgroundMusic;
-let backgroundMusicVolume = 0.1;
+let backgroundMusicVolume = 0.0;
 
 // WebGL can be removed to save ~963 bytes - see "Disabling WebGL" in README.md
 
@@ -29,11 +29,16 @@ async function gameInit() {
 function gameUpdate() {
   worldScale = min(mainCanvasSize.x / VIEW_WIDTH, mainCanvasSize.y / VIEW_HEIGHT);
   updateWorldCamera();
-  updateLevelEvent();
   background.updatePos(cameraPos);
   foreground.updatePos(cameraPos);
   if (backgroundMusic) {
     backgroundMusic.setVolume(backgroundMusicVolume);
+  }
+  if (mouseIsDown(0)) {
+    // const speed = 0.25;
+    // new RainbowBeam(vec2(107, 6.5), undefined, vec2(-speed, -speed), 1, 40, 6);
+    const pos = vec2(cameraPos.x - VIEW_WIDTH / 2, 6.5);
+    new Laser(pos);
   }
 }
 

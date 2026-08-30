@@ -4,6 +4,14 @@ const BULLET_TRAIL_POINT_COUNT = 8;
 const BULLET_TRAIL_THICKNESS = 0.05;
 const BULLET_TRAIL_TIME = 0.25;
 const RAINBOW_BULLET_COLOR_SPACING = 0.05;
+const LASER_AIM_TIME = 1.0;
+const LASER_FIRE_TIME = 0.14;
+const LASER_AIM_THICKNESS_OUTER = 1.0;
+const LASER_AIM_THICKNESS_INNER = 0.12;
+const LASER_FIRE_THICKNESS_OUTER = 0.24;
+const LASER_FIRE_THICKNESS_INNER = 0.10;
+const LASER_AIM_ALPHA = 0.2;
+const LASER_FIRE_ALPHA = 0.7;
 const SOUND_RAINBOW_HIT = new Sound([1.3,.15,224,.01,,.16,,1.5,-8,-13,,,,.2,,.3,,.64,.01,,868]);
 const SOUND_RAINBOW_HIT_VOLUME = 0.7;
 const RAINBOW_COLORS = [
@@ -246,5 +254,112 @@ class FireBall extends EngineObject {
 
   _explode() {
     this.destroy();
+  }
+}
+
+class Laser extends EngineObject {
+  constructor(pos, length = 2 * VIEW_WIDTH) {
+    super(pos, vec2(0.1, 0.1));
+    this._startPos = pos.copy();
+    this._length = abs(length);
+    this._direction = sign(length) || 1;
+    this._endPos = this._startPos.add(vec2(this._length * this._direction, 0));
+    this._midPos = this._startPos.add(this._endPos).scale(0.5);
+    this._stage = 0;
+    this._stageTimer = new Timer(LASER_AIM_TIME);
+    this._lineEmitter = undefined;
+    this.mass = 0;
+    this.damping = 1;
+    this.gravityScale = 0;
+    this.renderOrder = RENDER_ORDER_BULLET;
+    this.setCollision(false, false, false, false);
+  }
+
+  update() {
+    super.update();
+    if (this._stage == 0 && this._stageTimer.elapsed()) {
+      this._stage = 1;
+      this._stageTimer.set(LASER_FIRE_TIME);
+      this._startDissipateEmitter();
+    }
+    else if (this._stage == 1) {
+      if (this._lineEmitter) {
+        this._lineEmitter.emitParticle();
+      }
+      if (this._stageTimer.elapsed()) {
+        this.destroy();
+      }
+    }
+  }
+
+  render() {
+    if (this._stage == 0) {
+      this._renderAim();
+      return;
+    }
+    this._renderFire();
+  }
+
+  _renderAim() {
+    const p = smoothStep(this._stageTimer.getPercent());
+    const outerThickness = lerp(LASER_AIM_THICKNESS_OUTER, LASER_AIM_THICKNESS_INNER, p);
+    const laserColor = new Color(1, 1 - p, 1 - p, LASER_AIM_ALPHA);
+    this._drawLaser(LASER_AIM_ALPHA, outerThickness, LASER_AIM_THICKNESS_INNER, laserColor);
+  }
+
+  _renderFire() {
+    const color = new Color(1, 1, 1, LASER_FIRE_ALPHA);
+    this._drawLaser(LASER_FIRE_ALPHA, LASER_FIRE_THICKNESS_OUTER, LASER_FIRE_THICKNESS_INNER, color);
+  }
+
+  _drawLaser(alpha, outerThickness, innerThickness, color) {
+    const outerColor = new Color(color.r, color.g, color.b, alpha * 0.5);
+    const innerColor = new Color(color.r, color.g, color.b, alpha);
+    drawLine(this._startPos, this._endPos, outerThickness, outerColor);
+    drawLine(this._startPos, this._endPos, innerThickness, innerColor);
+  }
+
+  _startDissipateEmitter() {
+    if (this._lineEmitter) {
+      return;
+    }
+    this._lineEmitter = new ParticleEmitter(
+      this._midPos.copy(),                         // position
+      0,                                           // angle
+      vec2(this._length, 0.22),                    // emitSize
+      LASER_FIRE_TIME,                             // emitTime
+      100,                                         // emitRate
+      PI,                                          // emitConeAngle
+      undefined,                                   // tileInfo
+      new Color(1, 1, 1, 0.7),                    // colorStartA
+      new Color(1, 1, 1, 0.9),                    // colorStartB
+      new Color(1, 0.2, 0.2, 0),                  // colorEndA
+      new Color(1, 0.2, 0.2, 0),                  // colorEndB
+      0.12,                                        // particleTime
+      0.2,                                        // sizeStart
+      0.0,                                         // sizeEnd
+      0.1,                                        // speed
+      0.0,                                         // angleSpeed
+      1.0,                                         // damping
+      1.0,                                         // angleDamping
+      0.0,                                         // gravityScale
+      0,                                           // particleConeAngle
+      0.7,                                         // fadeRate
+      0.15,                                        // randomness
+      false,                                       // collideTiles
+      false,                                       // additive
+      true,                                        // randomColorLinear
+      1e9,                                         // renderOrder
+      false                                        // localSpace
+    );
+    this._lineEmitter.trailScale = 0.5;
+  }
+
+  destroy() {
+    if (this._lineEmitter) {
+      this._lineEmitter.destroy();
+      this._lineEmitter = undefined;
+    }
+    super.destroy();
   }
 }
