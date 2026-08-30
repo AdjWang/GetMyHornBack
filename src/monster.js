@@ -21,6 +21,74 @@ const SLIME_GHOST_ALPHA = 0.45;
 const JUMP_SLIME_JUMP_TIME = 1.2;
 const JUMP_SLIME_JUMP_HEIGHT = 3.0;
 
+class GhostTrail extends EngineObject {
+  constructor(length, alpha) {
+    super(vec2(), vec2(), undefined, 0, new Color, RENDER_ORDER_CHARACTER - .01);
+    this._obj = undefined;
+    this._length = length;
+    this._alpha = alpha;
+    this._ghosts = [];
+    this.mass = 0;
+    this.gravityScale = 0;
+    this.damping = 1;
+    this.friction = 1;
+    this.setCollision(false, false, false, false);
+  }
+
+  attach(obj) {
+    this._obj = obj;
+    this._ghosts = [];
+    this.renderOrder = obj.renderOrder - .01;
+  }
+
+  detach() {
+    this._obj = undefined;
+    this._ghosts = [];
+  }
+
+  update() {
+    if (!this._obj || this._obj.destroyed) {
+      return;
+    }
+    this._ghosts.push(this._sampleGhost());
+    if (this._ghosts.length > this._length) {
+      this._ghosts.shift();
+    }
+  }
+
+  render() {
+    if (!this._obj || this._obj.destroyed) {
+      return;
+    }
+    for (let i = 0; i < this._ghosts.length; ++i) {
+      const ghost = this._ghosts[i];
+      const alpha = this._alpha * (i + 1) / this._ghosts.length;
+      drawTile(ghost.pos, ghost.size, ghost.tileInfo, new Color(1, 1, 1, alpha), ghost.angle, ghost.mirror);
+    }
+  }
+
+  _sampleGhost() {
+    const obj = this._obj;
+    if (obj._scaleOffsetY && obj._currentFrame != undefined) {
+      const size = vec2(obj.size.x, obj.size.y * obj._scaleOffsetY[obj._currentFrame]);
+      return {
+        pos: obj.pos.add(vec2(0, (size.y - obj.size.y) / 2)),
+        size,
+        angle: obj.angle,
+        mirror: obj.mirror,
+        tileInfo: obj.tileInfo,
+      };
+    }
+    return {
+      pos: obj.pos.copy(),
+      size: obj.drawSize ? obj.drawSize.copy() : obj.size.copy(),
+      angle: obj.angle,
+      mirror: obj.mirror,
+      tileInfo: obj.tileInfo,
+    };
+  }
+}
+
 class Dragon extends EngineObject {
   constructor(pos) {
     const colliderSize = vec2(0.9, 0.9);
@@ -75,9 +143,9 @@ class DashSlime extends EngineObject {
     this._caughtObject = undefined;
     this._caughtPos = undefined;
     this._dashDirection = 0;
-    this._ghosts = [];
     this._patrolCenterX = pos.x;
     this._patrolTargetX = pos.x + patrolSight;
+    this._ghostTrail = new GhostTrail(SLIME_GHOST_COUNT, SLIME_GHOST_ALPHA);
     this.mirror = false;
     this.mass = 1;
     this.damping = 1;
@@ -88,9 +156,6 @@ class DashSlime extends EngineObject {
   update() {
     this._updateBehavior();
     super.update();
-    if (this._state == SLIME_STATE_DASH) {
-      this._addGhost();
-    }
     if (this.pos.y < -this.size.y) {
       this.destroy();
       return;
@@ -104,12 +169,12 @@ class DashSlime extends EngineObject {
   render() {
     const size = vec2(this.size.x, this.size.y * this._scaleOffsetY[this._currentFrame]);
     const pos = this.pos.add(vec2(0, (size.y - this.size.y) / 2));
-    for (let i = 0; i < this._ghosts.length; ++i) {
-      const ghost = this._ghosts[i];
-      const alpha = (i + 1) / (this._ghosts.length + 1) * SLIME_GHOST_ALPHA;
-      drawTile(ghost.pos, ghost.size, this.tileInfo, new Color(1, 1, 1, alpha), ghost.angle, ghost.mirror);
-    }
     drawTile(pos, size, this.tileInfo, this.color, this.angle, this.mirror);
+  }
+
+  destroy() {
+    this._ghostTrail.destroy();
+    super.destroy();
   }
 
   collideWithObject(o) {
@@ -216,7 +281,7 @@ class DashSlime extends EngineObject {
     this._dashDirection = sign(this._caughtPos.x - this.pos.x) || (this.mirror ? 1 : -1);
     this.mirror = this._dashDirection > 0;
     this.velocity.x = 0;
-    this._ghosts = [];
+    this._ghostTrail.attach(this);
     this._state = SLIME_STATE_DASH;
   }
 
@@ -232,20 +297,6 @@ class DashSlime extends EngineObject {
     this.velocity.x = blocked || cliff ? 0 : reached ? targetX - this.pos.x : direction * speed;
     this.mirror = direction > 0;
     return {blocked, cliff, reached};
-  }
-
-  _addGhost() {
-    const size = vec2(this.size.x, this.size.y * this._scaleOffsetY[this._currentFrame]);
-    const pos = this.pos.add(vec2(0, (size.y - this.size.y) / 2));
-    this._ghosts.push({
-      pos: pos.copy(),
-      size,
-      angle: this.angle,
-      mirror: this.mirror,
-    });
-    if (this._ghosts.length > SLIME_GHOST_COUNT) {
-      this._ghosts.shift();
-    }
   }
 
   _hitCaughtObject(o) {
@@ -264,8 +315,8 @@ class DashSlime extends EngineObject {
     this._caughtObject = undefined;
     this._caughtPos = undefined;
     this._dashDirection = 0;
-    this._ghosts = [];
     this._patrolTargetX = this._patrolCenterX + this._patrolSight;
+    this._ghostTrail.detach();
     this._state = SLIME_STATE_PATROL;
   }
 }
