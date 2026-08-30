@@ -72,7 +72,7 @@ const sourceFiles =
     'rdmath.js',
     'global.js',
     'assets/music.js',
-    'assets/dragonResource.js',
+    'assets/slimeResource.js',
     'assets/unicornResource.js',
     'resourceLoader.js',
     'camera.js',
@@ -88,9 +88,8 @@ const dataFiles =
 [
     'assets/tileset.png',
     'assets/objects.png',
-    'assets/dragon.png',
-    'assets/slime.png',
     'assets/unicorn.png',
+    'assets/slime.png',
 ];
 
 console.log(`Building ${PROGRAM_NAME}...`);

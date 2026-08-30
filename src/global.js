@@ -9,9 +9,7 @@ const IMAGE_SOURCES = [
   'assets/tileset.png',
   'assets/objects.png',
   'assets/unicorn.png',
-  'assets/dragon.png',
   'assets/slime.png',
-  'assets/cloud.png',
 ];
 
 const THEME_INDEX_ROCK = 0;
@@ -22,9 +20,7 @@ const TEXTURE_INDEX_TILESET = 0;
 const TEXTURE_INDEX_LEAF = 1;
 const TEXTURE_INDEX_FIREBALL = 1;
 const TEXTURE_INDEX_UNICORN = 2;
-const TEXTURE_INDEX_DRAGON = 3;
-const TEXTURE_INDEX_SLIME = 4;
-const TEXTURE_INDEX_CLOUD = 5;
+const TEXTURE_INDEX_SLIME = 3;
 
 const LEAF_SIZE = 8;
 const FIREBALL_SIZE = 8;
