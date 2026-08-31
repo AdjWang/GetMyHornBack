@@ -42,11 +42,11 @@
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 1.5,
-            "selectedLayer": 0,
+            "scale": 0.75,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 2047.9999999999998,
-                "y": 127.66666666666664
+                "x": 3128.6666666666665,
+                "y": 183.99999999999994
             }
         },
         "level2.tmx": {
@@ -54,10 +54,10 @@
                 2
             ],
             "scale": 1.5,
-            "selectedLayer": 1,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 2047.9999999999998,
-                "y": 127.66666666666664
+                "x": 1236.3333333333333,
+                "y": 36.66666666666663
             }
         },
         "test.tsx": {
@@ -81,7 +81,7 @@
         "level2.tmx"
     ],
     "project": "rd.tiled-project",
-    "property.type": "int",
+    "property.type": "string",
     "recentFiles": [
         "tileset.tsx",
         "level0.tmx",

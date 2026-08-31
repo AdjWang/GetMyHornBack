@@ -6,7 +6,6 @@ const DRAGON_SLIME_DRAW_X_OFFSETS = [0.3, 0.3];
 const DRAGON_SLIME_DRAW_Y_OFFSETS = [-0.1, 0.1];
 const DRAGON_SLIME_ATTACK_DISTANCE = 11;
 const DRAGON_SLIME_LOCK_DISTANCE = 0.5;
-const DRAGON_SLIME_LOCK_TIME = 0.6;
 const DRAGON_SLIME_VELOCITY = vec2(0.2, 0.05);
 const DRAGON_SLIME_CHARGE_LENGTH = 25;
 const DRAGON_SLIME_CHARGE_TIME = 1.0;
@@ -34,7 +33,7 @@ const JUMP_SLIME_TIME = 1.2;
 const JUMP_SLIME_HEIGHT = 3.0;
 
 class DragonSlime extends EngineObject {
-  constructor(pos) {
+  constructor(pos, velocity, lockTime) {
     const colliderSize = vec2(0.9, 0.9);
     super(pos, colliderSize, undefined, 0, new Color, RENDER_ORDER_CHARACTER);
     const res = createAsepriteResource(slimeAsepriteData, TEXTURE_INDEX_SLIME, ['body', 'wing']);
@@ -50,8 +49,9 @@ class DragonSlime extends EngineObject {
     this._lockTimer.unset();
     this._charge = undefined;
     this._fireLockY = undefined;
-    this._springHorizontal = new SpringDamping(this, 1, 0.06, 0.4, DRAGON_SLIME_VELOCITY, o => o.x, (o, v) => { o.x = v; });
-    this._springVertical = new SpringDamping(this, 1, 0.06, 0.4, DRAGON_SLIME_VELOCITY, o => o.y, (o, v) => { o.y = v; });
+    this._lockTime = lockTime;
+    this._springHorizontal = new SpringDamping(this, 1, 0.06, 0.4, velocity, o => o.x, (o, v) => { o.x = v; });
+    this._springVertical = new SpringDamping(this, 1, 0.06, 0.4, velocity, o => o.y, (o, v) => { o.y = v; });
     this.gravityScale = 0.0;
     this.mirror = true;
     this.mass = 0;
@@ -71,7 +71,7 @@ class DragonSlime extends EngineObject {
       if (this._stage == DRAGON_SLIME_STAGE_LOCK) {
         if (this._isLockTarget(lockTargetPos)) {
           if (!this._lockTimer.isSet()) {
-            this._lockTimer.set(DRAGON_SLIME_LOCK_TIME);
+            this._lockTimer.set(this._lockTime);
           }
         } else {
           this._lockTimer.unset();
@@ -124,12 +124,12 @@ class DragonSlime extends EngineObject {
     }
     if (o == player && o.velocity.y <= 0 && o.pos.y > this.pos.y) {
       o.groundObject = this;
-      this._setTargetObject(o);
+      this.setTargetObject(o);
     }
     return true;
   }
 
-  _setTargetObject(o) {
+  setTargetObject(o) {
     this._caughtObject = o;
     // this._caughtSide = sign(o.pos.x - this.pos.x) || this._caughtSide;
     // DEBUG

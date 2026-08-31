@@ -15,7 +15,7 @@ let backgroundMusicVolume = 0.0;
 
 ///////////////////////////////////////////////////////////////////////////////
 async function gameInit() {
-  await loadLevel(1);
+  await loadLevel(2);
   initWorldCamera();
   background.updatePos(cameraPos);
   foreground.updatePos(cameraPos);

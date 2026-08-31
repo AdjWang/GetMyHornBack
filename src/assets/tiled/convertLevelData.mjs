@@ -9,7 +9,7 @@ const watchMode = process.argv.includes('--watch');
 
 const OBJECT_SPECS = {
   DashSlime: ['patrolSight', 'dashSight'],
-  DragonSlime: [],
+  DragonSlime: ['velocity', 'lockTime'],
 };
 
 function readLevels() {
@@ -105,7 +105,7 @@ function parseObjectProperties(body, fileName, linePrefix) {
   for (const match of body.matchAll(propertyRegex)) {
     const attributes = match[1];
     const name = readXmlString(attributes, 'name', fileName, linePrefix);
-    const type = readXmlString(attributes, 'type', fileName, linePrefix);
+    const type = readXmlOptionalString(attributes, 'type') || 'string';
     const value = readXmlString(attributes, 'value', fileName, linePrefix);
     properties[name] = parseXmlValue(value, type, fileName, name, linePrefix);
   }
@@ -128,7 +128,15 @@ function readXmlString(attributes, name, fileName, linePrefix) {
   return match[1];
 }
 
+function readXmlOptionalString(attributes, name) {
+  const match = attributes.match(new RegExp(`\\b${name}="([^"]*)"`));
+  return match && match[1];
+}
+
 function parseXmlValue(value, type, fileName, name, linePrefix) {
+  if (name == 'velocity') {
+    return parseVec2Value(value, linePrefix, name);
+  }
   if (type == 'int' || type == 'float') {
     const number = Number(value);
     if (!Number.isFinite(number)) {
@@ -140,6 +148,14 @@ function parseXmlValue(value, type, fileName, name, linePrefix) {
     return value == 'true';
   }
   return value;
+}
+
+function parseVec2Value(value, linePrefix, name) {
+  const match = value.match(/^vec2\(([-+]?\d+(?:\.\d+)?),\s*([-+]?\d+(?:\.\d+)?)\)$/);
+  if (!match) {
+    throw new Error(`${linePrefix}: invalid value for ${name}`);
+  }
+  return { code: `vec2(${Number(match[1])}, ${Number(match[2])})` };
 }
 
 function getLineNumber(text, index) {
@@ -177,6 +193,9 @@ function formatObjectEntry(object) {
 }
 
 function formatLiteral(value) {
+  if (value && typeof value == 'object' && typeof value.code == 'string') {
+    return value.code;
+  }
   if (typeof value == 'number') {
     return `${value}`;
   }
