@@ -229,6 +229,6 @@ async function loadLevel(idx) {
 function updateLevelEvent() {
   if (mouseIsDown(0)) {
     const speed = 0.25;
-    new RainbowBeam(vec2(107, 6.5), undefined, vec2(-speed, -speed), 1, 40, 6);
+    new RainbowBeam(vec2(107, 6.5), undefined, vec2(-speed, -speed), 1, 40);
   }
 }
