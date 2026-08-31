@@ -397,13 +397,22 @@ class Unicorn extends EngineObject {
       if (!groundObject || !(tileLayer instanceof TileLayer)) {
         return;
       }
-      const footCell = vec2(this.pos.x | 0, (this.pos.y - this.size.y / 2 - 0.01) | 0);
-      const data = tileLayer.getData(footCell);
-      if (!data || data.tile != PRISM_TILE_ID) {
-        return;
+      const footY = (this.pos.y - this.size.y / 2 - 0.01) | 0;
+      const leftX = (this.pos.x - this.size.x / 2) | 0;
+      const rightX = (this.pos.x + this.size.x / 2) | 0;
+      let changed = false;
+      for (let x = leftX; x <= rightX; ++x) {
+        const footCell = vec2(x, footY);
+        const data = tileLayer.getData(footCell);
+        if (!data || data.tile != PRISM_TILE_ID) {
+          continue;
+        }
+        data.direction = (data.direction + 1) % PRISM_TILE_DIR_COUNT;
+        changed = true;
       }
-      data.direction = (data.direction + 1) % PRISM_TILE_DIR_COUNT;
-      tileLayer.redraw();
+      if (changed) {
+        tileLayer.redraw();
+      }
     }
   }
 
