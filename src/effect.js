@@ -3,6 +3,47 @@
 const CHARGE_THICKNESS_OUTER = 1.0;
 const CHARGE_THICKNESS_INNER = 0.12;
 const CHARGE_ALPHA = 0.2;
+const SOUND_EXPLODE = new Sound([1.3,.15,224,.01,,.16,,1.5,-8,-13,,,,.2,,.3,,.64,.01,,868]);
+const SOUND_EXPLODE_VOLUME = 0.7;
+
+class Explode {
+  constructor(pos, colors) {
+    SOUND_EXPLODE.play(pos, SOUND_EXPLODE_VOLUME);
+    const emitter = new ParticleEmitter(
+      pos.copy(),            // position
+      0,                     // angle
+      0.1,                   // emitSize
+      0.02,                  // emitTime
+      24,                    // emitRate
+      PI * 2,                // emitConeAngle
+      undefined,             // tileInfo
+      new Color,             // colorStartA
+      new Color,             // colorStartB
+      new Color,             // colorEndA
+      new Color,             // colorEndB
+      0.08,                  // particleTime
+      0.15,                  // sizeStart
+      0.15,                  // sizeEnd
+      0.1,                   // speed
+      0.1,                   // angleSpeed
+      1.0,                   // damping
+      1.0,                   // angleDamping
+      0.0,                   // gravityScale
+      0,                     // particleConeAngle
+      0.3,                   // fadeRate
+      0.0,                   // randomness
+      false,                 // collideTiles
+      false                  // additive
+    );
+    colors.forEach(color => {
+      const debris = emitter.emitParticle();
+      debris.pos = pos.add(randInCircle(0.08));
+      debris.colorStart = color;
+      debris.colorEndDelta = new Color(0, 0, 0, 0).subtract(color);
+    });
+    emitter.destroy();
+  }
+}
 
 class Charge extends EngineObject {
   constructor(pos, length, chargeTime, doneCallback = () => {}) {

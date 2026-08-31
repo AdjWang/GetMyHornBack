@@ -4,8 +4,6 @@ const BULLET_TRAIL_POINT_COUNT = 8;
 const BULLET_TRAIL_THICKNESS = 0.05;
 const BULLET_TRAIL_TIME = 0.25;
 const RAINBOW_BULLET_COLOR_SPACING = 0.05;
-const SOUND_RAINBOW_HIT = new Sound([1.3,.15,224,.01,,.16,,1.5,-8,-13,,,,.2,,.3,,.64,.01,,868]);
-const SOUND_RAINBOW_HIT_VOLUME = 0.7;
 const RAINBOW_COLORS = [
   new Color(1.0, 0.2, 0.0),
   new Color(1.0, 0.5, 0.0),
@@ -35,32 +33,6 @@ class RainbowBeam extends EngineObject {
     this._colors = colors;
     this._colorOffsets = this._createColorOffsets(colors.length, velocity);
     this._trailPoints = [this.pos.copy()];
-    this._explodeEmitter = new ParticleEmitter(
-      vec2(),               // position
-      0,                    // angle
-      0.1,                  // emitSize
-      0.02,                 // emitTime
-      24,                   // emitRate
-      PI * 2,               // emitConeAngle
-      undefined,            // tileInfo
-      new Color,            // colorStartA
-      new Color,            // colorStartB
-      new Color,            // colorEndA
-      new Color,            // colorEndB
-      0.08,                 // particleTime
-      0.15,                 // sizeStart
-      0.15,                 // sizeEnd
-      0.1,                  // speed
-      0.1,                  // angleSpeed
-      1.0,                  // damping
-      1.0,                  // angleDamping
-      0.0,                  // gravityScale
-      0,                    // particleConeAngle
-      0.3,                  // fadeRate
-      0.0,                  // randomness
-      false,                // collideTiles
-      false                 // additive
-    );
   }
 
   update() {
@@ -90,8 +62,16 @@ class RainbowBeam extends EngineObject {
   }
 
   collideWithTile(tileData, pos) {
-    this._explode();
-    return true;
+    if (tileLayer instanceof TileLayer) {
+      const data = tileLayer.getData(pos);
+      if (data && data.tile == SPIKEWEED_TILE_ID) {
+        tileLayer.setData(pos, new TileLayerData);
+        setTileCollisionData(pos, 0);
+        tileLayer.redraw();
+        new Explode(pos, RAINBOW_COLORS);
+      }
+    }
+    return false;
   }
 
   destroy() {
@@ -113,14 +93,7 @@ class RainbowBeam extends EngineObject {
   }
 
   _explode() {
-    SOUND_RAINBOW_HIT.play(this.pos, SOUND_RAINBOW_HIT_VOLUME);
-    this._explodeEmitter.pos = this.pos;
-    RAINBOW_COLORS.forEach(color => {
-      let debris = this._explodeEmitter.emitParticle();
-      debris.pos = this.pos.add(randInCircle(0.08));
-      debris.colorStart = color;
-      debris.colorEndDelta = new Color(0, 0, 0, 0).subtract(color);
-    });
+    new Explode(this.pos, RAINBOW_COLORS);
     this.destroy();
   }
 }
