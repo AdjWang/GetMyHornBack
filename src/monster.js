@@ -162,8 +162,9 @@ class DragonSlime extends EngineObject {
   }
 
   _shootRainbowBeam() {
-    const velocity = vec2(DRAGON_SLIME_BEAM_SPEED * this._caughtSide, 0);
-    new RainbowBeam(this.pos.copy(), this, velocity, DRAGON_SLIME_BEAM_DAMAGE, DRAGON_SLIME_BEAM_RANGE);
+    const speed = DRAGON_SLIME_BEAM_SPEED * this._caughtSide;
+    const dir = PRISM_TILE_DIR_RIGHT;
+    new RainbowBeam(this.pos.copy(), this, speed, dir, DRAGON_SLIME_BEAM_DAMAGE, DRAGON_SLIME_BEAM_RANGE);
   }
 }
 

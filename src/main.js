@@ -36,7 +36,7 @@ function gameUpdate() {
   }
   if (mouseIsDown(0)) {
     // const speed = 0.25;
-    // new RainbowBeam(vec2(107, 6.5), undefined, vec2(-speed, -speed), 1, 40);
+    // new RainbowBeam(mousePos, undefined, speed, PRISM_TILE_DIR_RIGHT, 0, 50);
     // const pos = vec2(cameraPos.x - VIEW_WIDTH / 2, 6.5);
   }
 }

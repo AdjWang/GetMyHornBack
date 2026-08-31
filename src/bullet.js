@@ -1,5 +1,11 @@
 'use strict';
 
+// Not so happy. Leave here as backup.
+// const SOUND_REFRACTION = new Sound([1.1, 0, 420, 0.02, 0.08, 0.18, 1, 1.9, 8, 0, 120, 0.04, 0.03]);
+// TODO: shorter
+const SOUND_REFRACTION = new Sound([,.15,94,,.12,.06,,2.9,13,48,,,.13,,,,,.7,.05,,-1417]);
+const SOUND_REFRACTION_VOLUME = 0.2;
+const MAX_REFRACTION_COUNT = 100;
 const BULLET_TRAIL_POINT_COUNT = 8;
 const BULLET_TRAIL_THICKNESS = 0.05;
 const BULLET_TRAIL_TIME = 0.25;
@@ -15,11 +21,20 @@ const RAINBOW_COLORS = [
 ];
 
 class RainbowBeam extends EngineObject {
-  constructor(pos, attacker, velocity, damage, range) {
+  constructor(pos, attacker, speed, dir, damage, range, refractionCount = 0) {
     super(pos, vec2(0.01, 0.01));
     const colors = RAINBOW_COLORS;
     this.color = colors[colors.length / 2 | 0];
+    let velocity = vec2(speed, 0);
+    if (dir == PRISM_TILE_DIR_UP) {
+      velocity = vec2(0, speed);
+    } else if (dir == PRISM_TILE_DIR_DOWN) {
+      velocity = vec2(0, -speed);
+    } else if (dir == PRISM_TILE_DIR_LEFT) {
+      velocity = vec2(-speed, 0);
+    }
     this.velocity = velocity;
+    this._prismDirection = dir;
     this.damping = 1;
     this.gravityScale = 0.0;
     this.renderOrder = RENDER_ORDER_BULLET;
@@ -31,8 +46,9 @@ class RainbowBeam extends EngineObject {
     this._startPos = pos.copy();
     this._range = range;
     this._colors = colors;
-    this._colorOffsets = this._createColorOffsets(colors.length, velocity);
+    this._colorOffsets = this._createColorOffsets(colors.length, this.velocity);
     this._trailPoints = [this.pos.copy()];
+    this._refractionCount = refractionCount;
   }
 
   update() {
@@ -64,12 +80,24 @@ class RainbowBeam extends EngineObject {
   collideWithTile(tileData, pos) {
     if (tileLayer instanceof TileLayer) {
       const data = tileLayer.getData(pos);
-      if (data && data.tile == DESTROYABLE_TILE_ID) {
-        // Destroy cell.
-        tileLayer.setData(pos, new TileLayerData);
-        setTileCollisionData(pos, 0);
-        tileLayer.redraw();
-        new Explode(pos, RAINBOW_COLORS);
+      if (data) {
+        if (data.tile == DESTROYABLE_TILE_ID) {
+          new Explode(pos, RAINBOW_COLORS);
+          // Destroy cell.
+          tileLayer.setData(pos, new TileLayerData);
+          setTileCollisionData(pos, 0);
+          tileLayer.redraw();
+        } else if (data.tile == PRISM_TILE_ID) {
+          SOUND_REFRACTION.play(pos, SOUND_REFRACTION_VOLUME);
+          if (data.direction != this._prismDirection) {
+            if (this._refractionCount < MAX_REFRACTION_COUNT) {
+              const speed = this.velocity.length();
+              new RainbowBeam(pos.add(vec2(0.5)), this._attacker, speed, data.direction,
+                this._damage, this._range, this._refractionCount + 1);
+            }
+            this.destroy();
+          }
+        }
       }
     }
     return false;
