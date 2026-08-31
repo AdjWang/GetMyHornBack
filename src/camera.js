@@ -16,7 +16,8 @@ let cameraSpringDamping;
 function initWorldCamera() {
   const targetPos = vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2);
   cameraPos = targetPos;
-  cameraSpringDamping = new SpringDamping(cameraSpringObject, CAMERA_MASS, CAMERA_SPRING, CAMERA_DAMPING, CAMERA_MAX_VELOCITY, o => o.x, (o, v) => { o.x = v; });
+  cameraSpringDamping = new SpringDamping(cameraSpringObject, CAMERA_MASS, CAMERA_SPRING, CAMERA_DAMPING, CAMERA_MAX_VELOCITY,
+    o => o.x, (o, v) => { o.x = v; });
 }
 
 function updateWorldCamera() {
@@ -30,7 +31,10 @@ function updateWorldCamera() {
   cameraSpringDamping.update(targetPos.add(vec2(motionOffset, 0)));
   if (cameraPos.x < VIEW_WIDTH / 2) {
     cameraPos.x = VIEW_WIDTH / 2;
-    cameraSpringDamping.velocity.x = max(0, cameraSpringDamping.velocity.x);
+  }
+  const levelSize =  getLevelSize(currentLevel);
+  if (cameraPos.x > levelSize.x - VIEW_WIDTH / 2) {
+    cameraPos.x = levelSize.x - VIEW_WIDTH / 2;
   }
   cameraScale = worldScale;
 }
