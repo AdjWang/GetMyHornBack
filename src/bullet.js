@@ -65,6 +65,7 @@ class RainbowBeam extends EngineObject {
     if (tileLayer instanceof TileLayer) {
       const data = tileLayer.getData(pos);
       if (data && data.tile == DESTROYABLE_TILE_ID) {
+        // Destroy cell.
         tileLayer.setData(pos, new TileLayerData);
         setTileCollisionData(pos, 0);
         tileLayer.redraw();

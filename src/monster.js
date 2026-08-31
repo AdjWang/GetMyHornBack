@@ -12,7 +12,7 @@ const DRAGON_SLIME_CHARGE_LENGTH = 25;
 const DRAGON_SLIME_CHARGE_TIME = 1.0;
 const DRAGON_SLIME_BEAM_SPEED = 0.45;
 const DRAGON_SLIME_BEAM_DAMAGE = 1;
-const DRAGON_SLIME_BEAM_RANGE = 25;
+const DRAGON_SLIME_BEAM_RANGE = 50;
 const DRAGON_SLIME_STAGE_LOCK = 0;
 const DRAGON_SLIME_STAGE_FIRE = 1;
 // Gain when unicorn jump over slime.
@@ -131,7 +131,9 @@ class DragonSlime extends EngineObject {
 
   _setTargetObject(o) {
     this._caughtObject = o;
-    this._caughtSide = sign(o.pos.x - this.pos.x) || this._caughtSide;
+    // this._caughtSide = sign(o.pos.x - this.pos.x) || this._caughtSide;
+    // DEBUG
+    this._caughtSide = 1;
     this._stage = DRAGON_SLIME_STAGE_LOCK;
     this._lockTimer.unset();
     this._fireLockY = undefined;
