@@ -83,12 +83,12 @@
     "project": "rd.tiled-project",
     "property.type": "int",
     "recentFiles": [
+        "tileset.tsx",
         "level0.tmx",
         "level2.tmx",
         "level1.tmx",
         "C:/JsProjects/archive/platformer/data/gameLevelData.tmx",
         "level.tmx",
-        "tileset.tsx",
         "test.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
