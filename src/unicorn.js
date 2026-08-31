@@ -93,6 +93,7 @@ class Unicorn extends EngineObject {
     this._runFrame = UNICORN_FRAME_INDEX_IDLE;
     this._runFrameTimer = new Timer(1.0 / UNICORN_ANIM_RUN_SPEED);
     this._landScaleTimer = new Timer;
+    this._lastGroundObject = false;
     this.mirror = false;
     this.mass = 1;
     this.damping = 1;
@@ -147,6 +148,7 @@ class Unicorn extends EngineObject {
       this._updateMotion();
     }
     this._updateAirCornerCorrection();
+    this._updateFootPrism();
     super.update();
     this._updateKnockbackState();
     this._updateJumpCornerRestoreState();
@@ -386,6 +388,23 @@ class Unicorn extends EngineObject {
     this._coyoteTimer.unset();
     this._emitDust();
     SOUND_JUMP.play(this.pos, SOUND_JUMP_VOLUME);
+  }
+
+  _updateFootPrism() {
+    const groundObject = this.groundObject;
+    if (this._lastGroundObject != groundObject) {
+      this._lastGroundObject = groundObject;
+      if (!groundObject || !(tileLayer instanceof TileLayer)) {
+        return;
+      }
+      const footCell = vec2(this.pos.x | 0, (this.pos.y - this.size.y / 2 - 0.01) | 0);
+      const data = tileLayer.getData(footCell);
+      if (!data || data.tile != PRISM_TILE_ID) {
+        return;
+      }
+      data.direction = (data.direction + 1) % PRISM_TILE_DIR_COUNT;
+      tileLayer.redraw();
+    }
   }
 
   _updateFacing() {
