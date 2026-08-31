@@ -8,6 +8,11 @@ const DRAGON_SLIME_ATTACK_DISTANCE = 11;
 const DRAGON_SLIME_LOCK_DISTANCE = 0.5;
 const DRAGON_SLIME_LOCK_TIME = 0.6;
 const DRAGON_SLIME_VELOCITY = vec2(0.2, 0.05);
+const DRAGON_SLIME_CHARGE_LENGTH = 25;
+const DRAGON_SLIME_CHARGE_TIME = 1.0;
+const DRAGON_SLIME_BEAM_SPEED = 0.45;
+const DRAGON_SLIME_BEAM_DAMAGE = 1;
+const DRAGON_SLIME_BEAM_RANGE = 25;
 const DRAGON_SLIME_STAGE_LOCK = 0;
 const DRAGON_SLIME_STAGE_FIRE = 1;
 // Gain when unicorn jump over slime.
@@ -43,7 +48,7 @@ class DragonSlime extends EngineObject {
     this._stage = DRAGON_SLIME_STAGE_LOCK;
     this._lockTimer = new Timer;
     this._lockTimer.unset();
-    this._laser = undefined;
+    this._charge = undefined;
     this._fireLockY = undefined;
     this._springHorizontal = new SpringDamping(this, 1, 0.06, 0.4, DRAGON_SLIME_VELOCITY, o => o.x, (o, v) => { o.x = v; });
     this._springVertical = new SpringDamping(this, 1, 0.06, 0.4, DRAGON_SLIME_VELOCITY, o => o.y, (o, v) => { o.y = v; });
@@ -75,11 +80,11 @@ class DragonSlime extends EngineObject {
           this._stage = DRAGON_SLIME_STAGE_FIRE;
           this._lockTimer.unset();
           this._fireLockY = this.pos.y;
-          this._fireLaser();
+          this._startCharge();
         }
       } else if (this._stage == DRAGON_SLIME_STAGE_FIRE) {
         if (!this._isFiring()) {
-          this._laser = undefined;
+          this._charge = undefined;
           this._stage = DRAGON_SLIME_STAGE_LOCK;
           this._fireLockY = undefined;
         }
@@ -126,6 +131,7 @@ class DragonSlime extends EngineObject {
 
   _setTargetObject(o) {
     this._caughtObject = o;
+    this._caughtSide = sign(o.pos.x - this.pos.x) || this._caughtSide;
     this._stage = DRAGON_SLIME_STAGE_LOCK;
     this._lockTimer.unset();
     this._fireLockY = undefined;
@@ -143,30 +149,19 @@ class DragonSlime extends EngineObject {
   }
 
   _isFiring() {
-    return this._laser && !this._laser.destroyed;
+    return this._charge && !this._charge.destroyed;
   }
 
-  _fireLaser() {
-    const LASER_LENGTH = 25;
-    const LASER_CHARGE_TIME = 1.0;
-    const LASER_FIRE_TIME = 0.14;
-    this._laser = new Laser(this.pos.copy(), LASER_LENGTH, LASER_CHARGE_TIME, LASER_FIRE_TIME,
-      this._fireLaserCollide);
-    this.addChild(this._laser, vec2());
+  _startCharge() {
+    const length = DRAGON_SLIME_CHARGE_LENGTH * this._caughtSide;
+    this._charge = new Charge(this.pos.copy(), length, DRAGON_SLIME_CHARGE_TIME,
+      () => this._shootRainbowBeam());
+    this.addChild(this._charge, vec2());
   }
 
-  _fireLaserCollide(o) {
-  // TODO: fix
-  //   if (!tileLayer || !o || !o.arrayCheck(tileLayer.size)) {
-  //     return;
-  //   }
-  //   const data = tileLayer.getData(o);
-  //   if (!data || data.tile != SPIKEWEED_TILE_ID) {
-  //     return;
-  //   }
-  //   tileLayer.setData(o, new TileLayerData);
-  //   setTileCollisionData(o, 0);
-  //   tileLayer.redraw();
+  _shootRainbowBeam() {
+    const velocity = vec2(DRAGON_SLIME_BEAM_SPEED * this._caughtSide, 0);
+    new RainbowBeam(this.pos.copy(), this, velocity, DRAGON_SLIME_BEAM_DAMAGE, DRAGON_SLIME_BEAM_RANGE);
   }
 }
 

@@ -34,27 +34,30 @@
             "scale": 0.75,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 270.66666666666663,
-                "y": 46.66666666666663
+                "x": 220,
+                "y": 127.33333333333331
             }
         },
         "level1.tmx": {
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 2,
+            "scale": 1.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 2496,
-                "y": 189
+                "x": 2047.9999999999998,
+                "y": 127.66666666666664
             }
         },
         "level2.tmx": {
+            "expandedObjectLayers": [
+                2
+            ],
             "scale": 1.5,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 1272,
-                "y": 199.99999999999997
+                "x": 2047.9999999999998,
+                "y": 127.66666666666664
             }
         },
         "test.tsx": {
@@ -73,15 +76,16 @@
     "map.tileWidth": 16,
     "map.width": 24,
     "openFiles": [
+        "level0.tmx",
         "level1.tmx",
-        "level0.tmx"
+        "level2.tmx"
     ],
     "project": "rd.tiled-project",
     "property.type": "int",
     "recentFiles": [
         "level0.tmx",
-        "level1.tmx",
         "level2.tmx",
+        "level1.tmx",
         "C:/JsProjects/archive/platformer/data/gameLevelData.tmx",
         "level.tmx",
         "tileset.tsx",

@@ -1,5 +1,54 @@
 'use strict';
 
+const CHARGE_THICKNESS_OUTER = 1.0;
+const CHARGE_THICKNESS_INNER = 0.12;
+const CHARGE_ALPHA = 0.2;
+
+class Charge extends EngineObject {
+  constructor(pos, length, chargeTime, doneCallback = () => {}) {
+    super(pos, vec2(0.1, 0.1));
+    this._length = abs(length);
+    this._direction = sign(length) || 1;
+    this._chargeTimer = new Timer(chargeTime);
+    this._doneCallback = doneCallback;
+    this._startPos = pos.copy();
+    this._endPos = pos.copy();
+    this.mass = 0;
+    this.damping = 1;
+    this.gravityScale = 0;
+    this.renderOrder = RENDER_ORDER_BULLET;
+    this.setCollision(false, false, false, false);
+  }
+
+  update() {
+    this._refreshGeometry();
+    if (this._chargeTimer.elapsed()) {
+      this._doneCallback();
+      this.destroy();
+    }
+  }
+
+  render() {
+    this._refreshGeometry();
+    const p = smoothStep(this._chargeTimer.getPercent());
+    const outerThickness = lerp(CHARGE_THICKNESS_OUTER, CHARGE_THICKNESS_INNER, p);
+    const chargeColor = new Color(1, 1 - p, 1 - p, CHARGE_ALPHA);
+    this._drawCharge(outerThickness, chargeColor);
+  }
+
+  _refreshGeometry() {
+    this._startPos = this.pos.copy();
+    this._endPos = this._startPos.add(vec2(this._length * this._direction, 0));
+  }
+
+  _drawCharge(outerThickness, color) {
+    const outerColor = new Color(color.r, color.g, color.b, CHARGE_ALPHA * 0.5);
+    const innerColor = new Color(color.r, color.g, color.b, CHARGE_ALPHA);
+    drawLine(this._startPos, this._endPos, outerThickness, outerColor);
+    drawLine(this._startPos, this._endPos, CHARGE_THICKNESS_INNER, innerColor);
+  }
+}
+
 class GhostTrail extends EngineObject {
   constructor(length, alpha) {
     super(vec2(), vec2(), undefined, 0, new Color, RENDER_ORDER_CHARACTER - .01);

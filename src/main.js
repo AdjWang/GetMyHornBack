@@ -38,7 +38,6 @@ function gameUpdate() {
     // const speed = 0.25;
     // new RainbowBeam(vec2(107, 6.5), undefined, vec2(-speed, -speed), 1, 40, 6);
     // const pos = vec2(cameraPos.x - VIEW_WIDTH / 2, 6.5);
-    // new Laser(pos);
   }
 }
 
