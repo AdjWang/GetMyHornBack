@@ -88,12 +88,13 @@ class RainbowBeam extends EngineObject {
           setTileCollisionData(pos, 0);
           tileLayer.redraw();
         } else if (data.tile == PRISM_TILE_ID) {
-          SOUND_REFRACTION.play(pos, SOUND_REFRACTION_VOLUME);
           if (data.direction != this._prismDirection) {
-            if (this._refractionCount < MAX_REFRACTION_COUNT) {
+            SOUND_REFRACTION.play(pos, SOUND_REFRACTION_VOLUME);
+            if (this._refractionCount < 0 || this._refractionCount < MAX_REFRACTION_COUNT) {
               const speed = this.velocity.length();
+              const nextCount = this._refractionCount < 0 ? -1 : this._refractionCount + 1;
               new RainbowBeam(pos.add(vec2(0.5)), this._attacker, speed, data.direction,
-                this._damage, this._range, this._refractionCount + 1);
+                this._damage, this._range, nextCount);
             }
             this.destroy();
           }
