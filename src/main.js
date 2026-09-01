@@ -53,6 +53,26 @@ function gameRender() {
 
 ///////////////////////////////////////////////////////////////////////////////
 function gameRenderPost() {
+  if (currentLevel == 0) {
+    const spriteColor = new Color(1, 1, 1, 0.5);
+    const textColor = new Color(0, 0, 0);
+    const unicornRes = createAsepriteResource(unicornAsepriteData, TEXTURE_INDEX_UNICORN, ['bag', 'body', 'head']);
+    let pos1 = vec2(31, 5);
+    drawAsepriteFrame(unicornRes.head[0], pos1, 1, spriteColor, PI / 2, false, false);
+    drawAsepriteFrame(unicornRes.body[0], pos1, 1, spriteColor, PI / 2, false, false);
+    drawTextOverlay('z', pos1.add(vec2(1.2, 0.5)), 0.5, textColor);
+    drawTextOverlay('z', pos1.add(vec2(1.5, 0.8)), 0.6, textColor);
+    drawTextOverlay('z', pos1.add(vec2(1.8, 1.1)), 0.7, textColor);
+
+    const dragonPos2 = vec2(40, 5.5);
+    const unicornPos2 = vec2(38, 5);
+    const dragonRes = createAsepriteResource(slimeAsepriteData, TEXTURE_INDEX_SLIME, ['body', 'wing']);
+    drawAsepriteFrame(dragonRes.wing[0], dragonPos2, 1, spriteColor, 0, false, false);
+    drawAsepriteFrame(dragonRes.body[0], dragonPos2, 1, spriteColor, 0, false, false);
+    drawAsepriteFrame(unicornRes.head[0], unicornPos2, 1, spriteColor, PI / 2, false, false);
+    drawAsepriteFrame(unicornRes.body[0], unicornPos2, 1, spriteColor, PI / 2, false, false);
+    // TODO
+  }
   // TODO
   drawTextScreen('Rainbow Defense', vec2(mainCanvasSize.x / 2, worldScale * 2.2), worldScale * 2.5);
 }

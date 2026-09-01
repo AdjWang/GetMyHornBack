@@ -28,8 +28,11 @@ function createAsepriteFrames(data, textureIndex) {
   return frames;
 }
 
-function drawAsepriteFrame(frame, pos, scaleY, color, angle, mirror) {
-  const offset = vec2(frame.offset.x * (mirror ? -1 : 1), frame.offset.y * scaleY);
+function drawAsepriteFrame(frame, pos, scaleY, color, angle, mirror, rotateLocal = true) {
+  let offset = vec2(frame.offset.x * (mirror ? -1 : 1), frame.offset.y * scaleY);
+  if (!rotateLocal) {
+    offset = offset.rotate(angle || 0);
+  }
   const size = vec2(frame.size.x, frame.size.y * scaleY);
   drawTile(pos.add(offset), size, frame.tileInfo, color, angle, mirror);
 }

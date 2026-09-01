@@ -63,7 +63,7 @@ const LEVEL2 = [
 ];
 
 const START_POINT = [
-  vec2(10, 3),
+  vec2(30, 3),
   vec2(244, 10),
   vec2(123, 3),
 ];
