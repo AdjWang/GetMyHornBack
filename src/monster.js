@@ -168,7 +168,7 @@ class DragonSlime extends EngineObject {
 
   _startCharge() {
     const length = DRAGON_SLIME_CHARGE_LENGTH * this._caughtSide;
-    this._charge = new Charge(this.pos.copy(), length, DRAGON_SLIME_CHARGE_TIME,
+    this._charge = new ChargeLaser(this.pos.copy(), length, DRAGON_SLIME_CHARGE_TIME,
       () => this._shootRainbowBeam());
     this.addChild(this._charge, vec2());
   }
@@ -180,24 +180,17 @@ class DragonSlime extends EngineObject {
   }
 }
 
-class DashSlime extends EngineObject {
-  constructor(pos, patrolSight = 0, dashSight = 0) {
+class StupidSlime extends EngineObject {
+  constructor(pos, patrolSight = 0) {
     const colliderSize = vec2(0.9, 0.9);
     const anim = tile(0, 16, TEXTURE_INDEX_SLIME, 0);
     super(pos, colliderSize, anim, 0, new Color, RENDER_ORDER_CHARACTER);
     this._frameTimer = new Timer(1.0 / DASH_SLIME_ANIM_SPEED);
-    this._manifestTimer = new Timer;
     this._currentFrame = 0;
     this._scaleOffsetY = [1.0, 0.9, 0.8, 0.7, 0.7, 0.8, 0.9, 1.0];
     this._patrolSight = patrolSight;
-    this._dashSight = dashSight;
-    this._state = DASH_SLIME_STATE_PATROL;
-    this._caughtObject = undefined;
-    this._caughtPos = undefined;
-    this._dashDirection = 0;
     this._patrolCenterX = pos.x;
     this._patrolTargetX = pos.x + patrolSight;
-    this._ghostTrail = new GhostTrail(DASH_SLIME_GHOST_COUNT, DASH_SLIME_GHOST_ALPHA);
     this.mirror = false;
     this.mass = 1;
     this.damping = 1;
@@ -206,7 +199,7 @@ class DashSlime extends EngineObject {
   }
 
   update() {
-    this._updateBehavior();
+    this._updatePatrol();
     super.update();
     if (this.pos.y < -this.size.y) {
       this.destroy();
@@ -224,118 +217,22 @@ class DashSlime extends EngineObject {
     drawTile(pos, size, this.tileInfo, this.color, this.angle, this.mirror);
   }
 
-  destroy() {
-    this._ghostTrail.destroy();
-    super.destroy();
-  }
-
-  collideWithObject(o) {
-    if (this._state == DASH_SLIME_STATE_DASH && o != this._caughtObject && o.mass) {
-      this._caughtObject = o;
-    }
-    if (this._state == DASH_SLIME_STATE_DASH && o == this._caughtObject) {
-      this._hitCaughtObject(o);
-      return false;
-    }
-    return true;
-  }
-
   get_jump_gain() {
     return DASH_SLIME_JUMP_GAIN;
   }
 
-  _updateBehavior() {
-    if (this._state == DASH_SLIME_STATE_PATROL) {
-      this.color = new Color;
-      if (!this._patrolSight && !this._dashSight) {
-        this.velocity.x = 0;
-        return;
-      }
-      const caughtObject = this._getCaughtObject();
-      if (caughtObject) {
-        this._caughtObject = caughtObject;
-        this._caughtPos = caughtObject.pos.copy();
-        this._faceTargetX(this._caughtPos.x);
-      this._manifestTimer.set(DASH_SLIME_MANIFEST_TIME);
-        this._state = DASH_SLIME_STATE_MANIFEST;
-        return;
-      }
-      const move = this._updateMoveToTarget(this._patrolTargetX, DASH_SLIME_PATROL_SPEED);
-      if (move.blocked || move.cliff) {
-        this._patrolTargetX = this._patrolTargetX == this._patrolCenterX + this._patrolSight ?
-          this._patrolCenterX - this._patrolSight :
-          this._patrolCenterX + this._patrolSight;
-      }
-      return;
-    }
-      if (this._state == DASH_SLIME_STATE_MANIFEST) {
-      this.color = DASH_SLIME_HINT_COLOR;
+  _updatePatrol() {
+    this.color = new Color;
+    if (!this._patrolSight) {
       this.velocity.x = 0;
-      if (this._manifestTimer.elapsed()) {
-        this._startDash();
-      }
       return;
     }
-    if (this._state == DASH_SLIME_STATE_DASH) {
-      this.color = new Color;
-      if (!this._caughtPos) {
-        this._resetGuard();
-        return;
-      }
-      const move = this._updateMoveToTarget(this._caughtPos.x, DASH_SLIME_DASH_SPEED);
-      if (move.blocked) {
-        this._hitCaughtObject(this._caughtObject);
-        return;
-      }
-      if (move.cliff) {
-        this._resetGuard();
-        return;
-      }
-      if (move.reached) {
-        this.pos.x = this._caughtPos.x;
-        this._resetGuard();
-      }
+    const move = this._updateMoveToTarget(this._patrolTargetX, DASH_SLIME_PATROL_SPEED);
+    if (move.reached || move.blocked || move.cliff) {
+      this._patrolTargetX = this._patrolTargetX == this._patrolCenterX + this._patrolSight ?
+        this._patrolCenterX - this._patrolSight :
+        this._patrolCenterX + this._patrolSight;
     }
-  }
-
-  _getCaughtObject() {
-    if (!this._dashSight) {
-      return undefined;
-    }
-    const sightSize = vec2(this._dashSight, DASH_SLIME_SIGHT_HEIGHT);
-    const leftSightPos = this.pos.add(vec2(-(this.size.x + this._dashSight) / 2, 0));
-    const rightSightPos = this.pos.add(vec2((this.size.x + this._dashSight) / 2, 0));
-    const objects = engineObjectsCollect(leftSightPos, sightSize)
-      .concat(engineObjectsCollect(rightSightPos, sightSize));
-    let caughtObject;
-    let caughtDistance = Infinity;
-    for (const o of objects) {
-      if (o == this || !o.mass || !o.collideSolidObjects || !o.isSolid) {
-        continue;
-      }
-      const distance = this.pos.distanceSquared(o.pos);
-      if (distance < caughtDistance) {
-        caughtObject = o;
-        caughtDistance = distance;
-      }
-    }
-    return caughtObject;
-  }
-
-  _startDash() {
-    if (!this._caughtObject || this._caughtObject.destroyed) {
-      this._resetGuard();
-      return;
-    }
-    this._caughtPos = this._caughtObject.pos.copy();
-    this._caughtPos.x = clamp(this._caughtPos.x,
-      this.pos.x - DASH_SLIME_DASH_MAX_DISTANCE,
-      this.pos.x + DASH_SLIME_DASH_MAX_DISTANCE);
-    this._dashDirection = sign(this._caughtPos.x - this.pos.x) || (this.mirror ? 1 : -1);
-    this._faceTargetX(this._caughtPos.x);
-    this.velocity.x = 0;
-    this._ghostTrail.attach(this);
-    this._state = DASH_SLIME_STATE_DASH;
   }
 
   _updateMoveToTarget(targetX, speed) {
@@ -344,36 +241,11 @@ class DashSlime extends EngineObject {
     const nextFootY = this.pos.y - this.size.y / 2 - .01;
     const nextFootX = nextPos.x + direction * this.size.x / 2;
     const blocked = engineObjectsRaycast(this.pos, nextPos).some(o =>
-      o != this && o != this._caughtObject && o.mass && o.collideSolidObjects && o.isSolid);
+      o != this && o.mass && o.collideSolidObjects && o.isSolid);
     const cliff = !getTileCollisionData(vec2(nextFootX, nextFootY));
     const reached = abs(this.pos.x - targetX) <= speed;
     this.velocity.x = blocked || cliff ? 0 : reached ? targetX - this.pos.x : direction * speed;
     this.mirror = direction > 0;
     return { blocked, cliff, reached };
-  }
-
-  _hitCaughtObject(o) {
-    const verticalDelta = abs(o.pos.y - this.pos.y);
-    const verticalThreshold = this.size.y / 2 - this.size.y * 0.05;
-    if (o.takeKnockback && verticalDelta < verticalThreshold) {
-      const forceDirection = sign(o.pos.x - this.pos.x) || sign(this.velocity.x) || 1;
-      o.takeKnockback(forceDirection * DASH_SLIME_HIT_KNOCKBACK_CELLS);
-    }
-    this._resetGuard();
-  }
-
-  _faceTargetX(targetX) {
-    this.mirror = targetX > this.pos.x;
-  }
-
-  _resetGuard() {
-    this.velocity.x = 0;
-    this.color = new Color;
-    this._caughtObject = undefined;
-    this._caughtPos = undefined;
-    this._dashDirection = 0;
-    this._patrolTargetX = this._patrolCenterX + this._patrolSight;
-    this._ghostTrail.detach();
-    this._state = DASH_SLIME_STATE_PATROL;
   }
 }

@@ -96,18 +96,18 @@ function tiledScreenToWorld(pos) {
 const LEVELS_OBJS = [
   [],
   [
-    [ DashSlime, tiledScreenToWorld(vec2(576, 224)), 3, 2 ],
-    [ DashSlime, tiledScreenToWorld(vec2(432, 176)), 3, 2 ],
-    [ DashSlime, tiledScreenToWorld(vec2(1968, 128)), 3, 0 ],
-    [ DashSlime, tiledScreenToWorld(vec2(2224, 128)), 3, 0 ],
-    [ DashSlime, tiledScreenToWorld(vec2(2320, 96)), 3, 0 ],
-    [ DashSlime, tiledScreenToWorld(vec2(2128, 160)), 3, 0 ],
-    [ DashSlime, tiledScreenToWorld(vec2(2912, 112)), 3, 0 ],
-    [ DashSlime, tiledScreenToWorld(vec2(2800, 144)), 3, 0 ],
-    [ DashSlime, tiledScreenToWorld(vec2(2640, 144)), 3, 0 ],
-    [ DashSlime, tiledScreenToWorld(vec2(2464, 112)), 3, 0 ],
+    [ StupidSlime, tiledScreenToWorld(vec2(576, 224)), 3 ],
+    [ StupidSlime, tiledScreenToWorld(vec2(432, 176)), 3 ],
+    [ StupidSlime, tiledScreenToWorld(vec2(1968, 128)), 3 ],
+    [ StupidSlime, tiledScreenToWorld(vec2(2224, 128)), 3 ],
+    [ StupidSlime, tiledScreenToWorld(vec2(2320, 96)), 3 ],
+    [ StupidSlime, tiledScreenToWorld(vec2(2128, 160)), 3 ],
+    [ StupidSlime, tiledScreenToWorld(vec2(2912, 112)), 3 ],
+    [ StupidSlime, tiledScreenToWorld(vec2(2800, 144)), 3 ],
+    [ StupidSlime, tiledScreenToWorld(vec2(2640, 144)), 3 ],
+    [ StupidSlime, tiledScreenToWorld(vec2(2464, 112)), 3 ],
     [ DragonSlime, tiledScreenToWorld(vec2(3120, 176)), vec2(0.2, 0.05), 0.6 ],
-    [ DashSlime, tiledScreenToWorld(vec2(512, 128)), 3, 2 ]
+    [ StupidSlime, tiledScreenToWorld(vec2(512, 128)), 3 ]
   ],
   [
     [ DragonSlime, tiledScreenToWorld(vec2(16, 128)), vec2(0.3, 0.2), 0.2 ]
@@ -268,20 +268,20 @@ async function loadLevel(idx) {
   if (idx == 2) {
     levelObjInsts[0].setTargetObject(player);
   }
-  // new DashSlime(vec2(576/16 + 0.5, 16 - 224/16 - 0.5), 3, 2);
-  // new DashSlime(vec2(432/16 + 0.5, 16 - 176/16 - 0.5), 3, 2);
-  // new DashSlime(vec2(512/16 + 0.5, 16 - 112/16 - 0.5), 3, 2);
-  // new DashSlime(vec2(1968/16 + 0.5, 16 - 128/16 - 0.5), 3, 2);
-  // new DashSlime(vec2(82.5, 5.5), 3);
-  // new DashSlime(vec2(1216/16, 192/16), 3);
+  // new StupidSlime(vec2(576/16 + 0.5, 16 - 224/16 - 0.5), 3, 2);
+  // new StupidSlime(vec2(432/16 + 0.5, 16 - 176/16 - 0.5), 3, 2);
+  // new StupidSlime(vec2(512/16 + 0.5, 16 - 112/16 - 0.5), 3, 2);
+  // new StupidSlime(vec2(1968/16 + 0.5, 16 - 128/16 - 0.5), 3, 2);
+  // new StupidSlime(vec2(82.5, 5.5), 3);
+  // new StupidSlime(vec2(1216/16, 192/16), 3);
   // const tofuCells = [
   //   vec2(98, 12),
   //   vec2(99, 12),
   //   vec2(100, 12),
   // ];
 
-  // new DashSlime(vec2(86.5, 6.5), 3);
-  // new DashSlime(vec2(96.5, 6.5), 3);
+  // new StupidSlime(vec2(86.5, 6.5), 3);
+  // new StupidSlime(vec2(96.5, 6.5), 3);
   // new DragonSlime(vec2(110.5, 9.5));
 }
 

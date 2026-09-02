@@ -45,7 +45,7 @@ class Explode {
   }
 }
 
-class Charge extends EngineObject {
+class ChargeLaser extends EngineObject {
   constructor(pos, length, chargeTime, doneCallback = () => {}) {
     super(pos, vec2(0.1, 0.1));
     this._length = abs(length);

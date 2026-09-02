@@ -8,7 +8,7 @@ const levelFilePattern = /^level(\d+)\.tmx$/;
 const watchMode = process.argv.includes('--watch');
 
 const OBJECT_SPECS = {
-  DashSlime: ['patrolSight', 'dashSight'],
+  StupidSlime: ['patrolSight'],
   DragonSlime: ['velocity', 'lockTime'],
 };
 
