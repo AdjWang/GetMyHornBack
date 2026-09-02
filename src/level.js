@@ -268,21 +268,6 @@ async function loadLevel(idx) {
   if (idx == 2) {
     levelObjInsts[0].setTargetObject(player);
   }
-  // new StupidSlime(vec2(576/16 + 0.5, 16 - 224/16 - 0.5), 3, 2);
-  // new StupidSlime(vec2(432/16 + 0.5, 16 - 176/16 - 0.5), 3, 2);
-  // new StupidSlime(vec2(512/16 + 0.5, 16 - 112/16 - 0.5), 3, 2);
-  // new StupidSlime(vec2(1968/16 + 0.5, 16 - 128/16 - 0.5), 3, 2);
-  // new StupidSlime(vec2(82.5, 5.5), 3);
-  // new StupidSlime(vec2(1216/16, 192/16), 3);
-  // const tofuCells = [
-  //   vec2(98, 12),
-  //   vec2(99, 12),
-  //   vec2(100, 12),
-  // ];
-
-  // new StupidSlime(vec2(86.5, 6.5), 3);
-  // new StupidSlime(vec2(96.5, 6.5), 3);
-  // new DragonSlime(vec2(110.5, 9.5));
 }
 
 function updateLevelEvent() {
