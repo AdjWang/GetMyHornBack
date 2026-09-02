@@ -10,15 +10,6 @@ const BULLET_TRAIL_POINT_COUNT = 8;
 const BULLET_TRAIL_THICKNESS = 0.05;
 const BULLET_TRAIL_TIME = 0.25;
 const RAINBOW_BULLET_COLOR_SPACING = 0.05;
-const RAINBOW_COLORS = [
-  new Color(1.0, 0.2, 0.0),
-  new Color(1.0, 0.5, 0.0),
-  new Color(1.0, 1.0, 0.0),
-  new Color(0.0, 0.8, 0.2),
-  new Color(0.0, 0.8, 1.0),
-  new Color(0.1, 0.2, 1.0),
-  new Color(0.6, 0.0, 1.0),
-];
 
 class RainbowBeam extends EngineObject {
   constructor(pos, attacker, speed, dir, damage, range, refractionCount = 0) {
@@ -78,6 +69,9 @@ class RainbowBeam extends EngineObject {
   }
 
   collideWithTile(tileData, pos) {
+    if (this.destroyed) {
+      return false;
+    }
     if (tileLayer instanceof TileLayer) {
       const data = tileLayer.getData(pos);
       if (data) {
@@ -99,14 +93,13 @@ class RainbowBeam extends EngineObject {
             this.destroy();
           }
         } else if (data.tile == TNT_TILE_ID) {
-          this._explode();
-          const charge = data.direction;
-          if (charge == 0) {
-            data.direction = charge + 1;
-            data.color = new Color(0, 0, 0);
+          if (data.direction == 0) {
+            chargeTntCell(pos);
           } else {
-
+            explodeTntCellCluster(pos);
           }
+          this._explode();
+          return true;
         }
       }
     }
@@ -132,6 +125,9 @@ class RainbowBeam extends EngineObject {
   }
 
   _explode() {
+    if (this.destroyed) {
+      return;
+    }
     new Explode(this.pos, RAINBOW_COLORS);
     this.destroy();
   }

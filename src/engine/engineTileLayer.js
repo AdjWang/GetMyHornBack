@@ -311,6 +311,16 @@ class TileLayer extends EngineObject
             const pos = layerPos.add(vec2(.5));
             const tileInfo = tile(d.tile, s, this.tileInfo.textureInfo, this.tileInfo.padding);
             drawTile(pos, vec2(1), tileInfo, d.color, d.direction*PI/2, d.mirror);
+            if (d.tile == TNT_TILE_ID && d.direction)
+            {
+                const px = layerPos.x * s.x;
+                const py = this.canvas.height - (layerPos.y + 1) * s.y;
+                this.context.save();
+                this.context.globalCompositeOperation = 'source-atop';
+                this.context.fillStyle = d.color.toString();
+                this.context.fillRect(px, py, s.x, s.y);
+                this.context.restore();
+            }
         }
     }
 
