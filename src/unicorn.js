@@ -50,7 +50,6 @@ const UNICORN_RUN_HEAD_BOB_AMPLIFY = 0.06;
 const UNICORN_RUN_HEAD_BOB_SPEED = 22;
 const UNICORN_RUN_HEAD_BOB_OFFSET = 0.4;
 const UNICORN_RUN_BODY_BOB_OFFSET = 0.0;
-const UNICORN_RUN_BAG_BOB_OFFSET = -0.4;
 // Slightly rotate body when running to make it looks weight.
 const UNICORN_RUN_ROTATE_ANGLE = 0.22;
 // Stretch when running to make it looks dynamic.
@@ -73,10 +72,9 @@ class Unicorn extends EngineObject {
   constructor(pos) {
     const colliderSize = vec2(0.9, 0.9);
     super(pos, colliderSize, undefined, 0, new Color, RENDER_ORDER_CHARACTER);
-    const res = createAsepriteResource(unicornAsepriteData, TEXTURE_INDEX_UNICORN, ['bag', 'body', 'head']);
+    const res = createAsepriteResource(unicornAsepriteData, TEXTURE_INDEX_UNICORN, ['body', 'head']);
     this._frameInfoHead = res.head;
     this._frameInfoBody = res.body;
-    this._frameInfoBag = res.bag;
     this._moveX = 0;
     this._moveY = 0;
     this._lastMoveX = 1;
@@ -163,7 +161,6 @@ class Unicorn extends EngineObject {
       Math.sin(time * UNICORN_IDLE_HEAD_BOB_SPEED) * UNICORN_IDLE_HEAD_BOB_AMPLIFY + UNICORN_IDLE_HEAD_BOB_OFFSET : 0;
     const headRunBob = this._getRunBob(runBobTime, UNICORN_RUN_HEAD_BOB_OFFSET);
     const bodyRunBob = this._getRunBob(runBobTime, UNICORN_RUN_BODY_BOB_OFFSET);
-    const bagRunBob = this._getRunBob(runBobTime, UNICORN_RUN_BAG_BOB_OFFSET);
     const headBob = idleHeadBob + headRunBob;
     const headPos = this.pos.add(vec2(0, headBob));
     const runRotate = this._animState == UNICORN_ANIM_STATE_RUN ?
@@ -178,7 +175,6 @@ class Unicorn extends EngineObject {
     const headDrawPos = headPos.add(scaleAnchorOffset).add(drawOffset);
     drawAsepriteFrame(this._frameInfoHead[this._runFrame], headDrawPos, runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
     drawAsepriteFrame(this._frameInfoBody[this._runFrame], drawPos.add(vec2(0, bodyRunBob)).add(drawOffset), runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
-    drawAsepriteFrame(this._frameInfoBag[this._runFrame], drawPos.add(vec2(0, bagRunBob)).add(drawOffset), 1, undefined, runRotate, this.mirror);
   }
 
   getFacingX() {
