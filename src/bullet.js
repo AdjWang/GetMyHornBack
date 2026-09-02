@@ -98,7 +98,7 @@ class RainbowBeam extends EngineObject {
           } else {
             explodeTntCellCluster(pos);
           }
-          this._explode();
+          this.destroy();
           return true;
         }
       }
