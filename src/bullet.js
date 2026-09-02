@@ -98,6 +98,15 @@ class RainbowBeam extends EngineObject {
             }
             this.destroy();
           }
+        } else if (data.tile == TNT_TILE_ID) {
+          this._explode();
+          const charge = data.direction;
+          if (charge == 0) {
+            data.direction = charge + 1;
+            data.color = new Color(0, 0, 0);
+          } else {
+
+          }
         }
       }
     }

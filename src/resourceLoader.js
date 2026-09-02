@@ -37,9 +37,9 @@ function drawAsepriteFrame(frame, pos, scaleY, color, angle, mirror, rotateLocal
   drawTile(pos.add(offset), size, frame.tileInfo, color, angle, mirror);
 }
 
-async function remapTilesetColor(textureIndex, to_idx) {
+async function remapTilesetColor(textureIndex, toIdx) {
   const from_idx = THEME_INDEX_ROCK;
-  if (from_idx == to_idx) {
+  if (from_idx == toIdx) {
     return;
   }
   const imageSource = IMAGE_SOURCES[textureIndex];
@@ -54,7 +54,7 @@ async function remapTilesetColor(textureIndex, to_idx) {
   for (let i = 0; i < data.length; i += 4) {
     for (const remap of TILE_COLOR_REMAP) {
       const fromColor = remap[from_idx];
-      const toColor = remap[to_idx];
+      const toColor = remap[toIdx];
       if (fromColor === undefined || toColor === undefined) {
         continue;
       }
