@@ -9,7 +9,6 @@ const DRAGON_SLIME_ATTACK_DISTANCE = 11;
 const DRAGON_SLIME_LOCK_DISTANCE = 0.5;
 const DRAGON_SLIME_VELOCITY = vec2(0.2, 0.05);
 const DRAGON_SLIME_CHARGE_LENGTH = 25;
-const DRAGON_SLIME_CHARGE_TIME = 1.0;
 const DRAGON_SLIME_BEAM_SPEED = 0.45;
 const DRAGON_SLIME_BEAM_DAMAGE = 1;
 const DRAGON_SLIME_BEAM_RANGE = 50;
@@ -17,22 +16,9 @@ const DRAGON_SLIME_STAGE_IDLE = 0;
 const DRAGON_SLIME_STAGE_LOCK = 1;
 const DRAGON_SLIME_STAGE_FIRE = 2;
 // Gain when unicorn jump over slime.
-const DASH_SLIME_JUMP_GAIN = 1.2;
-const DASH_SLIME_ANIM_SPEED = 12;  // frame/sec
-const DASH_SLIME_STATE_PATROL = 0;
-const DASH_SLIME_STATE_MANIFEST = 1;
-const DASH_SLIME_STATE_DASH = 2;
-const DASH_SLIME_MANIFEST_TIME = 0.33;
-const DASH_SLIME_DASH_SPEED = 0.28;
-const DASH_SLIME_PATROL_SPEED = 0.02;  // cells
-const DASH_SLIME_DASH_MAX_DISTANCE = 4;
-const DASH_SLIME_HIT_KNOCKBACK_CELLS = 6;
-const DASH_SLIME_SIGHT_HEIGHT = 0.95;
-const DASH_SLIME_HINT_COLOR = new Color(1, 0.45, 0.45);
-const DASH_SLIME_GHOST_COUNT = 5;
-const DASH_SLIME_GHOST_ALPHA = 0.45;
-const JUMP_SLIME_TIME = 1.2;
-const JUMP_SLIME_HEIGHT = 3.0;
+const STUPID_SLIME_JUMP_GAIN = 1.2;
+const STUPID_SLIME_ANIM_SPEED = 12;  // frame/sec
+const STUPID_SLIME_PATROL_SPEED = 0.02;  // cells
 
 class DragonSlime extends EngineObject {
   constructor(pos, velocity, lockTime) {
@@ -133,14 +119,14 @@ class DragonSlime extends EngineObject {
     this._caughtSide = toLeft;
   }
 
-  fire(laserCount = 1) {
+  fire(laserCount = 1, chargeTime = 1.0) {
     if (this._isFiring()) {
       return;
     }
     this._stage = DRAGON_SLIME_STAGE_FIRE;
     this._lockTimer.unset();
     this._fireLockY = this.pos.y;
-    this._startCharge(laserCount);
+    this._startCharge(laserCount, chargeTime);
   }
 
   _updateNormalState() {
@@ -208,22 +194,22 @@ class DragonSlime extends EngineObject {
     return this._charge && !this._charge.destroyed;
   }
 
-  _startCharge(laserCount) {
+  _startCharge(laserCount = 1, chargeTime = 1.0) {
     const length = DRAGON_SLIME_CHARGE_LENGTH * this._caughtSide;
     this.children.forEach(o => o.destroy());
     this.children = [];
-    this._charge = new ChargeLaser(this.pos.copy(), length, DRAGON_SLIME_CHARGE_TIME,
+    this._charge = new ChargeLaser(this.pos.copy(), length, chargeTime,
       () => this._shootRainbowBeam(vec2()));
     this.addChild(this._charge, vec2());
     for (let i = 1; i < laserCount; i++) {
       const offset1 = vec2(0, -i);
       const pos1 = this.pos.copy().add(offset1);
-      const charge1 = new ChargeLaser(pos1, length, DRAGON_SLIME_CHARGE_TIME,
+      const charge1 = new ChargeLaser(pos1, length, chargeTime,
         () => this._shootRainbowBeam(offset1));
       this.addChild(charge1, offset1);
       const offset2 = vec2(0, i);
       const pos2 = this.pos.copy().add(offset2);
-      const charge2 = new ChargeLaser(pos2, length, DRAGON_SLIME_CHARGE_TIME,
+      const charge2 = new ChargeLaser(pos2, length, chargeTime,
         () => this._shootRainbowBeam(offset2));
       this.addChild(charge2, offset2);
     }
@@ -241,7 +227,7 @@ class StupidSlime extends EngineObject {
     const colliderSize = vec2(0.9, 0.9);
     const anim = tile(0, 16, TEXTURE_INDEX_SLIME, 0);
     super(pos, colliderSize, anim, 0, new Color, RENDER_ORDER_CHARACTER);
-    this._frameTimer = new Timer(1.0 / DASH_SLIME_ANIM_SPEED);
+    this._frameTimer = new Timer(1.0 / STUPID_SLIME_ANIM_SPEED);
     this._currentFrame = 0;
     this._scaleOffsetY = [1.0, 0.9, 0.8, 0.7, 0.7, 0.8, 0.9, 1.0];
     this._patrolSight = patrolSight;
@@ -262,7 +248,7 @@ class StupidSlime extends EngineObject {
       return;
     }
     if (this._frameTimer.elapsed()) {
-      this._frameTimer.set(1.0 / DASH_SLIME_ANIM_SPEED);
+      this._frameTimer.set(1.0 / STUPID_SLIME_ANIM_SPEED);
       this._currentFrame = (this._currentFrame + 1) % this._scaleOffsetY.length;
     }
   }
@@ -274,7 +260,7 @@ class StupidSlime extends EngineObject {
   }
 
   get_jump_gain() {
-    return DASH_SLIME_JUMP_GAIN;
+    return STUPID_SLIME_JUMP_GAIN;
   }
 
   _updatePatrol() {
@@ -283,7 +269,7 @@ class StupidSlime extends EngineObject {
       this.velocity.x = 0;
       return;
     }
-    const move = this._updateMoveToTarget(this._patrolTargetX, DASH_SLIME_PATROL_SPEED);
+    const move = this._updateMoveToTarget(this._patrolTargetX, STUPID_SLIME_PATROL_SPEED);
     if (move.reached || move.blocked || move.cliff) {
       this._patrolTargetX = this._patrolTargetX == this._patrolCenterX + this._patrolSight ?
         this._patrolCenterX - this._patrolSight :

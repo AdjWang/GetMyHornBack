@@ -309,6 +309,6 @@ async function loadLevel(idx) {
 
 function updateLevelEvent() {
   if (mouseIsDown(0)) {
-    levelObjInsts[1].fire(6);
+    levelObjInsts[1].fire(6, 1.5);
   }
 }
