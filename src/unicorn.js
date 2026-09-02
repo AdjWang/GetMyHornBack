@@ -386,7 +386,6 @@ class Unicorn extends EngineObject {
     if (clearGroundObject) {
       this.groundObject = 0;
     }
-    destroyOneShotCellsAtFoot(this.pos, this.size);
     this.velocity.y = UNICORN_JUMP_INITIAL_SPEED * jumpGain;
     this._jumpNeedsCornerRestore = true;
     this._jumpBufferTimer.unset();

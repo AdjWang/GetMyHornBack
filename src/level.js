@@ -120,7 +120,6 @@ const LEVEL_THEMES = [
   THEME_INDEX_ROCK,
 ];
 
-let oneShotCells = [];
 let levelObjInsts = [];
 
 function getShuffledRainbowColors(count) {
@@ -169,31 +168,6 @@ function decodeTiledTile(gid) {
 
 function getLevelSize(idx) {
   return LEVELS_SIZE[idx];
-}
-
-function markOneShotCells(cells) {
-  oneShotCells = cells.map(pos => pos.copy());
-}
-
-function destroyOneShotCellsAtFoot(pos, size) {
-  if (!tileLayer || !oneShotCells.length) {
-    return;
-  }
-  const footY = pos.y - size.y / 2 - .01;
-  const leftX = pos.x - size.x / 2 + .05;
-  const rightX = pos.x + size.x / 2 - .05;
-  for (const x of [leftX, pos.x, rightX]) {
-    const cellPos = vec2(x | 0, footY | 0);
-    for (let i = oneShotCells.length - 1; i >= 0; i--) {
-      const cell = oneShotCells[i];
-      if (cell.x == cellPos.x && cell.y == cellPos.y) {
-        oneShotCells.splice(i, 1);
-        tileLayer.setData(cell, new TileLayerData);
-        setTileCollisionData(cell, 0);
-      }
-    }
-  }
-  tileLayer.redraw();
 }
 
 function chargeTntCell(pos, color) {
@@ -300,14 +274,11 @@ async function loadLevel(idx) {
   // new DashSlime(vec2(1968/16 + 0.5, 16 - 128/16 - 0.5), 3, 2);
   // new DashSlime(vec2(82.5, 5.5), 3);
   // new DashSlime(vec2(1216/16, 192/16), 3);
-  // new JumpSlime(vec2(1264/16 + 0.5, 16 - 192/16 - 0.5),
-  //               vec2(1344/16 + 0.5, 16 - 192/16 - 0.5));
   // const tofuCells = [
   //   vec2(98, 12),
   //   vec2(99, 12),
   //   vec2(100, 12),
   // ];
-  // markOneShotCells(tofuCells);
 
   // new DashSlime(vec2(86.5, 6.5), 3);
   // new DashSlime(vec2(96.5, 6.5), 3);
