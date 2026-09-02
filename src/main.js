@@ -34,11 +34,7 @@ function gameUpdate() {
   if (backgroundMusic) {
     backgroundMusic.setVolume(backgroundMusicVolume);
   }
-  if (mouseIsDown(0)) {
-    // const speed = 0.25;
-    // new RainbowBeam(mousePos, undefined, speed, PRISM_TILE_DIR_RIGHT, 0, 50);
-    // const pos = vec2(cameraPos.x - VIEW_WIDTH / 2, 6.5);
-  }
+  updateLevelEvent();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -74,7 +70,7 @@ function gameRenderPost() {
     // TODO
   }
   // TODO
-  drawTextScreen('Rainbow Defense', vec2(mainCanvasSize.x / 2, worldScale * 2.2), worldScale * 2.5);
+  // drawTextScreen('Rainbow Defense', vec2(mainCanvasSize.x / 2, worldScale * 2.2), worldScale * 2.5);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

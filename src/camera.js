@@ -21,20 +21,24 @@ function initWorldCamera() {
 }
 
 function updateWorldCamera() {
-  let targetPos = vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2);
-  let motionOffset = 0;
-  if (player) {
-    targetPos = vec2(player.pos.x, VIEW_HEIGHT / 2);
-    motionOffset = MOTION_OFFSET_X_FACTOR * Math.abs(player.velocity.x) * player.getFacingX();
-    motionOffset = Math.min(motionOffset, MOTION_OFFSET_X_MAX);
-  }
-  cameraSpringDamping.update(targetPos.add(vec2(motionOffset, 0)));
-  if (cameraPos.x < VIEW_WIDTH / 2) {
-    cameraPos.x = VIEW_WIDTH / 2;
-  }
-  const levelSize =  getLevelSize(currentLevel);
-  if (cameraPos.x > levelSize.x - VIEW_WIDTH / 2) {
-    cameraPos.x = levelSize.x - VIEW_WIDTH / 2;
+  if (currentLevel != BOSS_LEVEL) {
+    let targetPos = vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2);
+    let motionOffset = 0;
+    if (player) {
+      targetPos = vec2(player.pos.x, VIEW_HEIGHT / 2);
+      motionOffset = MOTION_OFFSET_X_FACTOR * Math.abs(player.velocity.x) * player.getFacingX();
+      motionOffset = Math.min(motionOffset, MOTION_OFFSET_X_MAX);
+    }
+    cameraSpringDamping.update(targetPos.add(vec2(motionOffset, 0)));
+    if (cameraPos.x < VIEW_WIDTH / 2) {
+      cameraPos.x = VIEW_WIDTH / 2;
+    }
+    const levelSize = getLevelSize(currentLevel);
+    if (cameraPos.x > levelSize.x - VIEW_WIDTH / 2) {
+      cameraPos.x = levelSize.x - VIEW_WIDTH / 2;
+    }
+  } else {
+    cameraPos = vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2).add(vec2(-0.5, 0));
   }
   cameraScale = worldScale;
 }

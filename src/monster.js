@@ -13,8 +13,9 @@ const DRAGON_SLIME_CHARGE_TIME = 1.0;
 const DRAGON_SLIME_BEAM_SPEED = 0.45;
 const DRAGON_SLIME_BEAM_DAMAGE = 1;
 const DRAGON_SLIME_BEAM_RANGE = 50;
-const DRAGON_SLIME_STAGE_LOCK = 0;
-const DRAGON_SLIME_STAGE_FIRE = 1;
+const DRAGON_SLIME_STAGE_IDLE = 0;
+const DRAGON_SLIME_STAGE_LOCK = 1;
+const DRAGON_SLIME_STAGE_FIRE = 2;
 // Gain when unicorn jump over slime.
 const DASH_SLIME_JUMP_GAIN = 1.2;
 const DASH_SLIME_ANIM_SPEED = 12;  // frame/sec
@@ -48,12 +49,13 @@ class DragonSlime extends EngineObject {
     this._frameTimer = new Timer(1.0 / DRAGON_SLIME_ANIM_SPEED);
     this._caughtObject = undefined;
     this._caughtSide = 1;
-    this._stage = DRAGON_SLIME_STAGE_LOCK;
+    this._stage = DRAGON_SLIME_STAGE_IDLE;
     this._lockTimer = new Timer;
     this._lockTimer.unset();
     this._charge = undefined;
     this._fireLockY = undefined;
     this._lockTime = lockTime;
+    this._bossSlot = vec2();
     this._springHorizontal = new SpringDamping(this, 1, 0.06, 0.4, velocity, o => o.x, (o, v) => { o.x = v; });
     this._springVertical = new SpringDamping(this, 1, 0.06, 0.4, velocity, o => o.y, (o, v) => { o.y = v; });
     this.gravityScale = 0.0;
@@ -65,38 +67,12 @@ class DragonSlime extends EngineObject {
   }
 
   update() {
-    if (this._caughtObject) {
-      const lockTargetPos = this._getTargetPos();
-      const motionTargetPos = this._stage == DRAGON_SLIME_STAGE_FIRE && this._fireLockY !== undefined ?
-        vec2(lockTargetPos.x, this._fireLockY) :
-        lockTargetPos;
-      this._springHorizontal.update(motionTargetPos);
-      this._springVertical.update(motionTargetPos);
-      if (this._stage == DRAGON_SLIME_STAGE_LOCK) {
-        if (this._isLockTarget(lockTargetPos)) {
-          if (!this._lockTimer.isSet()) {
-            this._lockTimer.set(this._lockTime);
-          }
-        } else {
-          this._lockTimer.unset();
-        }
-        if (this._lockTimer.elapsed()) {
-          this._stage = DRAGON_SLIME_STAGE_FIRE;
-          this._lockTimer.unset();
-          this._fireLockY = this.pos.y;
-          this._startCharge();
-        }
-      } else if (this._stage == DRAGON_SLIME_STAGE_FIRE) {
-        if (!this._isFiring()) {
-          this._charge = undefined;
-          this._stage = DRAGON_SLIME_STAGE_LOCK;
-          this._fireLockY = undefined;
-        }
-      }
+    if (currentLevel != BOSS_LEVEL) {
+      this._updateNormalState();
+    } else {
+      this._updateBossState();
     }
-
     super.update();
-
     if (this._frameTimer.elapsed()) {
       this._frameTimer.set(1.0 / DRAGON_SLIME_ANIM_SPEED);
       this._currentFrame = (this._currentFrame + 1) % DRAGON_SLIME_FRAME_COUNT;
@@ -143,12 +119,78 @@ class DragonSlime extends EngineObject {
 
   setTargetObject(o) {
     this._caughtObject = o;
-    // this._caughtSide = sign(o.pos.x - this.pos.x) || this._caughtSide;
-    // DEBUG
     this._caughtSide = 1;
-    this._stage = DRAGON_SLIME_STAGE_LOCK;
     this._lockTimer.unset();
     this._fireLockY = undefined;
+  }
+
+  setBossSlot(pos) {
+    this._bossSlot = pos;
+  }
+
+  // Input 0 to left, 1 to right.
+  setFaceDir(toLeft) {
+    this._caughtSide = toLeft;
+  }
+
+  fire(laserCount = 1) {
+    if (this._isFiring()) {
+      return;
+    }
+    this._stage = DRAGON_SLIME_STAGE_FIRE;
+    this._lockTimer.unset();
+    this._fireLockY = this.pos.y;
+    this._startCharge(laserCount);
+  }
+
+  _updateNormalState() {
+    if (!this._caughtObject) {
+      return;
+    }
+    if (this._stage == DRAGON_SLIME_STAGE_IDLE) {
+      this._stage = DRAGON_SLIME_STAGE_LOCK;
+    } else if (this._stage == DRAGON_SLIME_STAGE_LOCK) {
+      const targetPos = this._getTargetPos();
+      const motionTargetPos = targetPos;
+      this._springHorizontal.update(motionTargetPos);
+      this._springVertical.update(motionTargetPos);
+      this._handleLock(targetPos);
+    } else if (this._stage == DRAGON_SLIME_STAGE_FIRE) {
+      const targetPos = this._getTargetPos();
+      const motionTargetPos = vec2(targetPos.x, this._fireLockY);
+      this._springHorizontal.update(motionTargetPos);
+      this._springVertical.update(motionTargetPos);
+      this._handleFire();
+    }
+  }
+
+  _updateBossState() {
+    this._springHorizontal.update(this._bossSlot);
+    this._springVertical.update(this._bossSlot);
+    if (this._stage == DRAGON_SLIME_STAGE_FIRE) {
+      this._handleFire();
+    }
+  }
+
+  _handleLock(targetPos) {
+    if (this._isLockTarget(targetPos)) {
+      if (!this._lockTimer.isSet()) {
+        this._lockTimer.set(this._lockTime);
+      }
+    } else {
+      this._lockTimer.unset();
+    }
+    if (this._lockTimer.elapsed()) {
+      this.fire();
+    }
+  }
+
+  _handleFire() {
+    if (!this._isFiring()) {
+      this._charge = undefined;
+      this._stage = DRAGON_SLIME_STAGE_IDLE;
+      this._fireLockY = undefined;
+    }
   }
 
   _getTargetPos() {
@@ -166,17 +208,31 @@ class DragonSlime extends EngineObject {
     return this._charge && !this._charge.destroyed;
   }
 
-  _startCharge() {
+  _startCharge(laserCount) {
     const length = DRAGON_SLIME_CHARGE_LENGTH * this._caughtSide;
+    this.children.forEach(o => o.destroy());
+    this.children = [];
     this._charge = new ChargeLaser(this.pos.copy(), length, DRAGON_SLIME_CHARGE_TIME,
-      () => this._shootRainbowBeam());
+      () => this._shootRainbowBeam(vec2()));
     this.addChild(this._charge, vec2());
+    for (let i = 1; i < laserCount; i++) {
+      const offset1 = vec2(0, -i);
+      const pos1 = this.pos.copy().add(offset1);
+      const charge1 = new ChargeLaser(pos1, length, DRAGON_SLIME_CHARGE_TIME,
+        () => this._shootRainbowBeam(offset1));
+      this.addChild(charge1, offset1);
+      const offset2 = vec2(0, i);
+      const pos2 = this.pos.copy().add(offset2);
+      const charge2 = new ChargeLaser(pos2, length, DRAGON_SLIME_CHARGE_TIME,
+        () => this._shootRainbowBeam(offset2));
+      this.addChild(charge2, offset2);
+    }
   }
 
-  _shootRainbowBeam() {
+  _shootRainbowBeam(offset) {
     const speed = DRAGON_SLIME_BEAM_SPEED * this._caughtSide;
     const dir = PRISM_TILE_DIR_RIGHT;
-    new RainbowBeam(this.pos.copy(), this, speed, dir, DRAGON_SLIME_BEAM_DAMAGE, DRAGON_SLIME_BEAM_RANGE);
+    new RainbowBeam(this.pos.copy().add(offset), this, speed, dir, DRAGON_SLIME_BEAM_DAMAGE, DRAGON_SLIME_BEAM_RANGE);
   }
 }
 
@@ -247,5 +303,13 @@ class StupidSlime extends EngineObject {
     this.velocity.x = blocked || cliff ? 0 : reached ? targetX - this.pos.x : direction * speed;
     this.mirror = direction > 0;
     return { blocked, cliff, reached };
+  }
+}
+
+class DragonSpawnPoint extends EngineObject {
+  constructor(pos) {
+    super(pos);
+    this.gravityScale = 0.0;
+    this.setCollision(false, false, false, false);
   }
 }

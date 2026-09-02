@@ -41,6 +41,7 @@ const RENDER_ORDER_CHARACTER = 10;
 const RENDER_ORDER_BULLET = 11;
 const RENDER_ORDER_FOREGROUND = 110;
 
+// Remap colors to change theme.
 const TILE_COLOR_REMAP = [
   [0x322b28, 0x59c135, 0xb9bffb],
   [0x4a5462, 0x14a02e, 0xffffff],
@@ -54,6 +55,8 @@ const INPUT_KEY_DOWN = 'ArrowDown';
 const INPUT_KEY_LEFT = 'ArrowLeft';
 const INPUT_KEY_RIGHT = 'ArrowRight';
 const INPUT_KEY_FIRE = 0;
+
+const BOSS_LEVEL = 3;
 
 let worldScale = TILE_SIZE;
 let currentLevel = 0;

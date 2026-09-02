@@ -10,6 +10,7 @@ const watchMode = process.argv.includes('--watch');
 const OBJECT_SPECS = {
   StupidSlime: ['patrolSight'],
   DragonSlime: ['velocity', 'lockTime'],
+  DragonSpawnPoint: [],
 };
 
 function readLevels() {
