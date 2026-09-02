@@ -4,6 +4,7 @@ const DRAGON_SLIME_ANIM_SPEED = 4;  // frame/sec
 const DRAGON_SLIME_FRAME_COUNT = 2;
 const DRAGON_SLIME_DRAW_X_OFFSETS = [0.3, 0.3];
 const DRAGON_SLIME_DRAW_Y_OFFSETS = [-0.1, 0.1];
+const DRAGON_SLIME_HORN_OFFSET = vec2(0.2, 0.1);
 const DRAGON_SLIME_ATTACK_DISTANCE = 11;
 const DRAGON_SLIME_LOCK_DISTANCE = 0.5;
 const DRAGON_SLIME_VELOCITY = vec2(0.2, 0.05);
@@ -37,8 +38,11 @@ class DragonSlime extends EngineObject {
     const colliderSize = vec2(0.9, 0.9);
     super(pos, colliderSize, undefined, 0, new Color, RENDER_ORDER_CHARACTER);
     const res = createAsepriteResource(slimeAsepriteData, TEXTURE_INDEX_SLIME, ['body', 'wing']);
+    const unicornRes = createAsepriteResource(unicornAsepriteData, TEXTURE_INDEX_UNICORN, ['body', 'head', 'horn']);
     this._frameInfoWing = res.wing;
     this._frameInfoBody = res.body;
+    this._frameInfoHorn = unicornRes.horn;
+    this._hasHorn = true;
     this._currentFrame = 0;
     this._offsetFrame = 0;
     this._frameTimer = new Timer(1.0 / DRAGON_SLIME_ANIM_SPEED);
@@ -116,6 +120,14 @@ class DragonSlime extends EngineObject {
       drawAsepriteFrame(this._frameInfoBody[currentFrame], drawPos, scaleY, undefined, 0, this.mirror);
       drawAsepriteFrame(this._frameInfoWing[currentFrame], drawPos, scaleY, undefined, 0, this.mirror);
     }
+    if (this._hasHorn) {
+      const hornPos = drawPos.add(DRAGON_SLIME_HORN_OFFSET);
+      drawAsepriteFrame(this._frameInfoHorn[currentFrame], hornPos, scaleY, undefined, 0, this.mirror);
+    }
+  }
+
+  setHasHorn(has) {
+    this._hasHorn = has;
   }
 
   collideWithObject(o) {

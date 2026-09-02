@@ -72,9 +72,11 @@ class Unicorn extends EngineObject {
   constructor(pos) {
     const colliderSize = vec2(0.9, 0.9);
     super(pos, colliderSize, undefined, 0, new Color, RENDER_ORDER_CHARACTER);
-    const res = createAsepriteResource(unicornAsepriteData, TEXTURE_INDEX_UNICORN, ['body', 'head']);
+    const res = createAsepriteResource(unicornAsepriteData, TEXTURE_INDEX_UNICORN, ['body', 'head', 'horn']);
     this._frameInfoHead = res.head;
     this._frameInfoBody = res.body;
+    this._frameInfoHorn = res.horn;
+    this._hasHorn = false;
     this._moveX = 0;
     this._moveY = 0;
     this._lastMoveX = 1;
@@ -174,7 +176,14 @@ class Unicorn extends EngineObject {
     const drawPos = this.pos.add(scaleAnchorOffset);
     const headDrawPos = headPos.add(scaleAnchorOffset).add(drawOffset);
     drawAsepriteFrame(this._frameInfoHead[this._runFrame], headDrawPos, runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
+    if (this._hasHorn) {
+      drawAsepriteFrame(this._frameInfoHorn[this._runFrame], headDrawPos, runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
+    }
     drawAsepriteFrame(this._frameInfoBody[this._runFrame], drawPos.add(vec2(0, bodyRunBob)).add(drawOffset), runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
+  }
+
+  setHasHorn(has) {
+    this._hasHorn = has;
   }
 
   getFacingX() {

@@ -1,6 +1,6 @@
 { "frames": {
    "unicorn (body) 0.aseprite": {
-    "frame": { "x": 20, "y": 1, "w": 9, "h": 8 },
+    "frame": { "x": 1, "y": 1, "w": 9, "h": 8 },
     "rotated": false,
     "trimmed": true,
     "spriteSourceSize": { "x": 5, "y": 16, "w": 9, "h": 8 },
@@ -8,7 +8,7 @@
     "duration": 100
    },
    "unicorn (body) 1.aseprite": {
-    "frame": { "x": 31, "y": 1, "w": 6, "h": 8 },
+    "frame": { "x": 12, "y": 1, "w": 6, "h": 8 },
     "rotated": false,
     "trimmed": true,
     "spriteSourceSize": { "x": 7, "y": 16, "w": 6, "h": 8 },
@@ -16,7 +16,7 @@
     "duration": 100
    },
    "unicorn (body) 2.aseprite": {
-    "frame": { "x": 20, "y": 11, "w": 9, "h": 8 },
+    "frame": { "x": 20, "y": 1, "w": 9, "h": 8 },
     "rotated": false,
     "trimmed": true,
     "spriteSourceSize": { "x": 5, "y": 16, "w": 9, "h": 8 },
@@ -24,7 +24,7 @@
     "duration": 100
    },
    "unicorn (head) 0.aseprite": {
-    "frame": { "x": 1, "y": 1, "w": 17, "h": 15 },
+    "frame": { "x": 31, "y": 1, "w": 17, "h": 15 },
     "rotated": false,
     "trimmed": true,
     "spriteSourceSize": { "x": 0, "y": 5, "w": 17, "h": 15 },
@@ -32,7 +32,7 @@
     "duration": 100
    },
    "unicorn (head) 1.aseprite": {
-    "frame": { "x": 1, "y": 1, "w": 17, "h": 15 },
+    "frame": { "x": 31, "y": 1, "w": 17, "h": 15 },
     "rotated": false,
     "trimmed": true,
     "spriteSourceSize": { "x": 0, "y": 5, "w": 17, "h": 15 },
@@ -40,10 +40,34 @@
     "duration": 100
    },
    "unicorn (head) 2.aseprite": {
-    "frame": { "x": 1, "y": 1, "w": 17, "h": 15 },
+    "frame": { "x": 31, "y": 1, "w": 17, "h": 15 },
     "rotated": false,
     "trimmed": true,
     "spriteSourceSize": { "x": 0, "y": 5, "w": 17, "h": 15 },
+    "sourceSize": { "w": 21, "h": 24 },
+    "duration": 100
+   },
+   "unicorn (horn) 0.aseprite": {
+    "frame": { "x": 50, "y": 1, "w": 8, "h": 9 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 2, "y": 0, "w": 8, "h": 9 },
+    "sourceSize": { "w": 21, "h": 24 },
+    "duration": 100
+   },
+   "unicorn (horn) 1.aseprite": {
+    "frame": { "x": 50, "y": 1, "w": 8, "h": 9 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 2, "y": 0, "w": 8, "h": 9 },
+    "sourceSize": { "w": 21, "h": 24 },
+    "duration": 100
+   },
+   "unicorn (horn) 2.aseprite": {
+    "frame": { "x": 50, "y": 1, "w": 8, "h": 9 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 2, "y": 0, "w": 8, "h": 9 },
     "sourceSize": { "w": 21, "h": 24 },
     "duration": 100
    }
@@ -53,13 +77,14 @@
   "version": "1.3.18.3-x64",
   "image": "unicorn.png",
   "format": "I8",
-  "size": { "w": 38, "h": 20 },
+  "size": { "w": 59, "h": 17 },
   "scale": "1",
   "frameTags": [
   ],
   "layers": [
    { "name": "body", "opacity": 255, "blendMode": "normal" },
-   { "name": "head", "opacity": 255, "blendMode": "normal" }
+   { "name": "head", "opacity": 255, "blendMode": "normal" },
+   { "name": "horn", "opacity": 255, "blendMode": "normal" }
   ],
   "slices": [
   ]
