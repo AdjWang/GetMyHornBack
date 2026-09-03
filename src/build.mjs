@@ -93,6 +93,7 @@ const dataFiles =
     'assets/objects.png',
     'assets/unicorn.png',
     'assets/slime.png',
+    'assets/cloud.png',
 ];
 
 console.log(`Building ${PROGRAM_NAME}...`);

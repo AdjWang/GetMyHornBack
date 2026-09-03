@@ -10,6 +10,8 @@ const IMAGE_SOURCES = [
   'assets/objects.png',
   'assets/unicorn.png',
   'assets/slime.png',
+  // cloud.png sprite used by the background's cloud layer.
+  'assets/cloud.png',
 ];
 
 const THEME_INDEX_ROCK = 0;
@@ -20,6 +22,7 @@ const TEXTURE_INDEX_TILESET = 0;
 const TEXTURE_INDEX_LEAF = 1;
 const TEXTURE_INDEX_UNICORN = 2;
 const TEXTURE_INDEX_SLIME = 3;
+const TEXTURE_INDEX_CLOUD = 4;
 
 const LEAF_SIZE = 8;
 
