@@ -16,7 +16,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 async function gameInit() {
-  await loadLevel(3);
+  await loadLevel(1);
   initWorldCamera();
   background.updatePos(cameraPos);
   foreground.updatePos(cameraPos);

@@ -27,8 +27,8 @@ const SIZE_LIMIT = 13312; // JS13K limit in bytes
 // delete the whole subsystem. See "Saving space" in README.md for measurements.
 const FEATURES =
 {
-    webgl:   true, // WebGL renderer, disabling falls back to canvas 2D
-    touch:   true, // touch input and the on screen touch gamepad
+    webgl:   false, // WebGL renderer, disabling falls back to canvas 2D
+    touch:   false, // touch input and the on screen touch gamepad
     gamepad: true, // gamepad input
     sound:   true, // all audio
     physics: true, // collision response, both object vs object and object vs tile

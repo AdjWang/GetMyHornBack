@@ -296,16 +296,20 @@ async function loadLevel(idx) {
   if (idx == BOSS_LEVEL) {
     bossLevel = new BossLevel;
   } else {
-    bossLevel.destroy();
-    bossLevel = undefined;
+    if (bossLevel) {
+      bossLevel.destroy();
+      bossLevel = undefined;
+    }
   }
 }
 
 // TODO: remove eventually
 function updateLevelEvent() {
   if (mouseIsDown(0)) {
-    bossLevel.start();
-    // levelObjInsts[0].fire(6, 1.5);
+    if (bossLevel) {
+      bossLevel.start();
+      // levelObjInsts[0].fire(6, 1.5);
+    }
   }
   if (bossLevel) {
     bossLevel.update();
