@@ -16,6 +16,9 @@ class RainbowBeam extends EngineObject {
     super(pos, vec2(0.01, 0.01));
     const colors = RAINBOW_COLORS;
     this.color = colors[colors.length / 2 | 0];
+    if (speed < 0) {
+      speed = -speed;
+    }
     let velocity = vec2(speed, 0);
     if (dir == PRISM_TILE_DIR_UP) {
       velocity = vec2(0, speed);

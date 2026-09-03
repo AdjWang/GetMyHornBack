@@ -115,6 +115,7 @@ class DragonSlime extends EngineObject {
 
   // Input 0 to left, 1 to right.
   setFaceDir(toLeft) {
+    // -1 to left, 1 to right.
     this._caughtSide = toLeft * 2 - 1;
     this.mirror = this._caughtSide > 0;
   }
@@ -216,8 +217,8 @@ class DragonSlime extends EngineObject {
   }
 
   _shootRainbowBeam(offset) {
-    const speed = DRAGON_SLIME_BEAM_SPEED * this._caughtSide;
-    const dir = PRISM_TILE_DIR_RIGHT;
+    const speed = DRAGON_SLIME_BEAM_SPEED;
+    const dir = this._caughtSide < 0 ? PRISM_TILE_DIR_LEFT : PRISM_TILE_DIR_RIGHT;
     new RainbowBeam(this.pos.copy().add(offset), this, speed, dir, DRAGON_SLIME_BEAM_DAMAGE, DRAGON_SLIME_BEAM_RANGE);
   }
 }
