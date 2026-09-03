@@ -299,4 +299,5 @@ class DragonSpawnPoint extends EngineObject {
     this.gravityScale = 0.0;
     this.setCollision(false, false, false, false);
   }
+  render() { }
 }

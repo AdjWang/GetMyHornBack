@@ -80,14 +80,14 @@ const LEVEL3 = [
   0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 6, 6, 6, 6, 6, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0,
   0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0,
   0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0
+  0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0
 ];
 
 const START_POINT = [
   vec2(30, 3),
   vec2(200, 10),
   vec2(223, 3),
-  vec2(4, 3),
+  vec2(15, 13),
 ];
 
 const LEVELS = [
@@ -295,9 +295,6 @@ async function loadLevel(idx) {
   }
   if (idx == BOSS_LEVEL) {
     bossLevel = new BossLevel;
-    // levelObjInsts[0].setBossSlot(levelObjInsts[0].pos);
-    // levelObjInsts[0].setBossSlot(levelObjInsts[2].pos);
-    levelObjInsts[0].setBossSlot(levelObjInsts[3].pos);
   } else {
     bossLevel.destroy();
     bossLevel = undefined;
@@ -307,7 +304,8 @@ async function loadLevel(idx) {
 // TODO: remove eventually
 function updateLevelEvent() {
   if (mouseIsDown(0)) {
-    levelObjInsts[0].fire(6, 1.5);
+    bossLevel.start();
+    // levelObjInsts[0].fire(6, 1.5);
   }
   if (bossLevel) {
     bossLevel.update();
@@ -331,25 +329,27 @@ class BossLevel {
     ];
     this._bossMoveTimer = new Timer;
     this._bossFireTimer = new Timer;
-    // Start.
+    this._boss.setBossSlot(this._bossSlots[0]);
+  }
+
+  start() {
+    this._bossMoveTimer.unset();
     this._bossFireTimer.set(0.01);
   }
 
   update() {
     this._boss.setFaceDir(this._boss.pos.x < cameraPos.x ? 1 : 0);
-    if (this._bossMoveTimer.elapsed()) {
+    if (this._bossMoveTimer.isSet() && this._bossMoveTimer.elapsed()) {
       this._bossMoveTimer.unset();
       // Start to fire. Set timer including fire and cd.
       this._bossFireTimer.set(2.5);
       this._boss.fire(/*laserCount*/ 6, /*chargeTime*/ 1.5);
     }
-    if (this._bossFireTimer.elapsed()) {
+    if (this._bossFireTimer.isSet() && this._bossFireTimer.elapsed()) {
       this._bossFireTimer.unset();
       // Start to move. Set timer including move and aim.
       this._bossMoveTimer.set(1.5);
-      // const targetPos = randomSelect(this._bossSlots);
-      // DEBUG
-      const targetPos = this._bossSlots[3];
+      const targetPos = randomSelect(this._bossSlots);
       this._boss.setBossSlot(targetPos);
     }
     const tntCount = this._tntSlots.filter(pos => {
