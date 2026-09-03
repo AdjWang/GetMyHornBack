@@ -68,15 +68,15 @@ const LEVEL3 = [
   0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0,
   0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0,
   0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0,
-  0, 9, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 9, 0,
+  0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0,
   0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 6, 6, 6, 6, 6, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0,
   0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0,
   0, 0, 0, 6, 6, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 6, 0, 0, 0,
-  0, 9, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 9, 0,
+  0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0,
   0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 6, 6, 6, 6, 6, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0,
   0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0,
   0, 0, 0, 6, 6, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 6, 0, 0, 0,
-  0, 9, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 9, 0,
+  0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0,
   0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 6, 6, 6, 6, 6, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0,
   0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0,
   0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0,
@@ -318,20 +318,16 @@ class BossLevel {
   constructor() {
     this._boss = levelObjInsts[0];
     this._bossSlots = [
-      [
-        levelObjInsts[1].pos,
-        levelObjInsts[2].pos,
-        levelObjInsts[3].pos,
-      ],
-      [
-        levelObjInsts[4].pos,
-        levelObjInsts[5].pos,
-        levelObjInsts[6].pos,
-      ],
+      levelObjInsts[1].pos,
+      levelObjInsts[2].pos,
+      levelObjInsts[3].pos,
+      levelObjInsts[4].pos,
+      levelObjInsts[5].pos,
+      levelObjInsts[6].pos,
     ];
     this._tntSlots = [
-      [...this._bossSlots[0].map(pos => pos.add(vec2(-1, 0)))],
-      [...this._bossSlots[1].map(pos => pos.add(vec2(1, 0)))],
+      ...this._bossSlots.slice(0, 3).map(pos => pos.add(vec2(-1, 0))),
+      ...this._bossSlots.slice(3, 6).map(pos => pos.add(vec2(1, 0))),
     ];
     this._bossMoveTimer = new Timer;
     this._bossFireTimer = new Timer;
@@ -351,9 +347,23 @@ class BossLevel {
       this._bossFireTimer.unset();
       // Start to move. Set timer including move and aim.
       this._bossMoveTimer.set(1.5);
-      const side = randomInt(0, 1);
-      const targetPos = randomSelect(this._bossSlots[side]);
+      // const targetPos = randomSelect(this._bossSlots);
+      // DEBUG
+      const targetPos = this._bossSlots[3];
       this._boss.setBossSlot(targetPos);
+    }
+    const tntCount = this._tntSlots.filter(pos => {
+      const data = tileLayer.getData(pos);
+      if (data) {
+        return data.tile == TNT_TILE_ID;
+      }
+      return false;
+    }).length;
+    if (tntCount == 0) {
+      const pos = randomSelect(this._tntSlots);
+      tileLayer.setData(pos, new TileLayerData(TNT_TILE_ID, 0, false));
+      setTileCollisionData(pos, 1);
+      tileLayer.redraw();
     }
   }
 
