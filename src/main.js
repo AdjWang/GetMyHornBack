@@ -8,8 +8,9 @@
 'use strict';
 
 // game variables
-let backgroundMusic;
-let backgroundMusicVolume = 0.0;
+// Space seems not enough to put music in.
+// let backgroundMusic;
+// let backgroundMusicVolume = 0.0;
 
 // WebGL can be removed to save ~963 bytes - see "Disabling WebGL" in README.md
 
@@ -21,8 +22,8 @@ async function gameInit() {
   foreground.updatePos(cameraPos);
   gravity.y = -0.01;
 
-  backgroundMusic = new ZzFXMusic(THEME);
-  backgroundMusic.playMusic(backgroundMusicVolume, true);
+  // backgroundMusic = new ZzFXMusic(THEME);
+  // backgroundMusic.playMusic(backgroundMusicVolume, true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -31,9 +32,9 @@ function gameUpdate() {
   updateWorldCamera();
   background.updatePos(cameraPos);
   foreground.updatePos(cameraPos);
-  if (backgroundMusic) {
-    backgroundMusic.setVolume(backgroundMusicVolume);
-  }
+  // if (backgroundMusic) {
+  //   backgroundMusic.setVolume(backgroundMusicVolume);
+  // }
   updateLevelEvent();
 }
 

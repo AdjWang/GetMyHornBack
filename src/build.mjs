@@ -71,7 +71,8 @@ const sourceFiles =
     // game files
     'rdmath.js',
     'global.js',
-    'assets/music.js',
+    // Space seems not enough to put music in.
+    // 'assets/music.js',
     'assets/slimeResource.js',
     'assets/unicornResource.js',
     'resourceLoader.js',
