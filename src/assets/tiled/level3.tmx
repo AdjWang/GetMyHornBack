@@ -22,13 +22,13 @@
 </data>
  </layer>
  <objectgroup id="2" name="Ground">
-  <object id="2" name="dragon_slot_laser" type="DragonSpawnPoint" x="32" y="48" width="16" height="16"/>
-  <object id="3" name="dragon" type="DragonSlime" x="208" y="224" width="16" height="16">
+  <object id="2" name="dragon" type="DragonSlime" x="208" y="224" width="16" height="16">
    <properties>
     <property name="lockTime" type="float" value="0.2"/>
     <property name="velocity" value="vec2(0.3, 0.2)"/>
    </properties>
   </object>
+  <object id="3" name="dragon_slot_laser" type="DragonSpawnPoint" x="32" y="48" width="16" height="16"/>
   <object id="9" name="dragon_slot_laser" type="DragonSpawnPoint" x="32" y="112" width="16" height="16"/>
   <object id="10" name="dragon_slot_laser" type="DragonSpawnPoint" x="32" y="176" width="16" height="16"/>
   <object id="11" name="dragon_slot_laser" type="DragonSpawnPoint" x="384" y="48" width="16" height="16"/>

@@ -50,6 +50,16 @@ const TILE_COLOR_REMAP = [
   [0x221c1a, 0x423934, 0xe3e6ff],
 ];
 
+const RAINBOW_COLORS = [
+  new Color(1.0, 0.2, 0.0),
+  new Color(1.0, 0.5, 0.0),
+  new Color(1.0, 1.0, 0.0),
+  new Color(0.0, 0.8, 0.2),
+  new Color(0.0, 0.8, 1.0),
+  new Color(0.1, 0.2, 1.0),
+  new Color(0.6, 0.0, 1.0),
+];
+
 const INPUT_KEY_UP = 'ArrowUp';
 const INPUT_KEY_DOWN = 'ArrowDown';
 const INPUT_KEY_LEFT = 'ArrowLeft';

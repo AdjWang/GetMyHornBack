@@ -83,7 +83,7 @@ class DragonSlime extends EngineObject {
       drawAsepriteFrame(this._frameInfoWing[currentFrame], drawPos, scaleY, undefined, 0, this.mirror);
     }
     if (this._hasHorn) {
-      const hornPos = drawPos.add(DRAGON_SLIME_HORN_OFFSET);
+      const hornPos = drawPos.add(DRAGON_SLIME_HORN_OFFSET.multiply(vec2(this._caughtSide, 1)));
       drawAsepriteFrame(this._frameInfoHorn[currentFrame], hornPos, scaleY, undefined, 0, this.mirror);
     }
   }
@@ -105,7 +105,6 @@ class DragonSlime extends EngineObject {
 
   setTargetObject(o) {
     this._caughtObject = o;
-    this._caughtSide = 1;
     this._lockTimer.unset();
     this._fireLockY = undefined;
   }
@@ -116,7 +115,8 @@ class DragonSlime extends EngineObject {
 
   // Input 0 to left, 1 to right.
   setFaceDir(toLeft) {
-    this._caughtSide = toLeft;
+    this._caughtSide = toLeft * 2 - 1;
+    this.mirror = this._caughtSide > 0;
   }
 
   fire(laserCount = 1, chargeTime = 1.0) {

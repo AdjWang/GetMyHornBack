@@ -1,19 +1,12 @@
 'use strict';
 
+let bossLevel;
+
 const TILED_FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
 const TILED_FLIPPED_VERTICALLY_FLAG = 0x40000000;
 const TILED_FLIPPED_DIAGONALLY_FLAG = 0x20000000;
 const TILED_TILE_ID_MASK = 0x0fffffff;
 
-const RAINBOW_COLORS = [
-  new Color(1.0, 0.2, 0.0),
-  new Color(1.0, 0.5, 0.0),
-  new Color(1.0, 1.0, 0.0),
-  new Color(0.0, 0.8, 0.2),
-  new Color(0.0, 0.8, 1.0),
-  new Color(0.1, 0.2, 1.0),
-  new Color(0.6, 0.0, 1.0),
-];
 const LEVEL0 = [
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -135,8 +128,8 @@ const LEVELS_OBJS = [
     [ DragonSlime, tiledScreenToWorld(vec2(16, 128)), vec2(0.3, 0.2), 0.2 ]
   ],
   [
-    [ DragonSpawnPoint, tiledScreenToWorld(vec2(32, 48)) ],
     [ DragonSlime, tiledScreenToWorld(vec2(208, 224)), vec2(0.3, 0.2), 0.2 ],
+    [ DragonSpawnPoint, tiledScreenToWorld(vec2(32, 48)) ],
     [ DragonSpawnPoint, tiledScreenToWorld(vec2(32, 112)) ],
     [ DragonSpawnPoint, tiledScreenToWorld(vec2(32, 176)) ],
     [ DragonSpawnPoint, tiledScreenToWorld(vec2(384, 48)) ],
@@ -301,14 +294,68 @@ async function loadLevel(idx) {
     levelObjInsts[0].setTargetObject(player);
   }
   if (idx == BOSS_LEVEL) {
-    // levelObjInsts[1].setBossSlot(levelObjInsts[0].pos);
-    // levelObjInsts[1].setBossSlot(levelObjInsts[2].pos);
-    levelObjInsts[1].setBossSlot(levelObjInsts[3].pos);
+    bossLevel = new BossLevel;
+    // levelObjInsts[0].setBossSlot(levelObjInsts[0].pos);
+    // levelObjInsts[0].setBossSlot(levelObjInsts[2].pos);
+    levelObjInsts[0].setBossSlot(levelObjInsts[3].pos);
+  } else {
+    bossLevel.destroy();
+    bossLevel = undefined;
   }
 }
 
+// TODO: remove eventually
 function updateLevelEvent() {
   if (mouseIsDown(0)) {
-    levelObjInsts[1].fire(6, 1.5);
+    levelObjInsts[0].fire(6, 1.5);
   }
+  if (bossLevel) {
+    bossLevel.update();
+  }
+}
+
+class BossLevel {
+  constructor() {
+    this._boss = levelObjInsts[0];
+    this._bossSlots = [
+      [
+        levelObjInsts[1].pos,
+        levelObjInsts[2].pos,
+        levelObjInsts[3].pos,
+      ],
+      [
+        levelObjInsts[4].pos,
+        levelObjInsts[5].pos,
+        levelObjInsts[6].pos,
+      ],
+    ];
+    this._tntSlots = [
+      [...this._bossSlots[0].map(pos => pos.add(vec2(-1, 0)))],
+      [...this._bossSlots[1].map(pos => pos.add(vec2(1, 0)))],
+    ];
+    this._bossMoveTimer = new Timer;
+    this._bossFireTimer = new Timer;
+    // Start.
+    this._bossFireTimer.set(0.01);
+  }
+
+  update() {
+    this._boss.setFaceDir(this._boss.pos.x < cameraPos.x ? 1 : 0);
+    if (this._bossMoveTimer.elapsed()) {
+      this._bossMoveTimer.unset();
+      // Start to fire. Set timer including fire and cd.
+      this._bossFireTimer.set(2.5);
+      this._boss.fire(/*laserCount*/ 6, /*chargeTime*/ 1.5);
+    }
+    if (this._bossFireTimer.elapsed()) {
+      this._bossFireTimer.unset();
+      // Start to move. Set timer including move and aim.
+      this._bossMoveTimer.set(1.5);
+      const side = randomInt(0, 1);
+      const targetPos = randomSelect(this._bossSlots[side]);
+      this._boss.setBossSlot(targetPos);
+    }
+  }
+
+  destroy() {}
 }
