@@ -16,6 +16,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 async function gameInit() {
+  // glEnable = false;
   await loadLevel(3);
   initWorldCamera();
   background.updatePos(cameraPos);

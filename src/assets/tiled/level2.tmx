@@ -22,7 +22,7 @@
 </data>
  </layer>
  <objectgroup id="2" name="Ground">
-  <object id="10" name="dragon" type="DragonSlime" x="16" y="128" width="16" height="16">
+  <object id="10" name="dragon" type="DragonSlime" x="16" y="128" width="16" height="16" rotation="180">
    <properties>
     <property name="lockTime" type="float" value="0.2"/>
     <property name="velocity" value="vec2(0.3, 0.2)"/>

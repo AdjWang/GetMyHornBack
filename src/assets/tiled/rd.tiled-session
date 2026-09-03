@@ -59,10 +59,10 @@
         },
         "level3.tmx": {
             "scale": 2,
-            "selectedLayer": 1,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 254.75,
-                "y": 113
+                "x": 218.75,
+                "y": 139.5
             }
         },
         "test.tsx": {
