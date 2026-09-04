@@ -12,6 +12,7 @@ const BACKGROUND_PNG_CLOUD_COUNT = 5;
 const BACKGROUND_PNG_CLOUD_SIZE = 3.5; // width in world units when scale = 1
 const BACKGROUND_PNG_CLOUD_MIN_Y = 6;
 const BACKGROUND_PNG_CLOUD_MAX_Y = 14;
+const BACKGROUND_CLOUD_FILTER = "blur(2px)";
 
 class Background extends EngineObject {
   constructor(sceneTheme) {
@@ -80,12 +81,15 @@ class Background extends EngineObject {
   drawClouds() {
     const viewMin = this.pos.subtract(vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2));
     const camX = this.pos.x;
+    const prevFilter = mainContext.filter;
+    mainContext.filter = BACKGROUND_CLOUD_FILTER;
     for (const c of this.pngClouds) {
       const width = BACKGROUND_PNG_CLOUD_SIZE * c.scale;
       const height = width * 12 / 16; // match the 16x12 crop aspect
       const x = backgroundWrap(c.x - time * c.speed - camX * c.parallax, VIEW_WIDTH + width) - width;
       drawTile(viewMin.add(vec2(x + width / 2, c.y)), vec2(width, height), this.cloudTileInfo);
     }
+    mainContext.filter = prevFilter;
   }
 }
 

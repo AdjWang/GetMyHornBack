@@ -296,7 +296,7 @@ function getCameraSize() { return mainCanvasSize.scale(1/cameraScale); }
  *  @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} [context] - Canvas 2D context to draw to
  *  @memberof Draw */
 function drawTile(pos, size=vec2(1), tileInfo, color=new Color,
-    angle=0, mirror, additiveColor, useWebGL=glEnable, screenSpace, context, filter=undefined)
+    angle=0, mirror, additiveColor, useWebGL=glEnable, screenSpace, context)
 {
     ASSERT(!context || !useWebGL, 'context only supported in canvas 2D mode'); 
     ASSERT(typeof tileInfo !== 'number' || !tileInfo, 
@@ -356,9 +356,6 @@ function drawTile(pos, size=vec2(1), tileInfo, color=new Color,
                 const y = tileInfo.pos.y + tileFixBleedScale;
                 const w = tileInfo.size.x - 2*tileFixBleedScale;
                 const h = tileInfo.size.y - 2*tileFixBleedScale;
-                if (filter) {
-                    context.filter = filter;
-                }
                 context.globalAlpha = color.a; // only alpha is supported
                 context.drawImage(textureInfo.image, x, y, w, h, -.5, -.5, 1, 1);
                 context.globalAlpha = 1; // set back to full alpha
