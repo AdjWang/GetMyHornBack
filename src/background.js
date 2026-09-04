@@ -27,9 +27,11 @@ class Background extends EngineObject {
     super(vec2(), vec2(), undefined, 0, new Color, RENDER_ORDER_BACKGROUND);
     this.mass = 0;
     this.gravityScale = 0;
-    this.colorTheme = sceneTheme == THEME_INDEX_ROCK
-      ? BACKGROUND_COLOR_THEME_NIGHT : BACKGROUND_COLOR_THEME_DAY;
-    this.bands = BACKGROUND_BAND_COLORS[this.colorTheme];
+    if (sceneTheme == THEME_INDEX_ROCK) {
+      this.bands = BACKGROUND_BAND_COLORS[BACKGROUND_COLOR_THEME_NIGHT];
+    } else {
+      this.bands = BACKGROUND_BAND_COLORS[BACKGROUND_COLOR_THEME_DAY];
+    }
     this.pngClouds = [];
     for (let i = 0; i < BACKGROUND_PNG_CLOUD_COUNT; ++i) {
       this.pngClouds.push({
@@ -54,6 +56,33 @@ class Background extends EngineObject {
 
   drawSky() {
     this.drawBandSky();
+    this.drawClouds();
+  }
+
+  drawBandSky() {
+    const MOUNTAIN_DENSITY = [PI * 8, PI * 5, PI * 3];
+    const MOUNTAIN_AMPLITUDE = [0.05, 0.06, 0.07];
+    const HEIGHT = [0.6, 0.4, 0.2];
+    const scroll = [cameraPos.x * 0.05, cameraPos.x * 0.1, cameraPos.x * 0.2];
+    drawCanvas2D(vec2(), vec2(1), 0, false, (ctx) => {
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      const width = mainCanvasSize.x | 0;
+      const height = mainCanvasSize.y | 0;
+      ctx.fillStyle = this.bands[0];
+      ctx.fillRect(0, 0, width, height);
+      for (let x = 0; x < width; ++x) {
+        const ratio = x / width;
+        for (let i = 0; i < 3; ++i) {
+          const phase = lerp(0, MOUNTAIN_DENSITY[i], ratio) + scroll[i];
+          const y = (Math.sin(phase) * MOUNTAIN_AMPLITUDE[i] + HEIGHT[i]) * height;
+          ctx.fillStyle = this.bands[i + 1];
+          ctx.fillRect(x, height, 1, -y);
+        }
+      }
+    }, /*screenSpace*/ true);
+  }
+
+  drawClouds() {
     const viewMin = this.pos.subtract(vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2));
     const camX = this.pos.x;
     for (const c of this.pngClouds) {
@@ -61,34 +90,6 @@ class Background extends EngineObject {
       const height = width * 12 / 16; // match the 16x12 crop aspect
       const x = backgroundWrap(c.x - time * c.speed - camX * c.parallax, VIEW_WIDTH + width) - width;
       drawTile(viewMin.add(vec2(x + width / 2, c.y)), vec2(width, height), this.cloudTileInfo);
-    }
-  }
-
-  drawBandSky() {
-    const viewMin = this.pos.subtract(vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2));
-    const camX = this.pos.x;
-    const bands = this.bands;
-    const bandHeight = VIEW_HEIGHT / bands.length;
-    for (let x = 0; x < VIEW_WIDTH; x += BACKGROUND_WAVE_STEP) {
-      let prevCanvasY = 0;
-      for (let b = 0; b < bands.length; ++b) {
-        let canvasY;
-        if (b == bands.length - 1) {
-          canvasY = VIEW_HEIGHT; // last band is flat and reaches the bottom of the view
-        } else {
-          // phase = idle flow over time + camera parallax (far curves barely move, near follow faster)
-          const phase = x * BACKGROUND_WAVE_FREQUENCY
-            + time * BACKGROUND_WAVE_SCROLL_SPEED
-            + camX * BACKGROUND_WAVE_FREQUENCY * BACKGROUND_WAVE_PARALLAX[b]
-            + b * BACKGROUND_WAVE_PHASE_STEP;
-          canvasY = (b + 1) * bandHeight + Math.sin(phase) * BACKGROUND_WAVE_AMPLITUDE;
-        }
-        const topWorld = viewMin.y + VIEW_HEIGHT - prevCanvasY;
-        const bottomWorld = viewMin.y + VIEW_HEIGHT - canvasY;
-        drawRect(viewMin.add(vec2(x + BACKGROUND_WAVE_STEP / 2, (topWorld + bottomWorld) / 2)),
-          vec2(BACKGROUND_WAVE_STEP, topWorld - bottomWorld), bands[b]);
-        prevCanvasY = canvasY;
-      }
     }
   }
 }
