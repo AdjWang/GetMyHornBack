@@ -52,7 +52,7 @@ class Background extends EngineObject {
 
   drawBandSky() {
     const MOUNTAIN_DENSITY = [PI * 8, PI * 5, PI * 3];
-    const MOUNTAIN_AMPLITUDE = [0.05, 0.06, 0.07];
+    const MOUNTAIN_AMPLITUDE = [0.03, 0.05, 0.08];
     const HEIGHT = [0.6, 0.4, 0.2];
     const scroll = [cameraPos.x * 0.05, cameraPos.x * 0.1, cameraPos.x * 0.2];
     const MOUNTAIN_PIXEL_STEP = 3;
