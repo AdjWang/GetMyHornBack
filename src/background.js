@@ -6,15 +6,6 @@ const BACKGROUND_BAND_COLORS = [
   [new Color(.52, .84, 1), new Color(.7, .91, 1), new Color(.91, .97, 1), new Color(1, .94, .74)],
   [new Color(.02, .07, .29), new Color(.04, .09, .35), new Color(.06, .12, .4), new Color(.15, .19, .52)],
 ];
-// The sky is divided into bands by 3 sine curves. The curves flow over time (idle scroll), and each
-// curve additionally slides with the camera by its own parallax factor: curve 0 sits high
-// (far -> slow), curve 2 sits low (near -> fast).
-const BACKGROUND_WAVE_AMPLITUDE = 1.6;
-const BACKGROUND_WAVE_FREQUENCY = 0.28;
-const BACKGROUND_WAVE_PHASE_STEP = 1.7;
-const BACKGROUND_WAVE_SCROLL_SPEED = 0.6; // phase growth per second, moves the curves while idle
-const BACKGROUND_WAVE_PARALLAX = [0.15, 0.4, 0.7];
-const BACKGROUND_WAVE_STEP = 0.5;
 // Clouds are drawn from the cloud.png sprite (crop its 16x12 cloud body, enlarge when drawn).
 // They are far away, so their camera parallax stays small.
 const BACKGROUND_PNG_CLOUD_COUNT = 5;
@@ -64,19 +55,23 @@ class Background extends EngineObject {
     const MOUNTAIN_AMPLITUDE = [0.05, 0.06, 0.07];
     const HEIGHT = [0.6, 0.4, 0.2];
     const scroll = [cameraPos.x * 0.05, cameraPos.x * 0.1, cameraPos.x * 0.2];
+    const MOUNTAIN_PIXEL_STEP = 3;
     drawCanvas2D(vec2(), vec2(1), 0, false, (ctx) => {
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       const width = mainCanvasSize.x | 0;
       const height = mainCanvasSize.y | 0;
+      ctx.shadowBlur = 15;
       ctx.fillStyle = this.bands[0];
       ctx.fillRect(0, 0, width, height);
-      for (let x = 0; x < width; ++x) {
-        const ratio = x / width;
+      for (let x = 0; x < width; x += MOUNTAIN_PIXEL_STEP) {
+        const ratio = (x + MOUNTAIN_PIXEL_STEP / 2) / width;
         for (let i = 0; i < 3; ++i) {
           const phase = lerp(0, MOUNTAIN_DENSITY[i], ratio) + scroll[i];
-          const y = (Math.sin(phase) * MOUNTAIN_AMPLITUDE[i] + HEIGHT[i]) * height;
+          const y = Math.floor(((Math.sin(phase) * MOUNTAIN_AMPLITUDE[i] + HEIGHT[i]) * height)
+                               / MOUNTAIN_PIXEL_STEP) * MOUNTAIN_PIXEL_STEP;
+          ctx.shadowColor = this.bands[i + 1];
           ctx.fillStyle = this.bands[i + 1];
-          ctx.fillRect(x, height, 1, -y);
+          ctx.fillRect(x, height, MOUNTAIN_PIXEL_STEP, -y);
         }
       }
     }, /*screenSpace*/ true);
