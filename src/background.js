@@ -9,10 +9,8 @@ const BACKGROUND_BAND_COLORS = [
 // Clouds are drawn from the cloud.png sprite (crop its 16x12 cloud body, enlarge when drawn).
 // They are far away, so their camera parallax stays small.
 const BACKGROUND_PNG_CLOUD_COUNT = 5;
-const BACKGROUND_PNG_CLOUD_SIZE = 3.5; // width in world units when scale = 1
 const BACKGROUND_PNG_CLOUD_MIN_Y = 6;
 const BACKGROUND_PNG_CLOUD_MAX_Y = 14;
-const BACKGROUND_CLOUD_FILTER = "blur(2px)";
 
 class Background extends EngineObject {
   constructor(sceneTheme) {
@@ -24,9 +22,14 @@ class Background extends EngineObject {
     } else {
       this.bands = BACKGROUND_BAND_COLORS[BACKGROUND_COLOR_THEME_DAY];
     }
+    // Crop the cloud body.
+    const cloud1 = new TileInfo(vec2(0, 0), vec2(16, 7), textureInfos[TEXTURE_INDEX_CLOUD]);
+    const cloud2 = new TileInfo(vec2(0, 7), vec2(16, 5), textureInfos[TEXTURE_INDEX_CLOUD]);
+    const clouds = [cloud1, cloud2];
     this.pngClouds = [];
     for (let i = 0; i < BACKGROUND_PNG_CLOUD_COUNT; ++i) {
       this.pngClouds.push({
+        cloud: clouds[i % clouds.length],
         x: randomRange(0, VIEW_WIDTH),
         y: randomRange(BACKGROUND_PNG_CLOUD_MIN_Y, BACKGROUND_PNG_CLOUD_MAX_Y),
         scale: randomRange(0.7, 1.6),
@@ -34,8 +37,6 @@ class Background extends EngineObject {
         speed: randomRange(0.3, 0.9),
       });
     }
-    // Crop the cloud body (top 12 rows) out of the 16x16 cloud.png sprite.
-    this.cloudTileInfo = tile(vec2(), vec2(16, 12), TEXTURE_INDEX_CLOUD, 0);
   }
 
   render() {
@@ -82,12 +83,13 @@ class Background extends EngineObject {
     const viewMin = this.pos.subtract(vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2));
     const camX = this.pos.x;
     const prevFilter = mainContext.filter;
-    mainContext.filter = BACKGROUND_CLOUD_FILTER;
     for (const c of this.pngClouds) {
-      const width = BACKGROUND_PNG_CLOUD_SIZE * c.scale;
-      const height = width * 12 / 16; // match the 16x12 crop aspect
+      const width = 4 * c.scale;
+      const height = width * 6 / 16;
       const x = backgroundWrap(c.x - time * c.speed - camX * c.parallax, VIEW_WIDTH + width) - width;
-      drawTile(viewMin.add(vec2(x + width / 2, c.y)), vec2(width, height), this.cloudTileInfo);
+      // Draw with blur hierarchy according to distance.
+      mainContext.filter = `blur(${2 / c.scale}px)`;
+      drawTile(viewMin.add(vec2(x + width / 2, c.y)), vec2(width, height), c.cloud);
     }
     mainContext.filter = prevFilter;
   }
