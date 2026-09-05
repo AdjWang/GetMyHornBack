@@ -5,6 +5,8 @@ const CHARGE_THICKNESS_INNER = 0.12;
 const CHARGE_ALPHA = 0.2;
 const SOUND_EXPLODE = new Sound([1.3,.15,224,.01,,.16,,1.5,-8,-13,,,,.2,,.3,,.64,.01,,868]);
 const SOUND_EXPLODE_VOLUME = 0.7;
+const SOUND_SAVE = new Sound([.9,,683,,.07,.11,1,1.2,8,,384,.05,,,,,,.97,.02,,117]);
+const SOUND_SAVE_VOLUME = 0.9;
 
 class Explode {
   constructor(pos, colors) {
@@ -156,4 +158,41 @@ class GhostTrail extends EngineObject {
       tileInfo: obj.tileInfo,
     };
   }
+}
+
+function saveSplash(pos) {
+  SOUND_SAVE.play(pos, SOUND_SAVE_VOLUME);
+  const emitter = new ParticleEmitter(
+    pos.copy(),                 // position
+    0,                          // angle
+    0.15,                       // emitSize
+    0.03,                       // emitTime
+    180,                        // emitRate
+    PI * 2,                     // emitConeAngle
+    undefined,                  // tileInfo
+    new Color,                  // colorStartA
+    new Color,                  // colorStartB
+    new Color,                  // colorEndA
+    new Color,                  // colorEndB
+    0.28,                       // particleTime
+    0.18,                       // sizeStart
+    0.05,                       // sizeEnd
+    0.16,                       // speed
+    0.1,                        // angleSpeed
+    1.0,                        // damping
+    1.0,                        // angleDamping
+    0.0,                        // gravityScale
+    PI,                         // particleConeAngle
+    0.2,                        // fadeRate
+    0.35,                       // randomness
+    false,                      // collideTiles
+    false                       // additive
+  );
+  RAINBOW_COLORS.forEach(color => {
+    const p = emitter.emitParticle();
+    p.pos = pos.add(randInCircle(0.08));
+    p.colorStart = color;
+    p.colorEndDelta = new Color(0, 0, 0, 0).subtract(color);
+  });
+  emitter.destroy();
 }
