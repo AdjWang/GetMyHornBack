@@ -81,12 +81,11 @@ class Background extends EngineObject {
 
   drawClouds() {
     const viewMin = this.pos.subtract(vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2));
-    const camX = this.pos.x;
     const prevFilter = mainContext.filter;
     for (const c of this.pngClouds) {
       const width = 4 * c.scale;
       const height = width * 6 / 16;
-      const x = backgroundWrap(c.x - time * c.speed - camX * c.parallax, VIEW_WIDTH + width) - width;
+      const x = backgroundWrap(c.x - time * c.speed - c.parallax, VIEW_WIDTH + width) - width;
       // Draw with blur hierarchy according to distance.
       mainContext.filter = `blur(${2 / c.scale}px)`;
       drawTile(viewMin.add(vec2(x + width / 2, c.y)), vec2(width, height), c.cloud);
