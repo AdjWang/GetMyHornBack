@@ -114,8 +114,7 @@ function gameRenderPost() {
     const unicornPos4 = vec2(storyBaseX + 26, storyBaseY + 2);
     drawUnicorn(unicornPos4, false, true, 1);
     drawMoveHint(unicornPos4.add(vec2(0.5, -0.3)), true);
-    drawAngryMark(unicornPos4.add(vec2(0.6, 0.6)));
-    drawTextOverlay('Get my horn back!', unicornPos4.add(vec2(3.7, 0.6)), 0.5, textColor);
+    drawTextOverlay('Get my horn back!', unicornPos4.add(vec2(3.0, 0.6)), 0.5, textColor);
 
     const entryBaseX = 57.5;
     const entryBaseY = 4;
@@ -127,8 +126,9 @@ function gameRenderPost() {
       drawTextOverlay("🔻", vec2(entryBaseX + x, entryBaseY - 0.7), 0.5, textColor);
     });
   }
-  // TODO
-  drawTextScreen('Rainbow Defense', vec2(mainCanvasSize.x / 2, worldScale * 2.2), worldScale * 2.5);
+  if (currentLevel == 0) {
+    drawTextScreen('GET MY HORN BACK', vec2(mainCanvasSize.x / 2, worldScale * 2.2), worldScale * 2.5);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
