@@ -3,6 +3,8 @@
 const CHARGE_THICKNESS_OUTER = 1.0;
 const CHARGE_THICKNESS_INNER = 0.12;
 const CHARGE_ALPHA = 0.2;
+const SOUND_CHARGE = new Sound([.7,,189,.02,.24,.14,,2.5,4,,,,,,,,,.75,.23,,286]);
+const SOUND_CHARGE_VOLUME = 0.7;
 const SOUND_EXPLODE = new Sound([1.3,.15,224,.01,,.16,,1.5,-8,-13,,,,.2,,.3,,.64,.01,,868]);
 const SOUND_EXPLODE_VOLUME = 0.7;
 const SOUND_SAVE = new Sound([.9,,683,,.07,.11,1,1.2,8,,384,.05,,,,,,.97,.02,,117]);
@@ -61,6 +63,7 @@ class ChargeLaser extends EngineObject {
     this.gravityScale = 0;
     this.renderOrder = RENDER_ORDER_BULLET;
     this.setCollision(false, false, false, false);
+    SOUND_CHARGE.play(pos, SOUND_CHARGE_VOLUME);
   }
 
   update() {

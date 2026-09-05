@@ -1,10 +1,9 @@
 'use strict';
 
 // Not so happy. Leave here as backup.
-// const SOUND_REFRACTION = new Sound([1.1, 0, 420, 0.02, 0.08, 0.18, 1, 1.9, 8, 0, 120, 0.04, 0.03]);
-// TODO: shorter
-const SOUND_REFRACTION = new Sound([,.15,94,,.12,.06,,2.9,13,48,,,.13,,,,,.7,.05,,-1417]);
-const SOUND_REFRACTION_VOLUME = 0.2;
+// const SOUND_BEAM = new Sound([1.1, 0, 420, 0.02, 0.08, 0.18, 1, 1.9, 8, 0, 120, 0.04, 0.03]);
+const SOUND_BEAM = new Sound([1.6,,329,.03,.07,.01,,2.2,13,-10,,,,,,,.16,.8,.08]);
+const SOUND_BEAM_VOLUME = 0.7;
 const MAX_REFRACTION_COUNT = 100;
 const BULLET_TRAIL_POINT_COUNT = 8;
 const BULLET_TRAIL_THICKNESS = 0.05;
@@ -43,6 +42,8 @@ class RainbowBeam extends EngineObject {
     this._colorOffsets = this._createColorOffsets(colors.length, this.velocity);
     this._trailPoints = [this.pos.copy()];
     this._refractionCount = refractionCount;
+
+    SOUND_BEAM.play(pos, SOUND_BEAM_VOLUME);
   }
 
   update() {
@@ -86,7 +87,6 @@ class RainbowBeam extends EngineObject {
           tileLayer.redraw();
         } else if (data.tile == PRISM_TILE_ID) {
           if (data.direction != this._prismDirection) {
-            SOUND_REFRACTION.play(pos, SOUND_REFRACTION_VOLUME);
             if (this._refractionCount < 0 || this._refractionCount < MAX_REFRACTION_COUNT) {
               const speed = this.velocity.length();
               const nextCount = this._refractionCount < 0 ? -1 : this._refractionCount + 1;
