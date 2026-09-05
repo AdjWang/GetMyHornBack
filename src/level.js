@@ -85,8 +85,7 @@ const LEVEL3 = [
 
 const START_POINT = [
   vec2(36, 3),
-  // vec2(2, 10),
-  vec2(200, 10),
+  vec2(2, 10),
   vec2(2, 3),
   vec2(15, 13),
 ];
@@ -419,6 +418,7 @@ class BossLevel {
 
 function saveProgress(pos) {
   const data = {
+    level: currentLevel,
     unicorn: pos,
     dragon: (dragon && dragon.hasTarget()) ? dragon.pos : undefined,
   };
@@ -428,6 +428,9 @@ function saveProgress(pos) {
 function loadProgress() {
   const data = readSaveData(`${STORAGE_PREFIX}save`, undefined);
   if (!data || !data.unicorn) {
+    return;
+  }
+  if (data.level != currentLevel) {
     return;
   }
   if (player) {

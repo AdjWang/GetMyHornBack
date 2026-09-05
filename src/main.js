@@ -21,7 +21,7 @@ async function gameInit() {
   // Actually not remaping, just copy a unremaped image out to draw savepoint with
   // original color later in map. Normal tile(...) would get the grey one in game.
   savePointTileInfo = await createRemappedTextureInfo(TEXTURE_INDEX_TILESET, 0, 0);
-  await loadLevel(1);
+  await loadLevel(0);
   initWorldCamera();
   background.updatePos(cameraPos);
   foreground.updatePos(cameraPos);
@@ -67,7 +67,7 @@ function gameRenderPost() {
       drawAsepriteFrame(dragonRes.wing[0], basePos, 1, spriteColor, 0, mirror);
       drawAsepriteFrame(dragonRes.body[0], basePos, 1, spriteColor, 0, mirror);
       if (hasHorn) {
-        drawAsepriteFrame(unicornRes.horn[0], basePos, 1, spriteColor, 0, mirror);
+        drawAsepriteFrame(unicornRes.horn[0], basePos.add(DRAGON_SLIME_HORN_OFFSET), 1, spriteColor, 0, mirror);
       }
     };
     const drawSleepHint = function (basePos) {
@@ -102,18 +102,20 @@ function gameRenderPost() {
     drawMoveHint(dragonPos2, false);
     drawUnicorn(unicornPos2, true, false);
     drawSleepHint(unicornPos2);
+    drawTextOverlay('Horn == Power!', dragonPos2.add(vec2(0.1, 1.2)), 0.5, textColor);
     // Comic scene3.
     const dragonPos3 = vec2(storyBaseX + 20, storyBaseY + 2.5);
     const unicornPos3 = vec2(storyBaseX + 17, storyBaseY + 2);
     drawDragon(dragonPos3, true, true);
     drawMoveHint(dragonPos3, true);
     drawUnicorn(unicornPos3, false, false);
-    drawTextOverlay('?!', unicornPos3.add(vec2(-0.9, 0.5)), 0.5, textColor);
+    drawTextOverlay('What?!', unicornPos3.add(vec2(-0.9, 0.6)), 0.5, textColor);
     // Comic scene4.
     const unicornPos4 = vec2(storyBaseX + 26, storyBaseY + 2);
     drawUnicorn(unicornPos4, false, true, 1);
     drawMoveHint(unicornPos4.add(vec2(0.5, -0.3)), true);
     drawAngryMark(unicornPos4.add(vec2(0.6, 0.6)));
+    drawTextOverlay('Get my horn back!', unicornPos4.add(vec2(3.7, 0.6)), 0.5, textColor);
 
     const entryBaseX = 57.5;
     const entryBaseY = 4;
