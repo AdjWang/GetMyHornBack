@@ -34,8 +34,8 @@
             "scale": 0.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 499,
-                "y": 46
+                "x": 801,
+                "y": 127
             }
         },
         "level1.tmx": {
@@ -45,8 +45,8 @@
             "scale": 0.75,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 3182,
-                "y": 251.99999999999994
+                "x": 2048.6666666666665,
+                "y": 127.33333333333331
             }
         },
         "level2.tmx": {
@@ -56,8 +56,8 @@
             "scale": 2,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 3007.75,
-                "y": -14.25
+                "x": 2048.25,
+                "y": 127.75
             }
         },
         "level3.tmx": {
@@ -67,8 +67,8 @@
             "scale": 2,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 218.75,
-                "y": 139.5
+                "x": 216.25,
+                "y": 127.75
             }
         },
         "test.tsx": {

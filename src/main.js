@@ -86,37 +86,39 @@ function gameRenderPost() {
       });
     };
 
-    [35, 44, 53].forEach(x => {
-      drawLine(vec2(x, 3), vec2(x, 7), 0.1, textColor);
+    const baseX = 30;
+    const baseY = 5;
+    // Comic cut lines.
+    [baseX + 5, baseX + 14, baseX + 23].forEach(x => {
+      drawLine(vec2(x, baseY), vec2(x, baseY + 4), 0.1, textColor);
     });
-
-    let unicornPos1 = vec2(32, 5);
+    // Comic scene1.
+    let unicornPos1 = vec2(baseX + 2, baseY + 2);
     drawUnicorn(unicornPos1, true, false);
     drawSleepHint(unicornPos1);
-
-    const dragonPos2 = vec2(40, 5.5);
-    const unicornPos2 = vec2(38, 5);
+    // Comic scene2.
+    const dragonPos2 = vec2(baseX + 10, baseY + 2.5);
+    const unicornPos2 = vec2(baseX + 8, baseY + 2);
     drawDragon(dragonPos2, false, false);
     drawMoveHint(dragonPos2, false);
     drawUnicorn(unicornPos2, true, false);
     drawSleepHint(unicornPos2);
-
-    const dragonPos3 = vec2(50, 5.5);
-    const unicornPos3 = vec2(47, 5);
+    // Comic scene3.
+    const dragonPos3 = vec2(baseX + 20, baseY + 2.5);
+    const unicornPos3 = vec2(baseX + 17, baseY + 2);
     drawDragon(dragonPos3, true, true);
     drawMoveHint(dragonPos3, true);
     drawUnicorn(unicornPos3, false, false);
     drawTextOverlay('?!', unicornPos3.add(vec2(-0.9, 0.5)), 0.5, textColor);
-
-    const unicornPos4 = vec2(56, 5);
+    // Comic scene4.
+    const unicornPos4 = vec2(baseX + 26, baseY + 2);
     drawUnicorn(unicornPos4, false, true, 1);
     drawMoveHint(unicornPos4.add(vec2(0.5, -0.3)), true);
-    // drawSpeechBubble(unicornPos4, 1.0, 0.8);
     drawAngryMark(unicornPos4.add(vec2(0.6, 0.6)));
 
   }
   // TODO
-  drawTextScreen('Rainbow Defense', vec2(mainCanvasSize.x / 2, worldScale * 2.2), worldScale * 2.5);
+  // drawTextScreen('Rainbow Defense', vec2(mainCanvasSize.x / 2, worldScale * 2.2), worldScale * 2.5);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
