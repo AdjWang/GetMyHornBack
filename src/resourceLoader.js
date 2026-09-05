@@ -34,19 +34,10 @@ function drawAsepriteFrame(frame, pos, scaleY, color, angle, mirror) {
   drawTile(pos.add(offset), size, frame.tileInfo, color, angle, mirror);
 }
 
-async function remapTilesetColor(textureIndex, toIdx) {
-  const from_idx = THEME_INDEX_ROCK;
+function remapImageDataColors(imageData, from_idx, toIdx) {
   if (from_idx == toIdx) {
-    return;
+    return imageData;
   }
-  const imageSource = IMAGE_SOURCES[textureIndex];
-  const image = await loadImage(imageSource);
-  const canvas = document.createElement('canvas');
-  canvas.width = image.width;
-  canvas.height = image.height;
-  const context = canvas.getContext('2d');
-  context.drawImage(image, 0, 0);
-  const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
   const data = imageData.data;
   for (let i = 0; i < data.length; i += 4) {
     for (const remap of TILE_COLOR_REMAP) {
@@ -63,8 +54,25 @@ async function remapTilesetColor(textureIndex, toIdx) {
       }
     }
   }
+  return imageData;
+}
+
+async function createRemappedTextureInfo(textureIndex, toIdx, from_idx = THEME_INDEX_ROCK) {
+  const imageSource = IMAGE_SOURCES[textureIndex];
+  const image = await loadImage(imageSource);
+  const canvas = document.createElement('canvas');
+  canvas.width = image.width;
+  canvas.height = image.height;
+  const context = canvas.getContext('2d');
+  context.drawImage(image, 0, 0);
+  const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+  remapImageDataColors(imageData, from_idx, toIdx);
   context.putImageData(imageData, 0, 0);
-  textureInfos[textureIndex] = new TextureInfo(canvas);
+  return new TextureInfo(canvas);
+}
+
+async function remapTilesetColor(textureIndex, toIdx) {
+  textureInfos[textureIndex] = await createRemappedTextureInfo(textureIndex, toIdx);
 }
 
 function loadImage(source) {

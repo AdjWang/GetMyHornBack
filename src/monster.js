@@ -103,10 +103,18 @@ class DragonSlime extends EngineObject {
     return true;
   }
 
+  hasTarget() {
+    return this._caughtObject != undefined;
+  }
+
   setTargetObject(o) {
     this._caughtObject = o;
+    this._stage = DRAGON_SLIME_STAGE_IDLE;
     this._lockTimer.unset();
+    this._charge = undefined;
     this._fireLockY = undefined;
+    this.children.forEach(child => child.destroy());
+    this.children = [];
   }
 
   setBossSlot(pos) {

@@ -85,7 +85,8 @@ const LEVEL3 = [
 
 const START_POINT = [
   vec2(36, 3),
-  vec2(2, 10),
+  // vec2(2, 10),
+  vec2(200, 10),
   vec2(2, 3),
   vec2(15, 13),
 ];
@@ -111,6 +112,7 @@ function tiledScreenToWorld(pos) {
 const LEVELS_OBJS = [
   [],
   [
+    [ DragonSlime, tiledScreenToWorld(vec2(3120, 176)), vec2(0.2, 0.05), 0.6 ],
     [ StupidSlime, tiledScreenToWorld(vec2(576, 224)), 3 ],
     [ StupidSlime, tiledScreenToWorld(vec2(432, 176)), 3 ],
     [ StupidSlime, tiledScreenToWorld(vec2(1968, 128)), 3 ],
@@ -121,7 +123,6 @@ const LEVELS_OBJS = [
     [ StupidSlime, tiledScreenToWorld(vec2(2800, 144)), 3 ],
     [ StupidSlime, tiledScreenToWorld(vec2(2640, 144)), 3 ],
     [ StupidSlime, tiledScreenToWorld(vec2(2464, 112)), 3 ],
-    [ DragonSlime, tiledScreenToWorld(vec2(3120, 176)), vec2(0.2, 0.05), 0.6 ],
     [ StupidSlime, tiledScreenToWorld(vec2(512, 128)), 3 ]
   ],
   [
@@ -150,10 +151,13 @@ let savePoints = [];
 
 class SavePoint extends EngineObject {
   constructor(pos) {
-    super(pos.add(vec2(0.5)), vec2(1),
-      tile(SAVEPOINT_TILE_ID, 16, TEXTURE_INDEX_TILESET, 0));
+    const savedTileInfo = tile(SAVEPOINT_TILE_ID, 16, savePointTileInfo, 0);
+    const unsavedTileInfo = tile(SAVEPOINT_TILE_ID, 16, TEXTURE_INDEX_TILESET, 0);
+    super(pos.add(vec2(0.5)), vec2(1), unsavedTileInfo);
     this.gravityScale = 0.0;
     this.setCollision(false, false, false, false);
+    this._unsavedTileInfo = unsavedTileInfo;
+    this._savedTileInfo = savedTileInfo;
     this._saved = false;
   }
 
@@ -162,12 +166,13 @@ class SavePoint extends EngineObject {
       saveProgress(this.pos);
       saveSplash(this.pos);
       savePoints.forEach(sp => sp.setSaved(false));
-      this._saved = true;
+      this.setSaved(true);
     }
   }
 
   setSaved(enable) {
     this._saved = enable;
+    this.tileInfo = this._saved ? this._savedTileInfo : this._unsavedTileInfo;
   }
 }
 
@@ -272,6 +277,7 @@ function explodeTntCellClusterRecursive(centerPos, visited) {
 async function loadLevel(idx) {
   currentLevel = idx;
   player = new Unicorn(START_POINT[idx]);
+  savePoints = [];
   // Remap scene theme.
   const sceneTheme = LEVEL_THEMES[idx];
   await remapTilesetColor(0, sceneTheme);
@@ -316,12 +322,12 @@ async function loadLevel(idx) {
   if (idx == 0) {
     const speed = 0.1;
     new RainbowBeam(vec2(2, 6.5), undefined, speed, PRISM_TILE_DIR_RIGHT, 0, 10, -1);
-  }
-  if (idx == 2) {
+  } else if (idx == 1) {
+    dragon = levelObjInsts[0];
+  } else if (idx == 2) {
     dragon = levelObjInsts[0];
     levelObjInsts[0].setTargetObject(player);
-  }
-  if (idx == BOSS_LEVEL) {
+  } else if (idx == BOSS_LEVEL) {
     bossLevel = new BossLevel;
   } else {
     if (bossLevel) {
@@ -414,7 +420,7 @@ class BossLevel {
 function saveProgress(pos) {
   const data = {
     unicorn: pos,
-    dragon: dragon ? dragon.pos : undefined,
+    dragon: (dragon && dragon.hasTarget()) ? dragon.pos : undefined,
   };
   writeSaveData(`${STORAGE_PREFIX}save`, data);
 }
