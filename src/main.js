@@ -52,7 +52,7 @@ function gameRender() {
 
 function gameRenderPost() {
   if (currentLevel == 0) {
-    const spriteColor = new Color(1, 1, 1, 0.5);
+    const spriteColor = new Color(1, 1, 1, 0.6);
     const textColor = new Color(0, 0, 0, 0.5);
     const unicornRes = createAsepriteResource(unicornAsepriteData, TEXTURE_INDEX_UNICORN, ['body', 'head', 'horn']);
     const dragonRes = createAsepriteResource(slimeAsepriteData, TEXTURE_INDEX_SLIME, ['body', 'wing']);
@@ -86,36 +86,45 @@ function gameRenderPost() {
       });
     };
 
-    const baseX = 30;
-    const baseY = 5;
+    const storyBaseX = 28;
+    const storyBaseY = 5;
     // Comic cut lines.
-    [baseX + 5, baseX + 14, baseX + 23].forEach(x => {
-      drawLine(vec2(x, baseY), vec2(x, baseY + 4), 0.1, textColor);
+    [storyBaseX + 5, storyBaseX + 14, storyBaseX + 23].forEach(x => {
+      drawLine(vec2(x, storyBaseY), vec2(x, storyBaseY + 4), 0.1, new Color(0, 0, 0, 0.2));
     });
     // Comic scene1.
-    let unicornPos1 = vec2(baseX + 2, baseY + 2);
+    let unicornPos1 = vec2(storyBaseX + 2, storyBaseY + 2);
     drawUnicorn(unicornPos1, true, false);
     drawSleepHint(unicornPos1);
     // Comic scene2.
-    const dragonPos2 = vec2(baseX + 10, baseY + 2.5);
-    const unicornPos2 = vec2(baseX + 8, baseY + 2);
+    const dragonPos2 = vec2(storyBaseX + 10, storyBaseY + 2.5);
+    const unicornPos2 = vec2(storyBaseX + 8, storyBaseY + 2);
     drawDragon(dragonPos2, false, false);
     drawMoveHint(dragonPos2, false);
     drawUnicorn(unicornPos2, true, false);
     drawSleepHint(unicornPos2);
     // Comic scene3.
-    const dragonPos3 = vec2(baseX + 20, baseY + 2.5);
-    const unicornPos3 = vec2(baseX + 17, baseY + 2);
+    const dragonPos3 = vec2(storyBaseX + 20, storyBaseY + 2.5);
+    const unicornPos3 = vec2(storyBaseX + 17, storyBaseY + 2);
     drawDragon(dragonPos3, true, true);
     drawMoveHint(dragonPos3, true);
     drawUnicorn(unicornPos3, false, false);
     drawTextOverlay('?!', unicornPos3.add(vec2(-0.9, 0.5)), 0.5, textColor);
     // Comic scene4.
-    const unicornPos4 = vec2(baseX + 26, baseY + 2);
+    const unicornPos4 = vec2(storyBaseX + 26, storyBaseY + 2);
     drawUnicorn(unicornPos4, false, true, 1);
     drawMoveHint(unicornPos4.add(vec2(0.5, -0.3)), true);
     drawAngryMark(unicornPos4.add(vec2(0.6, 0.6)));
 
+    const entryBaseX = 57.5;
+    const entryBaseY = 4;
+    const entryHintOffset = [0.0, 6.0, 12.0];
+    drawTextOverlay("EASY", vec2(entryBaseX + entryHintOffset[0], entryBaseY), 0.7, textColor);
+    drawTextOverlay("NORMAL", vec2(entryBaseX + entryHintOffset[1], entryBaseY), 0.7, textColor);
+    drawTextOverlay("HARD", vec2(entryBaseX + entryHintOffset[2], entryBaseY), 0.7, textColor);
+    entryHintOffset.forEach(x => {
+      drawTextOverlay("🔻", vec2(entryBaseX + x, entryBaseY - 0.7), 0.5, textColor);
+    });
   }
   // TODO
   // drawTextScreen('Rainbow Defense', vec2(mainCanvasSize.x / 2, worldScale * 2.2), worldScale * 2.5);
