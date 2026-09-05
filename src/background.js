@@ -3,7 +3,7 @@ const BACKGROUND_COLOR_THEME_DAY = 0;
 const BACKGROUND_COLOR_THEME_NIGHT = 1;
 // 4 color bands from the top of the view (index 0) down to the ground: day / night.
 const BACKGROUND_BAND_COLORS = [
-  [new Color(.52, .84, 1), new Color(.7, .91, 1), new Color(.91, .97, 1), new Color(1, .94, .74)],
+  [new Color(.52, .84, 1), new Color(.7, .91, 1), new Color(.91, .97, .94), new Color(.7, .94, .74)],
   [new Color(.02, .07, .29), new Color(.04, .09, .35), new Color(.06, .12, .4), new Color(.15, .19, .52)],
 ];
 // Clouds are drawn from the cloud.png sprite (crop its 16x12 cloud body, enlarge when drawn).
