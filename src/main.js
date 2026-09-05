@@ -18,7 +18,7 @@
 async function gameInit() {
   setGLEnable(false);
   setFontDefault('Lucida Console');
-  await loadLevel(0);
+  await loadLevel(1);
   initWorldCamera();
   background.updatePos(cameraPos);
   foreground.updatePos(cameraPos);
@@ -40,14 +40,10 @@ function gameUpdate() {
   updateLevelEvent();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 function gameUpdatePost() {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 function gameRender() {
-  // TODO
-  // drawTile(player.pos.add(vec2(2, 0)), vec2(1.6, 0.7).multiply(vec2(5)), tile(0, vec2(16, 7), TEXTURE_INDEX_CLOUD, 0));
 }
 
 function gameRenderPost() {
@@ -127,7 +123,7 @@ function gameRenderPost() {
     });
   }
   // TODO
-  // drawTextScreen('Rainbow Defense', vec2(mainCanvasSize.x / 2, worldScale * 2.2), worldScale * 2.5);
+  drawTextScreen('Rainbow Defense', vec2(mainCanvasSize.x / 2, worldScale * 2.2), worldScale * 2.5);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

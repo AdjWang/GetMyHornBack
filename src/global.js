@@ -14,6 +14,8 @@ const IMAGE_SOURCES = [
   'assets/cloud.png',
 ];
 
+const STORAGE_PREFIX = 'gmhb_0_0_0_';
+
 const THEME_INDEX_ROCK = 0;
 const THEME_INDEX_GRASS = 1;
 const THEME_INDEX_CLOUD = 2;
@@ -28,6 +30,7 @@ const LEAF_SIZE = 8;
 
 const SPIKEWEED_TILE_ID = 4;
 const DESTROYABLE_TILE_ID = SPIKEWEED_TILE_ID;
+const SAVEPOINT_TILE_ID = 6;
 const PRISM_TILE_ID = 7;
 const PRISM_TILE_DIR_UP = 0;
 const PRISM_TILE_DIR_DOWN = 2;
@@ -67,13 +70,14 @@ const INPUT_KEY_UP = 'ArrowUp';
 const INPUT_KEY_DOWN = 'ArrowDown';
 const INPUT_KEY_LEFT = 'ArrowLeft';
 const INPUT_KEY_RIGHT = 'ArrowRight';
-const INPUT_KEY_FIRE = 0;
+const INPUT_KEY_RESET = 'KeyR';
 
 const BOSS_LEVEL = 3;
 
 let worldScale = TILE_SIZE;
 let currentLevel = 0;
 let player = undefined;
+let dragon = undefined;
 let foreground = undefined;
 let background = undefined;
 let tileLayer = undefined;
