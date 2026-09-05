@@ -57,12 +57,12 @@ function gameRenderPost() {
     const unicornRes = createAsepriteResource(unicornAsepriteData, TEXTURE_INDEX_UNICORN, ['body', 'head', 'horn']);
     const dragonRes = createAsepriteResource(slimeAsepriteData, TEXTURE_INDEX_SLIME, ['body', 'wing']);
 
-    const drawUnicorn = function(basePos, hasHorn, mirror) {
+    const drawUnicorn = function (basePos, hasHorn, mirror, bodyFrame = 0) {
       drawAsepriteFrame(unicornRes.head[0], basePos, 1, spriteColor, 0, mirror);
       if (hasHorn) {
         drawAsepriteFrame(unicornRes.horn[0], basePos, 1, spriteColor, 0, mirror);
       }
-      drawAsepriteFrame(unicornRes.body[0], basePos, 1, spriteColor, 0, mirror);
+      drawAsepriteFrame(unicornRes.body[bodyFrame], basePos, 1, spriteColor, 0, mirror);
     };
     const drawDragon = function(basePos, hasHorn, mirror) {
       drawAsepriteFrame(dragonRes.wing[0], basePos, 1, spriteColor, 0, mirror);
@@ -77,18 +77,20 @@ function gameRenderPost() {
       drawTextOverlay('z', basePos.add(vec2(-1.5, 1.1)), 0.7, textColor);
     };
     const drawMoveHint = function (basePos, mirror) {
-      if (mirror) {
-        drawTextOverlay('(', basePos.add(vec2(-1.5, 0.0)), 0.7, textColor);
-        drawTextOverlay('(', basePos.add(vec2(-1.8, 0.0)), 0.6, textColor);
-        drawTextOverlay('(', basePos.add(vec2(-2.1, 0.0)), 0.5, textColor);
-      } else {
-        drawTextOverlay(')', basePos.add(vec2(1.5, 0.0)), 0.7, textColor);
-        drawTextOverlay(')', basePos.add(vec2(1.8, 0.0)), 0.6, textColor);
-        drawTextOverlay(')', basePos.add(vec2(2.1, 0.0)), 0.5, textColor);
-      }
+      const offsets = [1.5, 1.8, 2.1];
+      const scales = [0.7, 0.6, 0.5];
+      const char = mirror ? '(' : ')';
+      const offsetSign = mirror ? -1 : 1;
+      offsets.forEach((offset, i) => {
+        drawTextOverlay(char, basePos.add(vec2(offsetSign * offset, 0.0)), scales[i], textColor);
+      });
     };
 
-    let unicornPos1 = vec2(31, 5);
+    [35, 44, 53].forEach(x => {
+      drawLine(vec2(x, 3), vec2(x, 7), 0.1, textColor);
+    });
+
+    let unicornPos1 = vec2(32, 5);
     drawUnicorn(unicornPos1, true, false);
     drawSleepHint(unicornPos1);
 
@@ -99,12 +101,18 @@ function gameRenderPost() {
     drawUnicorn(unicornPos2, true, false);
     drawSleepHint(unicornPos2);
 
-    const dragonPos3 = vec2(52, 5.5);
-    const unicornPos3 = vec2(49, 5);
+    const dragonPos3 = vec2(50, 5.5);
+    const unicornPos3 = vec2(47, 5);
     drawDragon(dragonPos3, true, true);
     drawMoveHint(dragonPos3, true);
     drawUnicorn(unicornPos3, false, false);
-    drawTextOverlay('!!', unicornPos3.add(vec2(-0.9, 0.5)), 0.5, textColor);
+    drawTextOverlay('?!', unicornPos3.add(vec2(-0.9, 0.5)), 0.5, textColor);
+
+    const unicornPos4 = vec2(56, 5);
+    drawUnicorn(unicornPos4, false, true, 1);
+    drawMoveHint(unicornPos4.add(vec2(0.5, -0.3)), true);
+    // drawSpeechBubble(unicornPos4, 1.0, 0.8);
+    drawAngryMark(unicornPos4.add(vec2(0.6, 0.6)));
 
   }
   // TODO

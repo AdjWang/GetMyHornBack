@@ -86,3 +86,50 @@ class Foreground extends EngineObject {
     }
   }
 }
+
+function drawSpeechBubble(basePos, width, height) {
+  const pos = worldToScreen(basePos.add(vec2(0, 1.4)));
+  const w = worldScale * width;
+  const h = worldScale * height;
+  const x = pos.x - w / 2;
+  const y = pos.y - h / 2;
+  overlayContext.fillStyle = '#fff';
+  overlayContext.strokeStyle = 'rgb(0 0 0 / 0.5)';
+  overlayContext.lineWidth = worldScale * 0.06;
+  const points = [
+    vec2(x, y),
+    vec2(x + w, y),
+    vec2(x + w, y + h),
+    vec2(pos.x + worldScale * 0.2, y + h),
+    vec2(pos.x, y + h + worldScale * 0.35),
+    vec2(pos.x - worldScale * 0.2, y + h),
+    vec2(x, y + h),
+  ];
+  overlayContext.beginPath();
+  overlayContext.moveTo(points[0].x, points[0].y);
+  points.forEach(p => overlayContext.lineTo(p.x, p.y));
+  overlayContext.closePath();
+  overlayContext.fill();
+  overlayContext.stroke();
+};
+
+function drawAngryMark(basePos) {
+  const pos = worldToScreen(basePos);
+  const s = worldScale * 0.18;
+  const coeffs = [
+    [vec2(-0.1, -0.6), vec2(0.0, 0.0), vec2(-0.9, 0.3)],
+    [vec2(0.8, -0.6), vec2(0.3, 0.0), vec2(0.9, 0.3)],
+    [vec2(-0.3, 1.0), vec2(0.0, 0.2), vec2(0.5, 0.8)],
+  ];
+  overlayContext.strokeStyle = 'rgb(0 0 0 / 0.5)';
+  overlayContext.lineWidth = worldScale * 0.06;
+  overlayContext.lineCap = 'round';
+  overlayContext.lineJoin = 'round';
+  for (const coeff of coeffs) {
+    overlayContext.beginPath();
+    const p = coeff.map(c => pos.add(c.multiply(vec2(s))));
+    overlayContext.moveTo(p[0].x, p[0].y);
+    overlayContext.quadraticCurveTo(p[1].x, p[1].y, p[2].x, p[2].y);
+    overlayContext.stroke();
+  }
+};
