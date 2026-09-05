@@ -17,7 +17,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 async function gameInit() {
   setGLEnable(false);
-  await loadLevel(1);
+  setFontDefault('Lucida Console');
+  await loadLevel(0);
   initWorldCamera();
   background.updatePos(cameraPos);
   foreground.updatePos(cameraPos);
@@ -49,30 +50,65 @@ function gameRender() {
   // drawTile(player.pos.add(vec2(2, 0)), vec2(1.6, 0.7).multiply(vec2(5)), tile(0, vec2(16, 7), TEXTURE_INDEX_CLOUD, 0));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 function gameRenderPost() {
   if (currentLevel == 0) {
     const spriteColor = new Color(1, 1, 1, 0.5);
-    const textColor = new Color(0, 0, 0);
-    const unicornRes = createAsepriteResource(unicornAsepriteData, TEXTURE_INDEX_UNICORN, ['bag', 'body', 'head']);
-    let pos1 = vec2(31, 5);
-    drawAsepriteFrame(unicornRes.head[0], pos1, 1, spriteColor, PI / 2, false, false);
-    drawAsepriteFrame(unicornRes.body[0], pos1, 1, spriteColor, PI / 2, false, false);
-    drawTextOverlay('z', pos1.add(vec2(1.2, 0.5)), 0.5, textColor);
-    drawTextOverlay('z', pos1.add(vec2(1.5, 0.8)), 0.6, textColor);
-    drawTextOverlay('z', pos1.add(vec2(1.8, 1.1)), 0.7, textColor);
+    const textColor = new Color(0, 0, 0, 0.5);
+    const unicornRes = createAsepriteResource(unicornAsepriteData, TEXTURE_INDEX_UNICORN, ['body', 'head', 'horn']);
+    const dragonRes = createAsepriteResource(slimeAsepriteData, TEXTURE_INDEX_SLIME, ['body', 'wing']);
+
+    const drawUnicorn = function(basePos, hasHorn, mirror) {
+      drawAsepriteFrame(unicornRes.head[0], basePos, 1, spriteColor, 0, mirror);
+      if (hasHorn) {
+        drawAsepriteFrame(unicornRes.horn[0], basePos, 1, spriteColor, 0, mirror);
+      }
+      drawAsepriteFrame(unicornRes.body[0], basePos, 1, spriteColor, 0, mirror);
+    };
+    const drawDragon = function(basePos, hasHorn, mirror) {
+      drawAsepriteFrame(dragonRes.wing[0], basePos, 1, spriteColor, 0, mirror);
+      drawAsepriteFrame(dragonRes.body[0], basePos, 1, spriteColor, 0, mirror);
+      if (hasHorn) {
+        drawAsepriteFrame(unicornRes.horn[0], basePos, 1, spriteColor, 0, mirror);
+      }
+    };
+    const drawSleepHint = function (basePos) {
+      drawTextOverlay('z', basePos.add(vec2(-0.9, 0.5)), 0.5, textColor);
+      drawTextOverlay('z', basePos.add(vec2(-1.2, 0.8)), 0.6, textColor);
+      drawTextOverlay('z', basePos.add(vec2(-1.5, 1.1)), 0.7, textColor);
+    };
+    const drawMoveHint = function (basePos, mirror) {
+      if (mirror) {
+        drawTextOverlay('(', basePos.add(vec2(-1.5, 0.0)), 0.7, textColor);
+        drawTextOverlay('(', basePos.add(vec2(-1.8, 0.0)), 0.6, textColor);
+        drawTextOverlay('(', basePos.add(vec2(-2.1, 0.0)), 0.5, textColor);
+      } else {
+        drawTextOverlay(')', basePos.add(vec2(1.5, 0.0)), 0.7, textColor);
+        drawTextOverlay(')', basePos.add(vec2(1.8, 0.0)), 0.6, textColor);
+        drawTextOverlay(')', basePos.add(vec2(2.1, 0.0)), 0.5, textColor);
+      }
+    };
+
+    let unicornPos1 = vec2(31, 5);
+    drawUnicorn(unicornPos1, true, false);
+    drawSleepHint(unicornPos1);
 
     const dragonPos2 = vec2(40, 5.5);
     const unicornPos2 = vec2(38, 5);
-    const dragonRes = createAsepriteResource(slimeAsepriteData, TEXTURE_INDEX_SLIME, ['body', 'wing']);
-    drawAsepriteFrame(dragonRes.wing[0], dragonPos2, 1, spriteColor, 0, false, false);
-    drawAsepriteFrame(dragonRes.body[0], dragonPos2, 1, spriteColor, 0, false, false);
-    drawAsepriteFrame(unicornRes.head[0], unicornPos2, 1, spriteColor, PI / 2, false, false);
-    drawAsepriteFrame(unicornRes.body[0], unicornPos2, 1, spriteColor, PI / 2, false, false);
-    // TODO
+    drawDragon(dragonPos2, false, false);
+    drawMoveHint(dragonPos2, false);
+    drawUnicorn(unicornPos2, true, false);
+    drawSleepHint(unicornPos2);
+
+    const dragonPos3 = vec2(52, 5.5);
+    const unicornPos3 = vec2(49, 5);
+    drawDragon(dragonPos3, true, true);
+    drawMoveHint(dragonPos3, true);
+    drawUnicorn(unicornPos3, false, false);
+    drawTextOverlay('!!', unicornPos3.add(vec2(-0.9, 0.5)), 0.5, textColor);
+
   }
   // TODO
-  // drawTextScreen('Rainbow Defense', vec2(mainCanvasSize.x / 2, worldScale * 2.2), worldScale * 2.5);
+  drawTextScreen('Rainbow Defense', vec2(mainCanvasSize.x / 2, worldScale * 2.2), worldScale * 2.5);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
