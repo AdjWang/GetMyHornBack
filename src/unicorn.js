@@ -90,6 +90,12 @@ class Unicorn extends EngineObject {
     this._runFrameTimer = new Timer(1.0 / UNICORN_ANIM_RUN_SPEED);
     this._landScaleTimer = new Timer;
     this._lastGroundObject = false;
+    this._ghostTrail = new GhostTrail(this, 6, 0.02, (ratio, drawPos) => {
+      const drawOffset = vec2(UNICORN_DRAW_OFFSET.x * (this.mirror ? -1.0 : 1.0), UNICORN_DRAW_OFFSET.y);
+      drawAsepriteFrame(characterRes.unicorn_head[0], drawPos.add(drawOffset), 1, new Color(1, 1, 1, ratio / 1.8), 0, this.mirror);
+      drawAsepriteFrame(characterRes.unicorn_body[0], drawPos.add(drawOffset), 1, new Color(1, 1, 1, ratio / 1.8), 0, this.mirror);
+    });
+    this._ghostTrail.setEnable(false);
     this.mirror = false;
     this.mass = 1;
     this.damping = 1;
@@ -336,6 +342,9 @@ class Unicorn extends EngineObject {
       this.groundObject = 0;
     }
     this.velocity.y = UNICORN_JUMP_INITIAL_SPEED * jumpGain;
+    if (jumpGain > 1.001) {
+      this._ghostTrail.setEnable(true, 0.5);
+    }
     this._jumpNeedsCornerRestore = true;
     this._jumpBufferTimer.unset();
     this._coyoteTimer.unset();
@@ -393,6 +402,7 @@ class Unicorn extends EngineObject {
       this._landScaleTimer.set(UNICORN_LAND_SCALE_TIME);
       this._emitDust();
       SOUND_LAND.play(this.pos, SOUND_LAND_VOLUME);
+      this._ghostTrail.setEnable(false);
     }
     this._wasGrounded = grounded;
 

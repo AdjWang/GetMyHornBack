@@ -236,27 +236,25 @@ class StupidSlime extends EngineObject {
     super(pos, colliderSize, anim, 0, new Color, RENDER_ORDER_CHARACTER);
     this._frameTimer = new Timer(1.0 / STUPID_SLIME_ANIM_SPEED);
     this._currentFrame = 0;
+    this._initY = pos.y;
     this._scaleOffsetY = [1.0, 0.9, 0.8, 0.7, 0.7, 0.8, 0.9, 1.0];
+    sight -= 1;  // fit tild object rect width
     this._sight = sight;
-    this._speed = speed;
+    this._step = speed;
     this._patrolFromX = pos.x;
     this._patrolToX = pos.x + sight;
-    this._patrolT = 0;
-    this._patrolDir = 1;
-    this.mirror = false;
-    this.mass = 1;
+    this._patrolRatio = 0.0;
+    this.gravityScale = 0.0;
+    this.mirror = true;
+    this.mass = 0;
     this.damping = 1;
     this.friction = 1;
-    this.setCollision();
+    this.setCollision(true, true, false, false);
   }
 
   update() {
     this._updatePatrol();
     super.update();
-    if (this.pos.y < -this.size.y) {
-      this.destroy();
-      return;
-    }
     if (this._frameTimer.elapsed()) {
       this._frameTimer.set(1.0 / STUPID_SLIME_ANIM_SPEED);
       this._currentFrame = (this._currentFrame + 1) % this._scaleOffsetY.length;
@@ -274,22 +272,18 @@ class StupidSlime extends EngineObject {
   }
 
   _updatePatrol() {
-    this.color = new Color;
-    if (!this._sight) {
-      this.velocity.x = 0;
-      return;
+    this._patrolRatio += this._step;
+    if (this._patrolRatio < 0.0) {
+      this._patrolRatio = 0.0;
+      this._step = -this._step;
+      this.mirror = !this.mirror;
+    } else if (this._patrolRatio > 1.0) {
+      this._patrolRatio = 1.0;
+      this._step = -this._step;
+      this.mirror = !this.mirror;
     }
-    this._patrolT += this._patrolDir * this._speed;
-    if (this._patrolT >= 1) {
-      this._patrolT = 1;
-      this._patrolDir = -1;
-    } else if (this._patrolT <= 0) {
-      this._patrolT = 0;
-      this._patrolDir = 1;
-    }
-    const targetX = lerp(this._patrolFromX, this._patrolToX, this._patrolT);
-    this.velocity.x = targetX - this.pos.x;
-    this.mirror = this._patrolDir > 0;
+    this.pos.x = lerp(this._patrolFromX, this._patrolToX, this._patrolRatio);
+    this.pos.y = this._initY;
   }
 }
 

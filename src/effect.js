@@ -96,12 +96,17 @@ class ChargeLaser extends EngineObject {
 }
 
 class GhostTrail extends EngineObject {
-  constructor(length, alpha) {
+  constructor(obj, length, gap, draw = (ratio, pos) => { }) {
     super(vec2(), vec2(), undefined, 0, new Color, RENDER_ORDER_CHARACTER - .01);
-    this._obj = undefined;
+    this._obj = obj;
     this._length = length;
-    this._alpha = alpha;
-    this._ghosts = [];
+    this._gap = gap;
+    this._draw = draw;
+    this._drawTimer = new Timer;
+    this._drawTimer.set(this._gap);
+    this._durationTimer = new Timer;
+    this._pos = [];
+    this._enable = true;
     this.mass = 0;
     this.gravityScale = 0;
     this.damping = 1;
@@ -109,57 +114,37 @@ class GhostTrail extends EngineObject {
     this.setCollision(false, false, false, false);
   }
 
-  attach(obj) {
-    this._obj = obj;
-    this._ghosts = [];
-    this.renderOrder = obj.renderOrder - .01;
-  }
-
-  detach() {
-    this._obj = undefined;
-    this._ghosts = [];
+  setEnable(on, duration = -1) {
+    this._enable = on;
+    if (duration > 0) {
+      this._durationTimer.set(duration);
+    }
   }
 
   update() {
-    if (!this._obj || this._obj.destroyed) {
-      return;
+    if (this._durationTimer.isSet() && this._durationTimer.elapsed()) {
+      this._durationTimer.unset();
+      this._enable = false;
     }
-    this._ghosts.push(this._sampleGhost());
-    if (this._ghosts.length > this._length) {
-      this._ghosts.shift();
+    if (this._drawTimer.elapsed()) {
+      this._drawTimer.set(this._gap);
+      if (this._enable) {
+        this._pos.push(this._obj.pos.copy());
+        if (this._pos.length > this._length) {
+          this._pos.shift();
+        }
+      } else {
+        this._pos.shift();
+      }
     }
   }
 
   render() {
-    if (!this._obj || this._obj.destroyed) {
-      return;
-    }
-    for (let i = 0; i < this._ghosts.length; ++i) {
-      const ghost = this._ghosts[i];
-      const alpha = this._alpha * (i + 1) / this._ghosts.length;
-      drawTile(ghost.pos, ghost.size, ghost.tileInfo, new Color(1, 1, 1, alpha), ghost.angle, ghost.mirror);
-    }
-  }
-
-  _sampleGhost() {
-    const obj = this._obj;
-    if (obj._scaleOffsetY && obj._currentFrame != undefined) {
-      const size = vec2(obj.size.x, obj.size.y * obj._scaleOffsetY[obj._currentFrame]);
-      return {
-        pos: obj.pos.add(vec2(0, (size.y - obj.size.y) / 2)),
-        size,
-        angle: obj.angle,
-        mirror: obj.mirror,
-        tileInfo: obj.tileInfo,
-      };
-    }
-    return {
-      pos: obj.pos.copy(),
-      size: obj.drawSize ? obj.drawSize.copy() : obj.size.copy(),
-      angle: obj.angle,
-      mirror: obj.mirror,
-      tileInfo: obj.tileInfo,
-    };
+    this._pos.forEach((_, i) => {
+      const drawIdx = this._pos.length - i - 1;
+      const ratio = drawIdx / this._pos.length;
+      this._draw(ratio, this._pos[drawIdx]);
+    });
   }
 }
 
