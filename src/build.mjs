@@ -29,7 +29,7 @@ const FEATURES =
 {
     webgl:   false, // WebGL renderer, disabling falls back to canvas 2D
     touch:   false, // touch input and the on screen touch gamepad
-    gamepad: true, // gamepad input
+    gamepad: false, // gamepad input
     sound:   true, // all audio
     physics: true, // collision response, both object vs object and object vs tile
 };

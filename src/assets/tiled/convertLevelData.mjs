@@ -8,7 +8,7 @@ const levelFilePattern = /^level(\d+)\.tmx$/;
 const watchMode = process.argv.includes('--watch');
 
 const OBJECT_SPECS = {
-  StupidSlime: ['patrolSight'],
+  StupidSlime: ['speed'],
   DragonSlime: ['velocity', 'lockTime'],
   DragonSpawnPoint: [],
 };
@@ -88,6 +88,7 @@ function parseObject(attributes, body, fileName, lineNumber) {
   }
   const x = readXmlNumber(attributes, 'x', fileName, linePrefix);
   const y = readXmlNumber(attributes, 'y', fileName, linePrefix);
+  const width = readXmlNumber(attributes, 'width', fileName, linePrefix);
   const properties = parseObjectProperties(body, fileName, linePrefix);
   const unexpected = Object.keys(properties).filter(name => !spec.includes(name));
   if (unexpected.length) {
@@ -97,7 +98,7 @@ function parseObject(attributes, body, fileName, lineNumber) {
   if (missing.length) {
     throw new Error(`${linePrefix}: ${type} missing properties ${missing.join(', ')}`);
   }
-  return { type, x, y, properties };
+  return { type, x, y, width, properties };
 }
 
 function parseObjectProperties(body, fileName, linePrefix) {
@@ -185,11 +186,14 @@ function formatLevelObjectList(level) {
 }
 
 function formatObjectEntry(object) {
-  const spec = OBJECT_SPECS[object.type];
-  const args = [
-    `tiledScreenToWorld(vec2(${object.x}, ${object.y}))`,
-    ...spec.map(name => formatLiteral(object.properties[name])),
-  ];
+  const args = [`tiledScreenToWorld(vec2(${object.x}, ${object.y}))`];
+  if (object.type == 'StupidSlime') {
+    args.push(`${object.width / 16}`);
+    args.push(formatLiteral(object.properties.speed));
+  } else {
+    const spec = OBJECT_SPECS[object.type];
+    args.push(...spec.map(name => formatLiteral(object.properties[name])));
+  }
   return `    [ ${object.type}, ${args.join(', ')} ]`;
 }
 

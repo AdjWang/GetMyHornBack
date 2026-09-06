@@ -19,7 +19,6 @@ const DRAGON_SLIME_STAGE_FIRE = 2;
 // Gain when unicorn jump over slime.
 const STUPID_SLIME_JUMP_GAIN = 1.2;
 const STUPID_SLIME_ANIM_SPEED = 12;  // frame/sec
-const STUPID_SLIME_PATROL_SPEED = 0.02;  // cells
 
 class DragonSlime extends EngineObject {
   constructor(pos, velocity, lockTime) {
@@ -231,16 +230,19 @@ class DragonSlime extends EngineObject {
 }
 
 class StupidSlime extends EngineObject {
-  constructor(pos, patrolSight = 0) {
+  constructor(pos, sight, speed) {
     const colliderSize = vec2(0.9, 0.9);
     const anim = tile(0, 16, TEXTURE_INDEX_SLIME, 0);
     super(pos, colliderSize, anim, 0, new Color, RENDER_ORDER_CHARACTER);
     this._frameTimer = new Timer(1.0 / STUPID_SLIME_ANIM_SPEED);
     this._currentFrame = 0;
     this._scaleOffsetY = [1.0, 0.9, 0.8, 0.7, 0.7, 0.8, 0.9, 1.0];
-    this._patrolSight = patrolSight;
-    this._patrolCenterX = pos.x;
-    this._patrolTargetX = pos.x + patrolSight;
+    this._sight = sight;
+    this._speed = speed;
+    this._patrolFromX = pos.x;
+    this._patrolToX = pos.x + sight;
+    this._patrolT = 0;
+    this._patrolDir = 1;
     this.mirror = false;
     this.mass = 1;
     this.damping = 1;
@@ -273,33 +275,25 @@ class StupidSlime extends EngineObject {
 
   _updatePatrol() {
     this.color = new Color;
-    if (!this._patrolSight) {
+    if (!this._sight) {
       this.velocity.x = 0;
       return;
     }
-    const move = this._updateMoveToTarget(this._patrolTargetX, STUPID_SLIME_PATROL_SPEED);
-    if (move.reached || move.blocked || move.cliff) {
-      this._patrolTargetX = this._patrolTargetX == this._patrolCenterX + this._patrolSight ?
-        this._patrolCenterX - this._patrolSight :
-        this._patrolCenterX + this._patrolSight;
+    this._patrolT += this._patrolDir * this._speed;
+    if (this._patrolT >= 1) {
+      this._patrolT = 1;
+      this._patrolDir = -1;
+    } else if (this._patrolT <= 0) {
+      this._patrolT = 0;
+      this._patrolDir = 1;
     }
-  }
-
-  _updateMoveToTarget(targetX, speed) {
-    const direction = sign(targetX - this.pos.x) || (this.mirror ? 1 : -1) || 1;
-    const nextPos = this.pos.add(vec2(direction * speed, 0));
-    const nextFootY = this.pos.y - this.size.y / 2 - .01;
-    const nextFootX = nextPos.x + direction * this.size.x / 2;
-    const blocked = engineObjectsRaycast(this.pos, nextPos).some(o =>
-      o != this && o.mass && o.collideSolidObjects && o.isSolid);
-    const cliff = !getTileCollisionData(vec2(nextFootX, nextFootY));
-    const reached = abs(this.pos.x - targetX) <= speed;
-    this.velocity.x = blocked || cliff ? 0 : reached ? targetX - this.pos.x : direction * speed;
-    this.mirror = direction > 0;
-    return { blocked, cliff, reached };
+    const targetX = lerp(this._patrolFromX, this._patrolToX, this._patrolT);
+    this.velocity.x = targetX - this.pos.x;
+    this.mirror = this._patrolDir > 0;
   }
 }
 
+// For boss level.
 class DragonSpawnPoint extends EngineObject {
   constructor(pos) {
     super(pos);
