@@ -19,7 +19,7 @@ class Foreground extends EngineObject {
         0,                    // emitTime
         5,                    // emitRate
         0,                    // emitConeAngle
-        tile(0, LEAF_SIZE, TEXTURE_INDEX_LEAF, 0),     // tileInfo
+        new TileInfo(vec2(64, 16), vec2(8), textureInfos[TEXTURE_INDEX_LEAF]),  // tileInfo
         color,                // colorStartA
         color,                // colorStartB
         color,                // colorEndA

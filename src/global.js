@@ -7,11 +7,8 @@ const VIEW_HEIGHT = 16;  // cells
 
 const IMAGE_SOURCES = [
   'assets/tileset.png',
-  'assets/objects.png',
   'assets/unicorn.png',
   'assets/slime.png',
-  // cloud.png sprite used by the background's cloud layer.
-  'assets/cloud.png',
 ];
 
 const STORAGE_PREFIX = 'gmhb_0_0_0_';
@@ -23,9 +20,9 @@ const THEME_INDEX_CLOUD = 2;
 const TEXTURE_INDEX_TILESET = 0;
 const TEXTURE_INDEX_CLOUD = 0;
 const TEXTURE_INDEX_RAINBOW = 0;
-const TEXTURE_INDEX_LEAF = 1;
-const TEXTURE_INDEX_UNICORN = 2;
-const TEXTURE_INDEX_SLIME = 3;
+const TEXTURE_INDEX_LEAF = 0;
+const TEXTURE_INDEX_UNICORN = 1;
+const TEXTURE_INDEX_SLIME = 2;
 
 const LEAF_SIZE = 8;
 

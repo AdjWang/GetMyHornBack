@@ -22,9 +22,9 @@ class Background extends EngineObject {
     } else {
       this.bands = BACKGROUND_BAND_COLORS[BACKGROUND_COLOR_THEME_DAY];
     }
-    // Crop the cloud body.
-    const cloud1 = new TileInfo(vec2(16, 16), vec2(16, 7), textureInfos[TEXTURE_INDEX_CLOUD]);
-    const cloud2 = new TileInfo(vec2(64, 27), vec2(16, 5), textureInfos[TEXTURE_INDEX_CLOUD]);
+    // Crop the cloud body. Shrink a little gap to avoid float rounding glitch.
+    const cloud1 = new TileInfo(vec2(16, 16), vec2(16 - 0.01, 7), textureInfos[TEXTURE_INDEX_CLOUD]);
+    const cloud2 = new TileInfo(vec2(64, 27), vec2(16 - 0.01, 5), textureInfos[TEXTURE_INDEX_CLOUD]);
     const clouds = [cloud1, cloud2];
     this.pngClouds = [];
     for (let i = 0; i < BACKGROUND_PNG_CLOUD_COUNT; ++i) {

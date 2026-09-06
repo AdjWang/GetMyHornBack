@@ -90,10 +90,8 @@ const sourceFiles =
 const dataFiles =
 [
     'assets/tileset.png',
-    'assets/objects.png',
     'assets/unicorn.png',
     'assets/slime.png',
-    'assets/cloud.png',
 ];
 
 console.log(`Building ${PROGRAM_NAME}...`);
