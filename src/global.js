@@ -21,10 +21,11 @@ const THEME_INDEX_GRASS = 1;
 const THEME_INDEX_CLOUD = 2;
 
 const TEXTURE_INDEX_TILESET = 0;
+const TEXTURE_INDEX_CLOUD = 0;
+const TEXTURE_INDEX_RAINBOW = 0;
 const TEXTURE_INDEX_LEAF = 1;
 const TEXTURE_INDEX_UNICORN = 2;
 const TEXTURE_INDEX_SLIME = 3;
-const TEXTURE_INDEX_CLOUD = 4;
 
 const LEAF_SIZE = 8;
 
@@ -49,11 +50,13 @@ const RENDER_ORDER_FOREGROUND = 110;
 
 // Remap colors to change theme.
 const TILE_COLOR_REMAP = [
+  // Tiles.
   [0x322b28, 0x59c135, 0xb9bffb],
   [0x4a5462, 0x14a02e, 0xffffff],
   [0x333941, 0x1a7a3e, 0xffffff],
   [0x221c1a, 0x24523b, 0x249fde],
   [0x221c1a, 0x423934, 0xe3e6ff],
+  // Rainbow.
   [0xb4202a, 0x4d4d4d, 0x4d4d4d],
   [0xfa6a0a, 0x8a8a8a, 0x8a8a8a],
   [0xfffc40, 0xe7e7e7, 0xe7e7e7],
@@ -61,6 +64,9 @@ const TILE_COLOR_REMAP = [
   [0x20d6c7, 0x9e9e9e, 0x9e9e9e],
   [0x285cc4, 0x585858, 0x585858],
   [0x143464, 0x303030, 0x303030],
+  // Clouds.
+  [0x793a80, 0xffffff, 0xffffff],
+  [0x403353, 0xdae0ea, 0xdae0ea],
 ];
 
 const RAINBOW_COLORS = [
@@ -88,4 +94,5 @@ let dragon = undefined;
 let foreground = undefined;
 let background = undefined;
 let tileLayer = undefined;
-let savePointTileInfo = undefined;
+let savePointEnableTileInfo = undefined;
+let savePointDisableTileInfo = undefined;

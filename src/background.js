@@ -23,8 +23,8 @@ class Background extends EngineObject {
       this.bands = BACKGROUND_BAND_COLORS[BACKGROUND_COLOR_THEME_DAY];
     }
     // Crop the cloud body.
-    const cloud1 = new TileInfo(vec2(0, 0), vec2(16, 7), textureInfos[TEXTURE_INDEX_CLOUD]);
-    const cloud2 = new TileInfo(vec2(0, 7), vec2(16, 5), textureInfos[TEXTURE_INDEX_CLOUD]);
+    const cloud1 = new TileInfo(vec2(16, 16), vec2(16, 7), textureInfos[TEXTURE_INDEX_CLOUD]);
+    const cloud2 = new TileInfo(vec2(64, 27), vec2(16, 5), textureInfos[TEXTURE_INDEX_CLOUD]);
     const clouds = [cloud1, cloud2];
     this.pngClouds = [];
     for (let i = 0; i < BACKGROUND_PNG_CLOUD_COUNT; ++i) {

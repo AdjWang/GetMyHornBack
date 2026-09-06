@@ -20,8 +20,11 @@ async function gameInit() {
   setFontDefault('Lucida Console');
   // Actually not remaping, just copy a unremaped image out to draw savepoint with
   // original color later in map. Normal tile(...) would get the grey one in game.
-  savePointTileInfo = await createRemappedTextureInfo(TEXTURE_INDEX_TILESET, 0, 0);
-  await loadLevel(0);
+  const rainbowColored = await createRemappedTextureInfo(TEXTURE_INDEX_TILESET, 0, 0);
+  const rainbowGrey = await createRemappedTextureInfo(TEXTURE_INDEX_TILESET, 1, 0);
+  savePointEnableTileInfo = new TileInfo(vec2(16, 23), vec2(16, 9), rainbowColored);
+  savePointDisableTileInfo = new TileInfo(vec2(16, 23), vec2(16, 9), rainbowGrey);
+  await loadLevel(1);
   initWorldCamera();
   background.updatePos(cameraPos);
   foreground.updatePos(cameraPos);

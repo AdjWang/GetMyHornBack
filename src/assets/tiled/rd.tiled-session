@@ -42,22 +42,22 @@
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 0.75,
+            "scale": 0.33,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 3182.6666666666665,
-                "y": 251.99999999999994
+                "x": 1772.7272727272727,
+                "y": -3.0303030303030027
             }
         },
         "level2.tmx": {
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 2,
+            "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 2048.25,
-                "y": 127.75
+                "x": 3676,
+                "y": 221
             }
         },
         "level3.tmx": {
@@ -67,8 +67,8 @@
             "scale": 2,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 216.25,
-                "y": 127.75
+                "x": 218.5,
+                "y": 139.5
             }
         },
         "test.tsx": {
