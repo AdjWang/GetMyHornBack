@@ -73,8 +73,7 @@ const sourceFiles =
     'global.js',
     // Space seems not enough to put music in.
     // 'assets/music.js',
-    'assets/slimeResource.js',
-    'assets/unicornResource.js',
+    'assets/characterResource.js',
     'resourceLoader.js',
     'physic.js',
     'camera.js',
@@ -90,8 +89,7 @@ const sourceFiles =
 const dataFiles =
 [
     'assets/tileset.png',
-    'assets/unicorn.png',
-    'assets/slime.png',
+    'assets/character.png',
 ];
 
 console.log(`Building ${PROGRAM_NAME}...`);

@@ -7,8 +7,7 @@ const VIEW_HEIGHT = 16;  // cells
 
 const IMAGE_SOURCES = [
   'assets/tileset.png',
-  'assets/unicorn.png',
-  'assets/slime.png',
+  'assets/character.png',
 ];
 
 const STORAGE_PREFIX = 'gmhb_0_0_0_';
@@ -22,9 +21,7 @@ const TEXTURE_INDEX_CLOUD = 0;
 const TEXTURE_INDEX_RAINBOW = 0;
 const TEXTURE_INDEX_LEAF = 0;
 const TEXTURE_INDEX_UNICORN = 1;
-const TEXTURE_INDEX_SLIME = 2;
-
-const LEAF_SIZE = 8;
+const TEXTURE_INDEX_SLIME = 1;
 
 const SPIKEWEED_TILE_ID = 4;
 const DESTROYABLE_TILE_ID = SPIKEWEED_TILE_ID;
@@ -91,5 +88,6 @@ let dragon = undefined;
 let foreground = undefined;
 let background = undefined;
 let tileLayer = undefined;
+let characterRes = undefined;
 let savePointEnableTileInfo = undefined;
 let savePointDisableTileInfo = undefined;

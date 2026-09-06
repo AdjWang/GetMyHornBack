@@ -18,13 +18,14 @@
 async function gameInit() {
   setGLEnable(false);
   setFontDefault('Lucida Console');
+  characterRes = createAsepriteResource(characterAsepriteData, TEXTURE_INDEX_UNICORN, ['slime_body', 'slime_wing', 'unicorn_body', 'unicorn_head', 'unicorn_horn']);
   // Actually not remaping, just copy a unremaped image out to draw savepoint with
   // original color later in map. Normal tile(...) would get the grey one in game.
   const rainbowColored = await createRemappedTextureInfo(TEXTURE_INDEX_TILESET, 0, 0);
   const rainbowGrey = await createRemappedTextureInfo(TEXTURE_INDEX_TILESET, 1, 0);
   savePointEnableTileInfo = new TileInfo(vec2(16, 23), vec2(16, 9), rainbowColored);
   savePointDisableTileInfo = new TileInfo(vec2(16, 23), vec2(16, 9), rainbowGrey);
-  await loadLevel(1);
+  await loadLevel(0);
   initWorldCamera();
   background.updatePos(cameraPos);
   foreground.updatePos(cameraPos);
@@ -56,21 +57,23 @@ function gameRenderPost() {
   if (currentLevel == 0) {
     const spriteColor = new Color(1, 1, 1, 0.6);
     const textColor = new Color(0, 0, 0, 0.5);
-    const unicornRes = createAsepriteResource(unicornAsepriteData, TEXTURE_INDEX_UNICORN, ['body', 'head', 'horn']);
-    const dragonRes = createAsepriteResource(slimeAsepriteData, TEXTURE_INDEX_SLIME, ['body', 'wing']);
 
     const drawUnicorn = function (basePos, hasHorn, mirror, bodyFrame = 0) {
-      drawAsepriteFrame(unicornRes.head[0], basePos, 1, spriteColor, 0, mirror);
+      const pos = basePos.add(UNICORN_DRAW_OFFSET).add(vec2(0, -0.5));
+      drawAsepriteFrame(characterRes.unicorn_head[0], pos, 1, spriteColor, 0, mirror);
       if (hasHorn) {
-        drawAsepriteFrame(unicornRes.horn[0], basePos, 1, spriteColor, 0, mirror);
+        drawAsepriteFrame(characterRes.unicorn_horn[0], pos, 1, spriteColor, 0, mirror);
       }
-      drawAsepriteFrame(unicornRes.body[bodyFrame], basePos, 1, spriteColor, 0, mirror);
+      drawAsepriteFrame(characterRes.unicorn_body[bodyFrame], pos, 1, spriteColor, 0, mirror);
     };
     const drawDragon = function(basePos, hasHorn, mirror) {
-      drawAsepriteFrame(dragonRes.wing[0], basePos, 1, spriteColor, 0, mirror);
-      drawAsepriteFrame(dragonRes.body[0], basePos, 1, spriteColor, 0, mirror);
+      const pos = basePos.add(vec2(DRAGON_SLIME_DRAW_X_OFFSETS[0] * mirror ? 1 : -1,
+                                   DRAGON_SLIME_DRAW_Y_OFFSETS[0]));
+      drawAsepriteFrame(characterRes.slime_wing[DRAGON_SLIME_DRAW_BASE_FRAME], pos, 1, spriteColor, 0, mirror);
+      drawAsepriteFrame(characterRes.slime_body[DRAGON_SLIME_DRAW_BASE_FRAME], pos, 1, spriteColor, 0, mirror);
       if (hasHorn) {
-        drawAsepriteFrame(unicornRes.horn[0], basePos.add(DRAGON_SLIME_HORN_OFFSET), 1, spriteColor, 0, mirror);
+        const hornPos = basePos.add(DRAGON_SLIME_HORN_OFFSET).add(vec2(1.0, -1.1));
+        drawAsepriteFrame(characterRes.unicorn_horn[0], hornPos, 1, spriteColor, 0, mirror);
       }
     };
     const drawSleepHint = function (basePos) {
@@ -114,9 +117,9 @@ function gameRenderPost() {
     drawUnicorn(unicornPos3, false, false);
     drawTextOverlay('What?!', unicornPos3.add(vec2(-0.9, 0.6)), 0.5, textColor);
     // Comic scene4.
-    const unicornPos4 = vec2(storyBaseX + 26, storyBaseY + 2);
+    const unicornPos4 = vec2(storyBaseX + 24, storyBaseY + 2);
     drawUnicorn(unicornPos4, false, true, 1);
-    drawMoveHint(unicornPos4.add(vec2(0.5, -0.3)), true);
+    drawMoveHint(unicornPos4.add(vec2(2.5, -0.3)), true);
     drawTextOverlay('Get my horn back!', unicornPos4.add(vec2(3.0, 0.6)), 0.5, textColor);
 
     const entryBaseX = 57.5;

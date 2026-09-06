@@ -40,7 +40,7 @@ const UNICORN_AIR_CORNER_VERTICAL_CORRECTION_STEP = 0.03;
 const UNICORN_KNOCKBACK_SPEED = 0.5;
 
 // Animation.
-const UNICORN_DRAW_OFFSET = vec2(0.1, 0.3);
+const UNICORN_DRAW_OFFSET = vec2(1.1, -0.7);
 // Head bob animation.
 const UNICORN_IDLE_HEAD_BOB_OFFSET = -0.03;
 const UNICORN_IDLE_HEAD_BOB_AMPLIFY = 0.03;
@@ -72,10 +72,9 @@ class Unicorn extends EngineObject {
   constructor(pos) {
     const colliderSize = vec2(0.9, 0.9);
     super(pos, colliderSize, undefined, 0, new Color, RENDER_ORDER_CHARACTER);
-    const res = createAsepriteResource(unicornAsepriteData, TEXTURE_INDEX_UNICORN, ['body', 'head', 'horn']);
-    this._frameInfoHead = res.head;
-    this._frameInfoBody = res.body;
-    this._frameInfoHorn = res.horn;
+    this._frameInfoHead = characterRes.unicorn_head;
+    this._frameInfoBody = characterRes.unicorn_body;
+    this._frameInfoHorn = characterRes.unicorn_horn;
     this._hasHorn = false;
     this._moveX = 0;
     this._moveY = 0;
