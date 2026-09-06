@@ -73,7 +73,6 @@ const sourceFiles =
     'global.js',
     // Space seems not enough to put music in.
     // 'assets/music.js',
-    'assets/characterResource.js',
     'resourceLoader.js',
     'physic.js',
     'camera.js',

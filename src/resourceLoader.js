@@ -1,41 +1,103 @@
 'use strict';
 
-function createAsepriteResource(data, textureIndex, frameNames) {
-  const res = {};
-  for (let i = 0; i < data.length; ++i) {
-    const frameName = frameNames && frameNames[i] || i;
-    res[frameName] = createAsepriteFrames(data[i], textureIndex);
-  }
-  return res;
-}
+const ASEPRITE_ENTRY_TILEINFO = 0;
+const ASEPRITE_ENTRY_SIZE = 1;
+const ASEPRITE_ENTRY_OFFSET = 2;
 
-function createAsepriteFrames(data, textureIndex) {
-  const frames = [];
-  for (let i = 0; i < data.length; ++i) {
-    const frame = data[i];
-    if (frame) {
-      // Fix incorrect image cutting align value.
-      const bleedFix = 0.5;
-      frames[i] = {
-        tileInfo: new TileInfo(
-          vec2(frame[0] + bleedFix, frame[1] + bleedFix),
-          vec2(frame[2] - bleedFix * 2, frame[3] - bleedFix * 2),
-          textureInfos[textureIndex],
-        ),
-        size: vec2(frame[2] / TILE_SIZE, frame[3] / TILE_SIZE),
-        offset: vec2(frame[4] / TILE_SIZE, frame[5] / TILE_SIZE),
-      };
-    } else {
-      frames[i] = undefined;
-    }
-  }
-  return frames;
+function createAsepriteResource() {
+  const textureInfo = textureInfos[TEXTURE_INDEX_UNICORN];
+  return {
+    slime_body: [
+      undefined,
+      undefined,
+      undefined,
+      [
+        new TileInfo(vec2(1.5, 1.5), vec2(15, 15), textureInfo),
+        vec2(1, 1),
+        vec2(0.75, 1.125),
+      ],
+      [
+        new TileInfo(vec2(1.5, 1.5), vec2(15, 15), textureInfo),
+        vec2(1, 1),
+        vec2(0.75, 1.125),
+      ],
+    ],
+    slime_wing: [
+      undefined,
+      undefined,
+      undefined,
+      [
+        new TileInfo(vec2(19.5, 1.5), vec2(30, 14), textureInfo),
+        vec2(1.9375, 0.9375),
+        vec2(1.03125, 1.34375),
+      ],
+      [
+        new TileInfo(vec2(52.5, 1.5), vec2(31, 15), textureInfo),
+        vec2(2, 1),
+        vec2(1, 0.9375),
+      ],
+    ],
+    unicorn_body: [
+      [
+        new TileInfo(vec2(86.5, 1.5), vec2(8, 7), textureInfo),
+        vec2(0.5625, 0.5),
+        vec2(-1.09375, 0.5),
+      ],
+      [
+        new TileInfo(vec2(97.5, 1.5), vec2(5, 7), textureInfo),
+        vec2(0.375, 0.5),
+        vec2(-1.0625, 0.5),
+      ],
+      [
+        new TileInfo(vec2(105.5, 1.5), vec2(8, 7), textureInfo),
+        vec2(0.5625, 0.5),
+        vec2(-1.09375, 0.5),
+      ],
+    ],
+    unicorn_head: [
+      [
+        new TileInfo(vec2(116.5, 1.5), vec2(16, 14), textureInfo),
+        vec2(1.0625, 0.9375),
+        vec2(-1.15625, 0.96875),
+      ],
+      [
+        new TileInfo(vec2(116.5, 1.5), vec2(16, 14), textureInfo),
+        vec2(1.0625, 0.9375),
+        vec2(-1.15625, 0.96875),
+      ],
+      [
+        new TileInfo(vec2(116.5, 1.5), vec2(16, 14), textureInfo),
+        vec2(1.0625, 0.9375),
+        vec2(-1.15625, 0.96875),
+      ],
+    ],
+    unicorn_horn: [
+      [
+        new TileInfo(vec2(135.5, 1.5), vec2(7, 8), textureInfo),
+        vec2(0.5, 0.5625),
+        vec2(-1.3125, 1.46875),
+      ],
+      [
+        new TileInfo(vec2(135.5, 1.5), vec2(7, 8), textureInfo),
+        vec2(0.5, 0.5625),
+        vec2(-1.3125, 1.46875),
+      ],
+      [
+        new TileInfo(vec2(135.5, 1.5), vec2(7, 8), textureInfo),
+        vec2(0.5, 0.5625),
+        vec2(-1.3125, 1.46875),
+      ],
+    ],
+  };
 }
 
 function drawAsepriteFrame(frame, pos, scaleY, color, angle, mirror) {
-  let offset = vec2(frame.offset.x * (mirror ? -1 : 1), frame.offset.y * scaleY);
-  const size = vec2(frame.size.x, frame.size.y * scaleY);
-  drawTile(pos.add(offset), size, frame.tileInfo, color, angle, mirror);
+  const frameTileInfo = frame[ASEPRITE_ENTRY_TILEINFO];
+  const frameOffset = frame[ASEPRITE_ENTRY_OFFSET];
+  const frameSize = frame[ASEPRITE_ENTRY_SIZE];
+  let offset = vec2(frameOffset.x * (mirror ? -1 : 1), frameOffset.y * scaleY);
+  const size = vec2(frameSize.x, frameSize.y * scaleY);
+  drawTile(pos.add(offset), size, frameTileInfo, color, angle, mirror);
 }
 
 function remapImageDataColors(imageData, from_idx, toIdx) {

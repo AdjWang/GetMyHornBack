@@ -18,7 +18,7 @@
 async function gameInit() {
   setGLEnable(false);
   setFontDefault('Lucida Console');
-  characterRes = createAsepriteResource(characterAsepriteData, TEXTURE_INDEX_UNICORN, ['slime_body', 'slime_wing', 'unicorn_body', 'unicorn_head', 'unicorn_horn']);
+  characterRes = createAsepriteResource();
   // Actually not remaping, just copy a unremaped image out to draw savepoint with
   // original color later in map. Normal tile(...) would get the grey one in game.
   const rainbowColored = await createRemappedTextureInfo(TEXTURE_INDEX_TILESET, 0, 0);
