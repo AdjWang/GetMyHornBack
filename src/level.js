@@ -111,7 +111,7 @@ function tiledScreenToWorld(pos) {
 const LEVELS_OBJS = [
   [],
   [
-    [ DragonSlime, tiledScreenToWorld(vec2(3120, 176)), vec2(0.2, 0.05), 0.6 ],
+    [ DragonSlime, tiledScreenToWorld(vec2(3120, 176)), vec2(0.2, 0.06), 0.6 ],
     [ StupidSlime, tiledScreenToWorld(vec2(560, 224)), 3, 3 ],
     [ StupidSlime, tiledScreenToWorld(vec2(416, 176)), 3, 3 ],
     [ StupidSlime, tiledScreenToWorld(vec2(1936, 128)), 5, 3 ],

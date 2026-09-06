@@ -40,8 +40,8 @@ class DragonSlime extends EngineObject {
     this._fireLockY = undefined;
     this._lockTime = lockTime;
     this._bossSlot = vec2();
-    this._springHorizontal = new SpringDamping(this, 1, 0.06, 0.4, velocity, o => o.x, (o, v) => { o.x = v; });
-    this._springVertical = new SpringDamping(this, 1, 0.06, 0.4, velocity, o => o.y, (o, v) => { o.y = v; });
+    this._motionX = new Lowpass(1.0 - velocity.x);
+    this._motionY = new Lowpass(1.0 - velocity.y);
     this.gravityScale = 0.0;
     this.mirror = true;
     this.mass = 0;
@@ -145,21 +145,21 @@ class DragonSlime extends EngineObject {
     } else if (this._stage == DRAGON_SLIME_STAGE_LOCK) {
       const targetPos = this._getTargetPos();
       const motionTargetPos = targetPos;
-      this._springHorizontal.update(motionTargetPos);
-      this._springVertical.update(motionTargetPos);
+      this.pos.x = this._motionX.update(motionTargetPos.x);
+      this.pos.y = this._motionY.update(motionTargetPos.y);
       this._handleLock(targetPos);
     } else if (this._stage == DRAGON_SLIME_STAGE_FIRE) {
       const targetPos = this._getTargetPos();
       const motionTargetPos = vec2(targetPos.x, this._fireLockY);
-      this._springHorizontal.update(motionTargetPos);
-      this._springVertical.update(motionTargetPos);
+      this.pos.x = this._motionX.update(motionTargetPos.x);
+      this.pos.y = this._motionY.update(motionTargetPos.y);
       this._handleFire();
     }
   }
 
   _updateBossState() {
-    this._springHorizontal.update(this._bossSlot);
-    this._springVertical.update(this._bossSlot);
+    this.pos.x = this._motionX.update(this._bossSlot);
+    this.pos.y = this._motionY.update(this._bossSlot);
     if (this._stage == DRAGON_SLIME_STAGE_FIRE) {
       this._handleFire();
     }

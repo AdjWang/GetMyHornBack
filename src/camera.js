@@ -11,13 +11,12 @@ const cameraSpringObject = {
   set pos(value) { cameraPos = value; },
 };
 
-let cameraSpringDamping;
+let cameraMotion;
 
 function initWorldCamera() {
   const targetPos = vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2);
   cameraPos = targetPos;
-  cameraSpringDamping = new SpringDamping(cameraSpringObject, CAMERA_MASS, CAMERA_SPRING, CAMERA_DAMPING, CAMERA_MAX_VELOCITY,
-    o => o.x, (o, v) => { o.x = v; });
+  cameraMotion = new Lowpass(0.9);
 }
 
 function updateWorldCamera() {
@@ -29,7 +28,8 @@ function updateWorldCamera() {
       motionOffset = MOTION_OFFSET_X_FACTOR * Math.abs(player.velocity.x) * player.getFacingX();
       motionOffset = Math.min(motionOffset, MOTION_OFFSET_X_MAX);
     }
-    cameraSpringDamping.update(targetPos.add(vec2(motionOffset, 0)));
+    targetPos = targetPos.add(vec2(motionOffset, 0));
+    cameraPos.x = cameraMotion.update(targetPos.x);
     if (cameraPos.x < VIEW_WIDTH / 2) {
       cameraPos.x = VIEW_WIDTH / 2;
     }
