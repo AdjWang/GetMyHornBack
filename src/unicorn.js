@@ -98,7 +98,7 @@ class Unicorn extends EngineObject {
       drawAsepriteFrame(characterRes.unicorn_body[0], drawPos.add(drawOffset), 1, new Color(1, 1, 1, ratio / 1.8), 0, this.mirror);
     });
     this._ghostTrail.setEnable(false);
-    this.mirror = false;
+    this.mirror = true;
     this.mass = 1;
     this.damping = 1;
     this.friction = 1;

@@ -85,8 +85,7 @@ const LEVEL3 = [
 
 const START_POINT = [
   vec2(36, 3),
-  // vec2(2, 10),
-  vec2(182, 11),
+  vec2(1, 15),
   vec2(2, 3),
   vec2(15, 13),
 ];
