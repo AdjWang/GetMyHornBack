@@ -92,12 +92,11 @@ class DragonSlime extends EngineObject {
   }
 
   collideWithObject(o) {
-    if (this._caughtObject) {
-      return false;
-    }
     if (o == player && o.velocity.y <= 0 && o.pos.y > this.pos.y) {
       o.groundObject = this;
-      this.setTargetObject(o);
+      if (!this._caughtObject) {
+        this.setTargetObject(o);
+      }
     }
     return true;
   }
