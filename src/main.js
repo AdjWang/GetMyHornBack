@@ -24,8 +24,8 @@ async function gameInit() {
   const rainbowColored = await createRemappedTextureInfo(TEXTURE_INDEX_TILESET, 0, 0);
   const rainbowGrey = await createRemappedTextureInfo(TEXTURE_INDEX_TILESET, 1, 0);
   // Crop the rainbow body. Shrink a little gap to avoid float rounding glitch.
-  savePointEnableTileInfo = new TileInfo(vec2(16, 23), vec2(16 - 0.01, 9), rainbowColored);
-  savePointDisableTileInfo = new TileInfo(vec2(16, 23), vec2(16 - 0.01, 9), rainbowGrey);
+  savePointEnableTileInfo = new TileInfo(vec2(96, 7), vec2(16 - 0.01, 9), rainbowColored);
+  savePointDisableTileInfo = new TileInfo(vec2(96, 7), vec2(16 - 0.01, 9), rainbowGrey);
   await loadLevel();
   initWorldCamera();
   background.updatePos(cameraPos);

@@ -31,33 +31,33 @@
             }
         },
         "level0.tmx": {
-            "scale": 1.5,
+            "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 686,
-                "y": 123.33333333333331
+                "x": 380.5,
+                "y": 54
             }
         },
         "level1.tmx": {
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 0.75,
+            "scale": 2,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 691.9999999999999,
-                "y": 130.66666666666663
+                "x": 681.75,
+                "y": 160
             }
         },
         "level2.tmx": {
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 0.75,
+            "scale": 0.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 2613.333333333333,
-                "y": -105.33333333333337
+                "x": 647,
+                "y": -196
             }
         },
         "level3.tmx": {
@@ -65,10 +65,10 @@
                 2
             ],
             "scale": 2,
-            "selectedLayer": 0,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 218.5,
-                "y": 139.5
+                "x": 215.75,
+                "y": 232
             }
         },
         "test.tsx": {
