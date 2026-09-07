@@ -40,7 +40,7 @@ class DragonSlime extends EngineObject {
     this._charge = undefined;
     this._fireLockY = undefined;
     this._lockTime = lockTime;
-    this._bossSlot = vec2();
+    this._bossSlot = this.pos;
     this._motionX = new Lowpass(1.0 - velocity.x);
     this._motionY = new Lowpass(1.0 - velocity.y);
     this.gravityScale = 0.0;
@@ -164,8 +164,8 @@ class DragonSlime extends EngineObject {
   }
 
   _updateBossState() {
-    this.pos.x = this._motionX.update(this._bossSlot);
-    this.pos.y = this._motionY.update(this._bossSlot);
+    this.pos.x = this._motionX.update(this._bossSlot.x);
+    this.pos.y = this._motionY.update(this._bossSlot.y);
     if (this._stage == DRAGON_SLIME_STAGE_FIRE) {
       this._handleFire();
     }
