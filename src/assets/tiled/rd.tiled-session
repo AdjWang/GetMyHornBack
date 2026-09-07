@@ -31,33 +31,33 @@
             }
         },
         "level0.tmx": {
-            "scale": 0.75,
+            "scale": 1.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 545.3333333333333,
-                "y": 14.666666666666629
+                "x": 208.66666666666663,
+                "y": 135.99999999999997
             }
         },
         "level1.tmx": {
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 0.5,
+            "scale": 0.33,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1118,
-                "y": -182
+                "x": 1300.0000000000002,
+                "y": -357.5757575757575
             }
         },
         "level2.tmx": {
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 0.5,
+            "scale": 0.75,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1948,
-                "y": -70
+                "x": 2613.333333333333,
+                "y": -105.33333333333337
             }
         },
         "level3.tmx": {
