@@ -96,55 +96,23 @@ class ChargeLaser extends EngineObject {
 }
 
 class GhostTrail extends EngineObject {
-  constructor(obj, length, gap, draw = (ratio, pos) => { }) {
-    super(vec2(), vec2(), undefined, 0, new Color, RENDER_ORDER_CHARACTER - .01);
-    this._obj = obj;
-    this._length = length;
-    this._gap = gap;
+  constructor(pos, duration, draw = (ratio, pos) => { }) {
+    super();
+    this.renderOrder = RENDER_ORDER_CHARACTER - .01;
+    this._pos = pos;
+    this._lifeTimer = new Timer(duration);
     this._draw = draw;
-    this._drawTimer = new Timer;
-    this._drawTimer.set(this._gap);
-    this._durationTimer = new Timer;
-    this._pos = [];
-    this._enable = true;
-    this.mass = 0;
-    this.gravityScale = 0;
-    this.damping = 1;
-    this.friction = 1;
     this.setCollision(false, false, false, false);
   }
 
-  setEnable(on, duration = -1) {
-    this._enable = on;
-    if (duration > 0) {
-      this._durationTimer.set(duration);
-    }
-  }
-
-  update() {
-    if (this._durationTimer.isSet() && this._durationTimer.elapsed()) {
-      this._durationTimer.unset();
-      this._enable = false;
-    }
-    if (this._drawTimer.elapsed()) {
-      this._drawTimer.set(this._gap);
-      if (this._enable) {
-        this._pos.push(this._obj.pos.copy());
-        if (this._pos.length > this._length) {
-          this._pos.shift();
-        }
-      } else {
-        this._pos.shift();
-      }
-    }
-  }
-
   render() {
-    this._pos.forEach((_, i) => {
-      const drawIdx = this._pos.length - i - 1;
-      const ratio = drawIdx / this._pos.length;
-      this._draw(ratio, this._pos[drawIdx]);
-    });
+    if (this.destroyed) {
+      return;
+    }
+    this._draw(1.0 - this._lifeTimer.getPercent(), this._pos);
+    if (this._lifeTimer.elapsed()) {
+      this.destroy();
+    }
   }
 }
 

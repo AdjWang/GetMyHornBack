@@ -350,8 +350,8 @@ function updateLevelEvent() {
     player = new Unicorn(START_POINT[0]);
   }
   if (mouseIsDown(0)) {
-    // switchLevel(3);
-    // location.reload();
+    switchLevel(1);
+    location.reload();
     if (bossLevel) {
       bossLevel.start();
       // levelObjInsts[0].fire(6, 1.5);

@@ -68,6 +68,7 @@ const UNICORN_FRAME_INDEX_JUMP = 0;
 const UNICORN_FRAME_INDEX_RUN = 1;
 const UNICORN_FRAME_COUNT_RUN = 2;
 const UNICORN_ANIM_RUN_SPEED = 8;  // frame/sec
+const UNICORN_GHOST_TRAIL_TICKS = 40;  // frames
 
 class Unicorn extends EngineObject {
   constructor(pos) {
@@ -92,12 +93,7 @@ class Unicorn extends EngineObject {
     this._runFrameTimer = new Timer(1.0 / UNICORN_ANIM_RUN_SPEED);
     this._landScaleTimer = new Timer;
     this._lastGroundObject = false;
-    this._ghostTrail = new GhostTrail(this, 6, 0.02, (ratio, drawPos) => {
-      const drawOffset = vec2(UNICORN_DRAW_OFFSET.x * (this.mirror ? -1.0 : 1.0), UNICORN_DRAW_OFFSET.y);
-      drawAsepriteFrame(characterRes.unicorn_head[0], drawPos.add(drawOffset), 1, new Color(1, 1, 1, ratio / 1.8), 0, this.mirror);
-      drawAsepriteFrame(characterRes.unicorn_body[0], drawPos.add(drawOffset), 1, new Color(1, 1, 1, ratio / 1.8), 0, this.mirror);
-    });
-    this._ghostTrail.setEnable(false);
+    this._drawGhostTrailTicks = 0;
     this.mirror = true;
     this.mass = 1;
     this.damping = 1;
@@ -156,6 +152,15 @@ class Unicorn extends EngineObject {
   }
 
   render() {
+    // Draw ghost trail.
+    if (this._drawGhostTrailTicks > 0) {
+      this._drawGhostTrailTicks -= 1;
+      new GhostTrail(this.pos.copy(), 0.1, (ratio, drawPos) => {
+        const drawOffset = vec2(UNICORN_DRAW_OFFSET.x * (this.mirror ? -1.0 : 1.0), UNICORN_DRAW_OFFSET.y);
+        drawAsepriteFrame(characterRes.unicorn_head[0], drawPos.add(drawOffset), 1, new Color(1, 1, 1, ratio / 1.8), 0, this.mirror);
+        drawAsepriteFrame(characterRes.unicorn_body[0], drawPos.add(drawOffset), 1, new Color(1, 1, 1, ratio / 1.8), 0, this.mirror);
+      });
+    }
     const runBobTime = time * UNICORN_RUN_HEAD_BOB_SPEED;
     const runCycle = Math.sin(runBobTime);
     const idleHeadBob = this._animState == UNICORN_ANIM_STATE_IDLE ?
@@ -346,7 +351,7 @@ class Unicorn extends EngineObject {
     }
     this.velocity.y = UNICORN_JUMP_INITIAL_SPEED * jumpGain;
     if (jumpGain > 1.001) {
-      this._ghostTrail.setEnable(true, 0.5);
+      this._drawGhostTrailTicks = UNICORN_GHOST_TRAIL_TICKS;
       SOUND_HIGH_JUMP.play(this.pos, SOUND_HIGH_JUMP_VOLUME);
     } else {
       SOUND_JUMP.play(this.pos, SOUND_JUMP_VOLUME);
@@ -407,7 +412,7 @@ class Unicorn extends EngineObject {
       this._landScaleTimer.set(UNICORN_LAND_SCALE_TIME);
       this._emitDust();
       SOUND_LAND.play(this.pos, SOUND_LAND_VOLUME);
-      this._ghostTrail.setEnable(false);
+      this._drawGhostTrailTicks = 0;
     }
     this._wasGrounded = grounded;
 
