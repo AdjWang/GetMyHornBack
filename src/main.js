@@ -121,7 +121,7 @@ function gameRenderPost() {
     drawMoveHint(unicornPos4.add(vec2(2.5, -0.3)), true);
     drawTextOverlay('Get my horn back!', unicornPos4.add(vec2(2.0, 0.6)), 0.5, textColor);
 
-    const entryBaseX = 30;
+    const entryBaseX = 30.5;
     const entryBaseY = 4;
     const entryHintOffset = [0.0, 6.0, 12.0];
     drawTextOverlay("LEVEL1", vec2(entryBaseX + entryHintOffset[0], entryBaseY), 0.7, textColor);
@@ -133,7 +133,9 @@ function gameRenderPost() {
   }
   if (currentLevel == 0) {
     drawTextOverlay('GET MY HORN BACK', vec2(14, 13), 2.5, textColor);
-    drawTextOverlay('Press S to start', vec2(14, 11), 0.8, textColor);
+    if (!player) {
+      drawTextOverlay('Press S to start', vec2(14, 11), 0.8, textColor);
+    }
   }
 }
 
