@@ -45,19 +45,19 @@
             "scale": 0.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 504,
-                "y": -22
+                "x": 1118,
+                "y": -182
             }
         },
         "level2.tmx": {
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 0.75,
+            "scale": 0.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1026.6666666666667,
-                "y": 129.33333333333326
+                "x": 1948,
+                "y": -70
             }
         },
         "level3.tmx": {

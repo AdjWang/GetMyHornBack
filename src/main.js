@@ -25,7 +25,7 @@ async function gameInit() {
   const rainbowGrey = await createRemappedTextureInfo(TEXTURE_INDEX_TILESET, 1, 0);
   savePointEnableTileInfo = new TileInfo(vec2(16, 23), vec2(16, 9), rainbowColored);
   savePointDisableTileInfo = new TileInfo(vec2(16, 23), vec2(16, 9), rainbowGrey);
-  await loadLevel(1);
+  await loadLevel(0);
   initWorldCamera();
   background.updatePos(cameraPos);
   foreground.updatePos(cameraPos);
