@@ -91,10 +91,10 @@ function gameRenderPost() {
       });
     };
 
-    const storyBaseX = 28;
+    const storyBaseX = 0;
     const storyBaseY = 5;
     // Comic cut lines.
-    [storyBaseX + 5, storyBaseX + 14, storyBaseX + 23].forEach(x => {
+    [storyBaseX + 4, storyBaseX + 13, storyBaseX + 21.5].forEach(x => {
       drawLine(vec2(x, storyBaseY), vec2(x, storyBaseY + 4), 0.1, new Color(0, 0, 0, 0.2));
     });
     // Comic scene1.
@@ -102,32 +102,32 @@ function gameRenderPost() {
     drawUnicorn(unicornPos1, true, false);
     drawSleepHint(unicornPos1);
     // Comic scene2.
-    const dragonPos2 = vec2(storyBaseX + 10, storyBaseY + 2.5);
-    const unicornPos2 = vec2(storyBaseX + 8, storyBaseY + 2);
+    const dragonPos2 = vec2(storyBaseX + 9, storyBaseY + 2.5);
+    const unicornPos2 = vec2(storyBaseX + 7, storyBaseY + 2);
     drawDragon(dragonPos2, false, false);
     drawMoveHint(dragonPos2, false);
     drawUnicorn(unicornPos2, true, false);
     drawSleepHint(unicornPos2);
     drawTextOverlay('Horn == Power!', dragonPos2.add(vec2(0.1, 1.2)), 0.5, textColor);
     // Comic scene3.
-    const dragonPos3 = vec2(storyBaseX + 20, storyBaseY + 2.5);
-    const unicornPos3 = vec2(storyBaseX + 17, storyBaseY + 2);
+    const dragonPos3 = vec2(storyBaseX + 19, storyBaseY + 2.5);
+    const unicornPos3 = vec2(storyBaseX + 16, storyBaseY + 2);
     drawDragon(dragonPos3, true, true);
     drawMoveHint(dragonPos3, true);
     drawUnicorn(unicornPos3, false, false);
     drawTextOverlay('What?!', unicornPos3.add(vec2(-0.9, 0.6)), 0.5, textColor);
     // Comic scene4.
-    const unicornPos4 = vec2(storyBaseX + 24, storyBaseY + 2);
+    const unicornPos4 = vec2(storyBaseX + 23, storyBaseY + 2);
     drawUnicorn(unicornPos4, false, true, 1);
     drawMoveHint(unicornPos4.add(vec2(2.5, -0.3)), true);
-    drawTextOverlay('Get my horn back!', unicornPos4.add(vec2(3.0, 0.6)), 0.5, textColor);
+    drawTextOverlay('Get my horn back!', unicornPos4.add(vec2(2.0, 0.6)), 0.5, textColor);
 
-    const entryBaseX = 57.5;
+    const entryBaseX = 30;
     const entryBaseY = 4;
     const entryHintOffset = [0.0, 6.0, 12.0];
-    drawTextOverlay("EASY", vec2(entryBaseX + entryHintOffset[0], entryBaseY), 0.7, textColor);
-    drawTextOverlay("NORMAL", vec2(entryBaseX + entryHintOffset[1], entryBaseY), 0.7, textColor);
-    drawTextOverlay("HARD", vec2(entryBaseX + entryHintOffset[2], entryBaseY), 0.7, textColor);
+    drawTextOverlay("LEVEL1", vec2(entryBaseX + entryHintOffset[0], entryBaseY), 0.7, textColor);
+    drawTextOverlay("LEVEL2", vec2(entryBaseX + entryHintOffset[1], entryBaseY), 0.7, textColor);
+    drawTextOverlay("LEVEL3", vec2(entryBaseX + entryHintOffset[2], entryBaseY), 0.7, textColor);
     entryHintOffset.forEach(x => {
       drawTextOverlay("🔻", vec2(entryBaseX + x, entryBaseY - 0.7), 0.5, textColor);
     });
