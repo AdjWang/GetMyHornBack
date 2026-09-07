@@ -85,8 +85,7 @@ const LEVEL3 = [
 
 const START_POINT = [
   vec2(25.2, 6.5),
-  // vec2(1, 15),
-  vec2(200, 15),
+  vec2(1, 15),
   vec2(2, 3),
   vec2(15, 13),
 ];
@@ -172,7 +171,9 @@ class SavePoint extends EngineObject {
   setSaved(enable) {
     this._saved = enable;
     this.tileInfo = this._saved ? this._savedTileInfo : this._unsavedTileInfo;
-    saveSplash(this.pos);
+    if (enable) {
+      saveSplash(this.pos);
+    }
     savePoints.forEach(sp => () => { if (sp != this) { sp.setSaved(false); } });
   }
 }
