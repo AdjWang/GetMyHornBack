@@ -417,10 +417,15 @@ class BossLevel {
 }
 
 function saveProgress(pos) {
+  let hasDragon = currentLevel >= 1 && dragon && dragon.hasTarget(); 
+  // A position hack to avoid record dragon before it triggered.
+  if (currentLevel == 1 && pos.x < 205) {
+    hasDragon = undefined;
+  }
   const data = {
     level: currentLevel,
     unicorn: pos.add(vec2(0, 0.5)),
-    dragon: (dragon && dragon.hasTarget()) ? dragon.pos : undefined,
+    dragon: hasDragon ? dragon.pos : undefined,
   };
   writeSaveData(`${STORAGE_PREFIX}save`, data);
 }

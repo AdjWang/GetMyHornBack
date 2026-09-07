@@ -247,7 +247,7 @@ class StupidSlime extends EngineObject {
     this._scaleOffsetY = [1.0, 0.9, 0.8, 0.7, 0.7, 0.8, 0.9, 1.0];
     sight -= 1;  // fit tild object rect width
     this._sight = sight;
-    this._step = speed;
+    this._step = speed / sight;
     this._patrolFromX = pos.x;
     this._patrolToX = pos.x + sight;
     this._patrolRatio = 0.0;
