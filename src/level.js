@@ -84,7 +84,7 @@ const LEVEL3 = [
 ];
 
 const START_POINT = [
-  vec2(3, 3),
+  vec2(25.2, 7),
   vec2(1, 15),
   vec2(2, 3),
   vec2(15, 13),
@@ -275,7 +275,6 @@ function explodeTntCellClusterRecursive(centerPos, visited) {
 
 async function loadLevel(idx) {
   currentLevel = idx;
-  player = new Unicorn(START_POINT[idx]);
   savePoints = [];
   // Remap scene theme.
   const sceneTheme = LEVEL_THEMES[idx];
@@ -317,11 +316,10 @@ async function loadLevel(idx) {
     const obj = new Constructor(...args);
     levelObjInsts.push(obj);
   });
-  // DEBUG
-  if (idx == 0) {
-    const speed = 0.1;
-    new RainbowBeam(vec2(2, 6.5), undefined, speed, PRISM_TILE_DIR_RIGHT, 0, 10, -1);
-  } else if (idx == 1) {
+  if (idx != 0) {
+    player = new Unicorn(START_POINT[idx]);
+  }
+  if (idx == 1) {
     dragon = levelObjInsts[0];
   } else if (idx == 2) {
     dragon = levelObjInsts[0];
@@ -344,6 +342,9 @@ function clearProgress() {
 
 // TODO: remove eventually
 function updateLevelEvent() {
+  if (!player && currentLevel == 0 && keyWasPressed(INPUT_KEY_DOWN)) {
+    player = new Unicorn(START_POINT[0]);
+  }
   if (mouseIsDown(0)) {
     // currentLevel += 1;
     // if (bossLevel) {

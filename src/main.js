@@ -54,10 +54,9 @@ function gameRender() {
 }
 
 function gameRenderPost() {
+  const spriteColor = new Color(1, 1, 1, 0.6);
+  const textColor = new Color(0, 0, 0, 0.5);
   if (currentLevel == 0) {
-    const spriteColor = new Color(1, 1, 1, 0.6);
-    const textColor = new Color(0, 0, 0, 0.5);
-
     const drawUnicorn = function (basePos, hasHorn, mirror, bodyFrame = 0) {
       const pos = basePos.add(UNICORN_DRAW_OFFSET).add(vec2(0, -0.5));
       drawAsepriteFrame(characterRes.unicorn_head[0], pos, 1, spriteColor, 0, mirror);
@@ -133,7 +132,8 @@ function gameRenderPost() {
     });
   }
   if (currentLevel == 0) {
-    drawTextScreen('GET MY HORN BACK', vec2(mainCanvasSize.x / 2, worldScale * 2.2), worldScale * 2.5);
+    drawTextOverlay('GET MY HORN BACK', vec2(14, 13), 2.5, textColor);
+    drawTextOverlay('Press S to start', vec2(14, 11), 0.8, textColor);
   }
 }
 
