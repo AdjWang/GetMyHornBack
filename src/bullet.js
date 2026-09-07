@@ -65,7 +65,7 @@ class RainbowBeam extends EngineObject {
   }
 
   collideWithObject(o) {
-    if (o == this._attacker) {
+    if (o instanceof DragonSlime || o instanceof StupidSlime) {
       return false;
     }
     this._explode();
