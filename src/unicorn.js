@@ -10,6 +10,8 @@ const UNICORN_FIRE_RANGE = 8;
 const UNICORN_FIRE_DAMAGE = 1.0;
 const SOUND_JUMP = new Sound([,.15,224,.02,.02,.06,,1.7,,50,,,,,,,,.61,.02]);
 const SOUND_JUMP_VOLUME = 0.8;
+const SOUND_HIGH_JUMP = new Sound([,.15,304,.02,.02,.06,,1.7,,50,,,,,,,,.61,.02]);
+const SOUND_HIGH_JUMP_VOLUME = 1.0;
 const SOUND_LAND = new Sound([,.03,65.40639,.02,.01,.07,4,,10,,,,,.7]);
 const SOUND_LAND_VOLUME = 0.05;
 
@@ -344,12 +346,14 @@ class Unicorn extends EngineObject {
     this.velocity.y = UNICORN_JUMP_INITIAL_SPEED * jumpGain;
     if (jumpGain > 1.001) {
       this._ghostTrail.setEnable(true, 0.5);
+      SOUND_HIGH_JUMP.play(this.pos, SOUND_HIGH_JUMP_VOLUME);
+    } else {
+      SOUND_JUMP.play(this.pos, SOUND_JUMP_VOLUME);
     }
     this._jumpNeedsCornerRestore = true;
     this._jumpBufferTimer.unset();
     this._coyoteTimer.unset();
     this._emitDust();
-    SOUND_JUMP.play(this.pos, SOUND_JUMP_VOLUME);
   }
 
   _updateFootPrism() {

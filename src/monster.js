@@ -267,6 +267,13 @@ class StupidSlime extends EngineObject {
     drawTile(pos, size, this.tileInfo, this.color, this.angle, this.mirror);
   }
 
+  collideWithObject(o) {
+    if (o == player && o.velocity.y <= 0 && o.pos.y > this.pos.y) {
+      o.groundObject = this;
+    }
+    return true;
+  }
+
   get_jump_gain() {
     return STUPID_SLIME_JUMP_GAIN;
   }
