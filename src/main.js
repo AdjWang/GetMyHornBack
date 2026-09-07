@@ -26,7 +26,7 @@ async function gameInit() {
   // Crop the rainbow body. Shrink a little gap to avoid float rounding glitch.
   savePointEnableTileInfo = new TileInfo(vec2(16, 23), vec2(16 - 0.01, 9), rainbowColored);
   savePointDisableTileInfo = new TileInfo(vec2(16, 23), vec2(16 - 0.01, 9), rainbowGrey);
-  await loadLevel(1);
+  await loadLevel();
   initWorldCamera();
   background.updatePos(cameraPos);
   foreground.updatePos(cameraPos);

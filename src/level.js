@@ -278,7 +278,8 @@ function explodeTntCellClusterRecursive(centerPos, visited) {
   }
 }
 
-async function loadLevel(idx) {
+async function loadLevel() {
+  const idx = loadCurrentLevel();
   currentLevel = idx;
   savePoints = [];
   // Remap scene theme.
@@ -351,7 +352,8 @@ function updateLevelEvent() {
     player = new Unicorn(START_POINT[0]);
   }
   if (mouseIsDown(0)) {
-    // currentLevel += 1;
+    switchLevel(2);
+    location.reload();
     // if (bossLevel) {
     //   bossLevel.start();
     //   // levelObjInsts[0].fire(6, 1.5);
@@ -427,6 +429,14 @@ class BossLevel {
   destroy() {}
 }
 
+function switchLevel(idx) {
+  clearProgress();
+  const data = {
+    level: idx,
+  };
+  writeSaveData(`${STORAGE_PREFIX}save`, data);
+}
+
 function saveProgress(pos, idx) {
   let hasDragon = currentLevel >= 1 && dragon && dragon.hasTarget(); 
   // A position hack to avoid record dragon before it triggered.
@@ -444,16 +454,20 @@ function saveProgress(pos, idx) {
   writeSaveData(`${STORAGE_PREFIX}save`, data);
 }
 
+function loadCurrentLevel() {
+  const data = readSaveData(`${STORAGE_PREFIX}save`, undefined);
+  return data.level ? data.level : 0;
+}
+
 function loadProgress() {
   const data = readSaveData(`${STORAGE_PREFIX}save`, undefined);
-  if (!data || !data.unicorn) {
-    return;
-  }
   if (data.level != currentLevel) {
     return;
   }
-  savePoints[data.idx].setSaved(true);
-  if (player) {
+  if (data.idx) {
+    savePoints[data.idx].setSaved(true);
+  }
+  if (data.unicorn && player) {
     player.pos = vec2(data.unicorn.x, data.unicorn.y);
   }
   if (data.dragon && dragon) {
