@@ -23,8 +23,9 @@ async function gameInit() {
   // original color later in map. Normal tile(...) would get the grey one in game.
   const rainbowColored = await createRemappedTextureInfo(TEXTURE_INDEX_TILESET, 0, 0);
   const rainbowGrey = await createRemappedTextureInfo(TEXTURE_INDEX_TILESET, 1, 0);
-  savePointEnableTileInfo = new TileInfo(vec2(16, 23), vec2(16, 9), rainbowColored);
-  savePointDisableTileInfo = new TileInfo(vec2(16, 23), vec2(16, 9), rainbowGrey);
+  // Crop the rainbow body. Shrink a little gap to avoid float rounding glitch.
+  savePointEnableTileInfo = new TileInfo(vec2(16, 23), vec2(16 - 0.01, 9), rainbowColored);
+  savePointDisableTileInfo = new TileInfo(vec2(16, 23), vec2(16 - 0.01, 9), rainbowGrey);
   await loadLevel(1);
   initWorldCamera();
   background.updatePos(cameraPos);
