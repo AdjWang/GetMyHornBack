@@ -1,5 +1,7 @@
 'use strict';
 
+const SLIME_JUMP_GAIN = 1.2;
+
 const DRAGON_SLIME_ANIM_SPEED = 4;  // frame/sec
 const DRAGON_SLIME_FRAME_COUNT = 2;
 const DRAGON_SLIME_DRAW_BASE_FRAME = 3;
@@ -17,7 +19,6 @@ const DRAGON_SLIME_STAGE_IDLE = 0;
 const DRAGON_SLIME_STAGE_LOCK = 1;
 const DRAGON_SLIME_STAGE_FIRE = 2;
 // Gain when unicorn jump over slime.
-const STUPID_SLIME_JUMP_GAIN = 1.2;
 const STUPID_SLIME_ANIM_SPEED = 12;  // frame/sec
 
 class DragonSlime extends EngineObject {
@@ -101,6 +102,10 @@ class DragonSlime extends EngineObject {
     return true;
   }
 
+  get_jump_gain() {
+    return SLIME_JUMP_GAIN;
+  }
+
   hasTarget() {
     return this._caughtObject != undefined;
   }
@@ -142,6 +147,8 @@ class DragonSlime extends EngineObject {
     }
     if (this._stage == DRAGON_SLIME_STAGE_IDLE) {
       this._stage = DRAGON_SLIME_STAGE_LOCK;
+      this.pos.x = this._motionX.update(this.pos.x);
+      this.pos.y = this._motionY.update(this.pos.y);
     } else if (this._stage == DRAGON_SLIME_STAGE_LOCK) {
       const targetPos = this._getTargetPos();
       const motionTargetPos = targetPos;
@@ -275,7 +282,7 @@ class StupidSlime extends EngineObject {
   }
 
   get_jump_gain() {
-    return STUPID_SLIME_JUMP_GAIN;
+    return SLIME_JUMP_GAIN;
   }
 
   _updatePatrol() {
