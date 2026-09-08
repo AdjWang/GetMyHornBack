@@ -24,9 +24,9 @@ const DRAGON_SLIME_DAMAGED_TICKS = 90;
 const STUPID_SLIME_ANIM_SPEED = 12;  // frame/sec
 
 class DragonSlime extends EngineObject {
-  constructor(pos, velocity, lockTime) {
+  constructor(pos, velocity, lockTime, alpha = 1.0) {
     const colliderSize = vec2(0.9, 0.9);
-    super(pos, colliderSize, undefined, 0, new Color, RENDER_ORDER_CHARACTER);
+    super(pos, colliderSize, undefined, 0, new Color(1, 1, 1, alpha), RENDER_ORDER_CHARACTER);
     this._frameInfoWing = characterRes.slime_wing;
     this._frameInfoBody = characterRes.slime_body;
     this._frameInfoHorn = characterRes.unicorn_horn;
@@ -75,7 +75,7 @@ class DragonSlime extends EngineObject {
   }
 
   render() {
-    let color = new Color(0, 0, 0, 1);
+    let color = this.color;
     if (this._flashTick > 0) {
       this._flashTick -= 1;
       color.a = (Math.sin(PI * 2 * 3 * (this._flashTick / DRAGON_SLIME_DAMAGED_TICKS)) + 1) / 2;

@@ -71,9 +71,9 @@ const UNICORN_ANIM_RUN_SPEED = 8;  // frame/sec
 const UNICORN_GHOST_TRAIL_TICKS = 40;  // frames
 
 class Unicorn extends EngineObject {
-  constructor(pos) {
+  constructor(pos, alpha = 1.0) {
     const colliderSize = vec2(0.9, 0.9);
-    super(pos, colliderSize, undefined, 0, new Color, RENDER_ORDER_CHARACTER);
+    super(pos, colliderSize, undefined, 0, new Color(1, 1, 1, alpha), RENDER_ORDER_CHARACTER);
     this._frameInfoHead = characterRes.unicorn_head;
     this._frameInfoBody = characterRes.unicorn_body;
     this._frameInfoHorn = characterRes.unicorn_horn;
@@ -97,10 +97,9 @@ class Unicorn extends EngineObject {
     this._drawGhostTrailTicks = 0;
     this._hornDrawPos = vec2();
     this.mirror = true;
-    this.mass = 1;
     this.damping = 1;
     this.friction = 1;
-    this.setCollision();
+    this.setStatic(false);
 
     const dustGrey = 0.8;
     this._jumpDustEmitter = new ParticleEmitter(
@@ -129,6 +128,18 @@ class Unicorn extends EngineObject {
       false,                // collideTiles
       false                 // additive
     );
+  }
+
+  setStatic(enable) {
+    if (enable) {
+      this.mass = 0;
+      this.gravityScale = 0.0;
+      this.setCollision(false, false, false, false);
+    } else {
+      this.mass = 1;
+      this.gravityScale = 1.0;
+      this.setCollision();
+    }
   }
 
   update() {
@@ -182,11 +193,11 @@ class Unicorn extends EngineObject {
     if (!this._gettingHorn) {
       this._hornDrawPos = headPos;
     }
-    drawAsepriteFrame(this._frameInfoHead[this._runFrame], headPos.add(scaleAnchorOffset).add(drawOffset), runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
+    drawAsepriteFrame(this._frameInfoHead[this._runFrame], headPos.add(scaleAnchorOffset).add(drawOffset), runScaleY * this._getJumpScaleY(), this.color, runRotate, this.mirror);
     if (this._hasHorn) {
-      drawAsepriteFrame(this._frameInfoHorn[this._runFrame], this._hornDrawPos.add(scaleAnchorOffset).add(drawOffset), runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
+      drawAsepriteFrame(this._frameInfoHorn[this._runFrame], this._hornDrawPos.add(scaleAnchorOffset).add(drawOffset), runScaleY * this._getJumpScaleY(), this.color, runRotate, this.mirror);
     }
-    drawAsepriteFrame(this._frameInfoBody[this._runFrame], drawPos.add(vec2(0, bodyRunBob)).add(drawOffset), runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
+    drawAsepriteFrame(this._frameInfoBody[this._runFrame], drawPos.add(vec2(0, bodyRunBob)).add(drawOffset), runScaleY * this._getJumpScaleY(), this.color, runRotate, this.mirror);
   }
 
   gettingHorn(pos) {
@@ -225,6 +236,10 @@ class Unicorn extends EngineObject {
   }
 
   _updateMotion() {
+    if (this.mass < 0.001) {
+      // Disable inputs for comic unicorns in level 0.
+      return;
+    }
     const leftDown = keyIsDown(INPUT_KEY_LEFT);
     const rightDown = keyIsDown(INPUT_KEY_RIGHT);
     const upDown = keyIsDown(INPUT_KEY_UP);
@@ -445,26 +460,23 @@ class Unicorn extends EngineObject {
       this._drawGhostTrailTicks = 0;
     }
     this._wasGrounded = grounded;
-
-    if (!grounded) {
+    if (grounded || this.color.a < 1.0) {
+      this._animState = abs(this.velocity.x) > .01 ? UNICORN_ANIM_STATE_RUN : UNICORN_ANIM_STATE_IDLE;
+      if (this._animState == UNICORN_ANIM_STATE_IDLE) {
+        this._runFrame = UNICORN_FRAME_INDEX_IDLE;
+        return;
+      }
+      if (this._runFrame < UNICORN_FRAME_INDEX_RUN) {
+        this._runFrame = UNICORN_FRAME_INDEX_RUN;
+      }
+      else if (this._runFrameTimer.elapsed()) {
+        this._runFrameTimer.set(1.0 / UNICORN_ANIM_RUN_SPEED);
+        this._runFrame = UNICORN_FRAME_INDEX_RUN +
+          (this._runFrame - UNICORN_FRAME_INDEX_RUN + 1) % UNICORN_FRAME_COUNT_RUN;
+      }
+    } else {
       this._animState = UNICORN_ANIM_STATE_JUMP;
       this._runFrame = UNICORN_FRAME_INDEX_JUMP;
-      return;
-    }
-
-    this._animState = abs(this.velocity.x) > .01 ? UNICORN_ANIM_STATE_RUN : UNICORN_ANIM_STATE_IDLE;
-    if (this._animState == UNICORN_ANIM_STATE_IDLE) {
-      this._runFrame = UNICORN_FRAME_INDEX_IDLE;
-      return;
-    }
-
-    if (this._runFrame < UNICORN_FRAME_INDEX_RUN) {
-      this._runFrame = UNICORN_FRAME_INDEX_RUN;
-    }
-    else if (this._runFrameTimer.elapsed()) {
-      this._runFrameTimer.set(1.0 / UNICORN_ANIM_RUN_SPEED);
-      this._runFrame = UNICORN_FRAME_INDEX_RUN +
-        (this._runFrame - UNICORN_FRAME_INDEX_RUN + 1) % UNICORN_FRAME_COUNT_RUN;
     }
   }
 

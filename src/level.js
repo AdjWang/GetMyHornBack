@@ -326,6 +326,7 @@ async function loadLevel() {
     const obj = new Constructor(...args);
     levelObjInsts.push(obj);
   });
+  // Create player from comic in level 0.
   if (idx != 0) {
     player = new Unicorn(START_POINT[idx]);
   }
@@ -352,7 +353,9 @@ function clearProgress() {
 
 function updateLevelEvent() {
   if (!player && currentLevel == 0 && keyWasPressed(INPUT_KEY_DOWN)) {
-    player = new Unicorn(START_POINT[0]);
+    player = comicUnicorns[3];
+    player.setStatic(false);
+    player.color.a = 1.0;
   }
   if (bossLevel) {
     // if (mouseWasPressed(0)) {

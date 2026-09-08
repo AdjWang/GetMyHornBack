@@ -16,6 +16,8 @@
 
 // Never die.
 const DEBUG_MODE = false;
+let comicUnicorns = []
+let comicDragons = []
 
 ///////////////////////////////////////////////////////////////////////////////
 async function gameInit() {
@@ -37,6 +39,26 @@ async function gameInit() {
 
   // backgroundMusic = new ZzFXMusic(THEME);
   // backgroundMusic.playMusic(backgroundMusicVolume, true);
+  if (currentLevel == 0) {
+    const alpha = 0.6;
+    const storyBaseX = 0;
+    const storyBaseY = 5;
+    [2, 7, 16, 25.2].forEach(x => {
+      const unicorn = new Unicorn(vec2(storyBaseX + x, storyBaseY + 1.4), alpha);
+      unicorn.setHasHorn(true);
+      unicorn.setStatic(true);
+      unicorn.mirror = false;
+      comicUnicorns.push(unicorn);
+    });
+    [8.6, 19.4].forEach(x => {
+      comicDragons.push(new DragonSlime(vec2(storyBaseX + x, storyBaseY + 2.5), vec2(), 1, alpha));
+    });
+    comicUnicorns[2].setHasHorn(false);
+    comicUnicorns[3].setHasHorn(false);
+    comicUnicorns[3].mirror = true;
+    comicDragons[0].mirror = false;
+    comicDragons[0].setHasHorn(false);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -68,24 +90,6 @@ function gameRenderPost() {
   const spriteColor = new Color(1, 1, 1, 0.6);
   const textColor = new Color(0, 0, 0, 0.5);
   if (currentLevel == 0) {
-    const drawUnicorn = function (basePos, hasHorn, mirror, bodyFrame = 0) {
-      const pos = basePos.add(UNICORN_DRAW_OFFSET).add(vec2(0, -0.5));
-      drawAsepriteFrame(characterRes.unicorn_head[0], pos, 1, spriteColor, 0, mirror);
-      if (hasHorn) {
-        drawAsepriteFrame(characterRes.unicorn_horn[0], pos, 1, spriteColor, 0, mirror);
-      }
-      drawAsepriteFrame(characterRes.unicorn_body[bodyFrame], pos, 1, spriteColor, 0, mirror);
-    };
-    const drawDragon = function(basePos, hasHorn, mirror) {
-      const pos = basePos.add(vec2(DRAGON_SLIME_DRAW_X_OFFSETS[0] * mirror ? 1 : -1,
-                                   DRAGON_SLIME_DRAW_Y_OFFSETS[0]));
-      drawAsepriteFrame(characterRes.slime_wing[DRAGON_SLIME_DRAW_BASE_FRAME], pos, 1, spriteColor, 0, mirror);
-      drawAsepriteFrame(characterRes.slime_body[DRAGON_SLIME_DRAW_BASE_FRAME], pos, 1, spriteColor, 0, mirror);
-      if (hasHorn) {
-        const hornPos = basePos.add(DRAGON_SLIME_HORN_OFFSET).add(vec2(1.0, -1.1));
-        drawAsepriteFrame(characterRes.unicorn_horn[0], hornPos, 1, spriteColor, 0, mirror);
-      }
-    };
     const drawSleepHint = function (basePos) {
       drawTextOverlay('z', basePos.add(vec2(-0.9, 0.5)), 0.5, textColor);
       drawTextOverlay('z', basePos.add(vec2(-1.2, 0.8)), 0.6, textColor);
@@ -109,26 +113,20 @@ function gameRenderPost() {
     });
     // Comic scene1.
     let unicornPos1 = vec2(storyBaseX + 2, storyBaseY + 2);
-    drawUnicorn(unicornPos1, true, false);
     drawSleepHint(unicornPos1);
     // Comic scene2.
     const dragonPos2 = vec2(storyBaseX + 9, storyBaseY + 2.5);
     const unicornPos2 = vec2(storyBaseX + 7, storyBaseY + 2);
-    drawDragon(dragonPos2, false, false);
     drawMoveHint(dragonPos2, false);
-    drawUnicorn(unicornPos2, true, false);
     drawSleepHint(unicornPos2);
     drawTextOverlay('Horn == Power!', dragonPos2.add(vec2(0.1, 1.2)), 0.5, textColor);
     // Comic scene3.
     const dragonPos3 = vec2(storyBaseX + 19, storyBaseY + 2.5);
     const unicornPos3 = vec2(storyBaseX + 16, storyBaseY + 2);
-    drawDragon(dragonPos3, true, true);
     drawMoveHint(dragonPos3, true);
-    drawUnicorn(unicornPos3, false, false);
     drawTextOverlay('What?!', unicornPos3.add(vec2(-0.9, 0.6)), 0.5, textColor);
     // Comic scene4.
     const unicornPos4 = vec2(storyBaseX + 23, storyBaseY + 2);
-    drawUnicorn(unicornPos4, false, true, 1);
     drawMoveHint(unicornPos4.add(vec2(2.5, -0.3)), true);
     drawTextOverlay('Get my horn back!', unicornPos4.add(vec2(2.0, 0.6)), 0.5, textColor);
 
