@@ -2,6 +2,7 @@
 
 const SLIME_JUMP_GAIN = 1.2;
 
+const DRAGON_SLIME_HEALTH = 3;
 const DRAGON_SLIME_ANIM_SPEED = 4;  // frame/sec
 const DRAGON_SLIME_FRAME_COUNT = 2;
 const DRAGON_SLIME_DRAW_BASE_FRAME = 3;
@@ -44,8 +45,7 @@ class DragonSlime extends EngineObject {
     this._bossSlot = this.pos;
     this._motionX = new Lowpass(1.0 - velocity.x);
     this._motionY = new Lowpass(1.0 - velocity.y);
-    // DEBUG
-    this._health = 1;
+    this._health = DRAGON_SLIME_HEALTH;
     this._flashTick = 0;
     this.gravityScale = 0.0;
     this.mirror = true;

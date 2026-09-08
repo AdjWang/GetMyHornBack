@@ -454,21 +454,21 @@ class BossLevel {
       }
       return false;
     }).length;
-    // if (tntCount == 0) {
-    //   const pos = randomSelect(this._tntSlots);
-    //   tileLayer.setData(pos, new TileLayerData(TNT_TILE_ID, 0, false));
-    //   setTileCollisionData(pos, 1);
-    //   tileLayer.redraw();
-    // }
-    // DEBUG
-    this._tntSlots.filter(pos => {
-      const data = tileLayer.getData(pos);
-      if (data && data.tile != TNT_TILE_ID) {
-        tileLayer.setData(pos, new TileLayerData(TNT_TILE_ID, 0, false));
-        setTileCollisionData(pos, 1);
-        tileLayer.redraw();
-      }
-    });
+    if (tntCount == 0) {
+      const pos = randomSelect(this._tntSlots);
+      tileLayer.setData(pos, new TileLayerData(TNT_TILE_ID, 0, false));
+      setTileCollisionData(pos, 1);
+      tileLayer.redraw();
+    }
+    // For debugging. Generate tnt cells at all positions.
+    // this._tntSlots.filter(pos => {
+    //   const data = tileLayer.getData(pos);
+    //   if (data && data.tile != TNT_TILE_ID) {
+    //     tileLayer.setData(pos, new TileLayerData(TNT_TILE_ID, 0, false));
+    //     setTileCollisionData(pos, 1);
+    //     tileLayer.redraw();
+    //   }
+    // });
   }
 
   theEnd(pos) {
