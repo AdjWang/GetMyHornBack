@@ -137,9 +137,8 @@ class Unicorn extends EngineObject {
     const levelSize = getLevelSize(currentLevel);
     if (this.pos.x > levelSize.x + 0.2) {
       this.pos.x = levelSize.x + 0.2;
-      // TODO: proceed to next level
     }
-    if (this.pos.y < -0.5) {
+    if (DEBUG_MODE && this.pos.y < -0.5) {
       this.pos.y = levelSize.y + 0.5;
     }
     this._updateMotion();

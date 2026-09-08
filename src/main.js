@@ -14,6 +14,9 @@
 
 // WebGL can be removed to save ~963 bytes - see "Disabling WebGL" in README.md
 
+// Never die.
+const DEBUG_MODE = false;
+
 ///////////////////////////////////////////////////////////////////////////////
 async function gameInit() {
   setGLEnable(false);
@@ -55,6 +58,13 @@ function gameRender() {
 }
 
 function gameRenderPost() {
+  // Test level 0 switch level triggers.
+  if (DEBUG_MODE && currentLevel == 0) {
+    drawRect(vec2(30.5, 0.5), vec2(3, 1), new Color(0, 0, 0));
+    drawRect(vec2(36.5, 0.5), vec2(3, 1), new Color(0, 0, 0));
+    drawRect(vec2(42.5, 0.5), vec2(3, 1), new Color(0, 0, 0));
+  }
+  // Draw level 0 story.
   const spriteColor = new Color(1, 1, 1, 0.6);
   const textColor = new Color(0, 0, 0, 0.5);
   if (currentLevel == 0) {

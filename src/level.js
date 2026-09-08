@@ -350,8 +350,7 @@ function updateLevelEvent() {
     player = new Unicorn(START_POINT[0]);
   }
   if (mouseIsDown(0)) {
-    switchLevel(1);
-    location.reload();
+    // switchLevel(0);
     if (bossLevel) {
       bossLevel.start();
       // levelObjInsts[0].fire(6, 1.5);
@@ -361,11 +360,28 @@ function updateLevelEvent() {
     bossLevel.update();
   }
   if (keyWasPressed(INPUT_KEY_RESET)) {
-    loadProgress();
+    resetPlayer();
   }
   // DEBUG
   if (keyWasPressed('KeyB')) {
     clearProgress();
+    window.alert('Progress cleared!');
+  }
+  if (player) {
+    if (currentLevel == 0) {
+      [30.5, 36.5, 42.5].forEach((x, i) => {
+        if (isOverlapping(player.pos, player.size, vec2(x, 0.5), vec2(3, 1))) {
+          switchLevel(i + 1);
+        }
+      });
+    } else if (currentLevel == 1 || currentLevel == 2) {
+      if (player.pos.x > getLevelSize(1).x) {
+        switchLevel(2);
+      }
+      if (!DEBUG_MODE && player.pos.y < -0.2) {
+        resetPlayer();
+      }
+    }
   }
 }
 
@@ -427,12 +443,17 @@ class BossLevel {
   destroy() {}
 }
 
+function resetPlayer() {
+  location.reload();
+}
+
 function switchLevel(idx) {
   clearProgress();
   const data = {
     level: idx,
   };
   writeSaveData(`${STORAGE_PREFIX}save`, data);
+  resetPlayer();
 }
 
 function saveProgress(pos, idx) {

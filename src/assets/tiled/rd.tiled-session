@@ -56,8 +56,8 @@
             "scale": 0.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 2847,
-                "y": 164
+                "x": 2595,
+                "y": 188
             }
         },
         "level3.tmx": {
@@ -65,10 +65,10 @@
                 2
             ],
             "scale": 2,
-            "selectedLayer": 1,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 215.75,
-                "y": 232
+                "x": 238.75,
+                "y": 138
             }
         },
         "test.tsx": {
