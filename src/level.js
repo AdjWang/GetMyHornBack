@@ -6,6 +6,7 @@ const TILED_FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
 const TILED_FLIPPED_VERTICALLY_FLAG = 0x40000000;
 const TILED_FLIPPED_DIAGONALLY_FLAG = 0x20000000;
 const TILED_TILE_ID_MASK = 0x0fffffff;
+const THE_END_TICKS = 120;
 
 const LEVEL0 = [
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -130,7 +131,7 @@ const LEVELS_OBJS = [
     [ DragonSlime, tiledScreenToWorld(vec2(16, 128)), vec2(0.3, 0.2), 0.2 ]
   ],
   [
-    [ DragonSlime, tiledScreenToWorld(vec2(208, 224)), vec2(0.3, 0.2), 0.2 ],
+    [ DragonSlime, tiledScreenToWorld(vec2(208, 224)), vec2(0.05, 0.05), 0.2 ],
     [ DragonSpawnPoint, tiledScreenToWorld(vec2(32, 48)) ],
     [ DragonSpawnPoint, tiledScreenToWorld(vec2(32, 112)) ],
     [ DragonSpawnPoint, tiledScreenToWorld(vec2(32, 176)) ],
@@ -354,6 +355,9 @@ function updateLevelEvent() {
     player = new Unicorn(START_POINT[0]);
   }
   if (bossLevel) {
+    // if (mouseWasPressed(0)) {
+    //   bossLevel.theEnd(levelObjInsts[0].pos);
+    // }
     if (keyWasPressed(INPUT_KEY_UP)) {
       bossLevel.start();
     }
@@ -401,6 +405,8 @@ class BossLevel {
     ];
     this._bossMoveTimer = new Timer;
     this._bossFireTimer = new Timer;
+    this._theEndTick = 0;
+    this._theEndPos = vec2();
     this._started = false;
   }
 
@@ -413,6 +419,20 @@ class BossLevel {
   }
 
   update() {
+    if (!this._boss || this._boss.destroyed) {
+      if (this._theEndTick > 0) {
+        this._theEndTick -= 1;
+        const ratio = 1.0 - (this._theEndTick / THE_END_TICKS);
+        const hornPosX = lerp(this._theEndPos.x, player.pos.x, ratio);
+        const hornPosY = lerp(this._theEndPos.y, player.pos.y, ratio);
+        player.gettingHorn(vec2(hornPosX, hornPosY));
+        if (this._theEndTick == 1) {
+          this._theEndTick = 0;
+          player.setHasHorn(true);
+        }
+      }
+      return;
+    }
     this._boss.setFaceDir(this._boss.pos.x < cameraPos.x ? 1 : 0);
     if (this._bossMoveTimer.isSet() && this._bossMoveTimer.elapsed()) {
       this._bossMoveTimer.unset();
@@ -451,7 +471,16 @@ class BossLevel {
     });
   }
 
-  destroy() {}
+  theEnd(pos) {
+    this._theEndTick = THE_END_TICKS;
+    this._theEndPos = pos;
+  }
+}
+
+function theEnd(pos) {
+  if (bossLevel) {
+    bossLevel.theEnd(pos);
+  }
 }
 
 function resetPlayer(withAnim) {

@@ -147,6 +147,10 @@ function gameRenderPost() {
     if (!player) {
       drawTextOverlay('Press S to start', vec2(14, 11), 0.8, textColor);
     }
+  } else if (currentLevel == BOSS_LEVEL) {
+    if (player && player.hasHorn()) {
+      drawTextOverlay('Thanks for playing!', vec2(14, 14), 0.8);
+    }
   }
 }
 

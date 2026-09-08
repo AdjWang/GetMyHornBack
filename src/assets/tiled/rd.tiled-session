@@ -31,10 +31,13 @@
             }
         },
         "level0.tmx": {
+            "expandedObjectLayers": [
+                2
+            ],
             "scale": 4,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 680.125,
+                "x": 488.125,
                 "y": 248
             }
         },

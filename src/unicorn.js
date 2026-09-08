@@ -78,6 +78,7 @@ class Unicorn extends EngineObject {
     this._frameInfoBody = characterRes.unicorn_body;
     this._frameInfoHorn = characterRes.unicorn_horn;
     this._hasHorn = false;
+    this._gettingHorn = false;
     this._moveX = 0;
     this._moveY = 0;
     this._lastMoveX = 1;
@@ -94,6 +95,7 @@ class Unicorn extends EngineObject {
     this._landScaleTimer = new Timer;
     this._lastGroundObject = false;
     this._drawGhostTrailTicks = 0;
+    this._hornDrawPos = vec2();
     this.mirror = true;
     this.mass = 1;
     this.damping = 1;
@@ -138,7 +140,7 @@ class Unicorn extends EngineObject {
     if (this.pos.x > levelSize.x + 0.2) {
       this.pos.x = levelSize.x + 0.2;
     }
-    if (DEBUG_MODE && this.pos.y < -2) {
+    if ((this._hasHorn || DEBUG_MODE) && this.pos.y < -2) {
       this.pos.y = levelSize.y + 0.5;
     }
     this._updateMotion();
@@ -177,12 +179,20 @@ class Unicorn extends EngineObject {
     const drawSizeStretch = vec2(drawSize.x, drawSize.y * runScaleY * this._getJumpScaleY());
     const scaleAnchorOffset = vec2(0, (drawSizeStretch.y - drawSize.y) / 2);
     const drawPos = this.pos.add(scaleAnchorOffset);
-    const headDrawPos = headPos.add(scaleAnchorOffset).add(drawOffset);
-    drawAsepriteFrame(this._frameInfoHead[this._runFrame], headDrawPos, runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
+    if (!this._gettingHorn) {
+      this._hornDrawPos = headPos;
+    }
+    drawAsepriteFrame(this._frameInfoHead[this._runFrame], headPos.add(scaleAnchorOffset).add(drawOffset), runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
     if (this._hasHorn) {
-      drawAsepriteFrame(this._frameInfoHorn[this._runFrame], headDrawPos, runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
+      drawAsepriteFrame(this._frameInfoHorn[this._runFrame], this._hornDrawPos.add(scaleAnchorOffset).add(drawOffset), runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
     }
     drawAsepriteFrame(this._frameInfoBody[this._runFrame], drawPos.add(vec2(0, bodyRunBob)).add(drawOffset), runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
+  }
+
+  gettingHorn(pos) {
+    this._gettingHorn = true;
+    this._hasHorn = true;
+    this._hornDrawPos = pos;
   }
 
   collideWithTile(tileData, pos) {
@@ -201,7 +211,12 @@ class Unicorn extends EngineObject {
     }
   }
 
+  hasHorn() {
+    return !this._gettingHorn && this._hasHorn;
+  }
+
   setHasHorn(has) {
+    this._gettingHorn = false;
     this._hasHorn = has;
   }
 

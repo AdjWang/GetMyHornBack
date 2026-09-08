@@ -18,6 +18,7 @@ const DRAGON_SLIME_BEAM_RANGE = 50;
 const DRAGON_SLIME_STAGE_IDLE = 0;
 const DRAGON_SLIME_STAGE_LOCK = 1;
 const DRAGON_SLIME_STAGE_FIRE = 2;
+const DRAGON_SLIME_DAMAGED_TICKS = 90;
 // Gain when unicorn jump over slime.
 const STUPID_SLIME_ANIM_SPEED = 12;  // frame/sec
 
@@ -43,7 +44,9 @@ class DragonSlime extends EngineObject {
     this._bossSlot = this.pos;
     this._motionX = new Lowpass(1.0 - velocity.x);
     this._motionY = new Lowpass(1.0 - velocity.y);
-    this._health = 3;
+    // DEBUG
+    this._health = 1;
+    this._flashTick = 0;
     this.gravityScale = 0.0;
     this.mirror = true;
     this.mass = 0;
@@ -64,9 +67,19 @@ class DragonSlime extends EngineObject {
       this._currentFrame = (this._currentFrame + 1) % DRAGON_SLIME_FRAME_COUNT;
     }
     this._offsetFrame = this._currentFrame + this._frameTimer.getPercent();
+    if (this._health == 0) {
+      theEnd(this.pos.copy());
+      new Explode(this.pos, RAINBOW_COLORS);
+      this.destroy();
+    }
   }
 
   render() {
+    let color = new Color(0, 0, 0, 1);
+    if (this._flashTick > 0) {
+      this._flashTick -= 1;
+      color.a = (Math.sin(PI * 2 * 3 * (this._flashTick / DRAGON_SLIME_DAMAGED_TICKS)) + 1) / 2;
+    }
     const currentFrame = this._currentFrame;
     const nextFrame = (currentFrame + 1) % DRAGON_SLIME_FRAME_COUNT;
     const framePercent = smoothStep(this._offsetFrame - currentFrame);
@@ -76,11 +89,11 @@ class DragonSlime extends EngineObject {
     const scaleY = 1;
     const drawPos = this.pos.add(vec2(drawXOffset, drawYOffset));
     if (currentFrame == 0) {
-      drawAsepriteFrame(this._frameInfoWing[currentFrame + DRAGON_SLIME_DRAW_BASE_FRAME], drawPos, scaleY, undefined, 0, this.mirror);
-      drawAsepriteFrame(this._frameInfoBody[currentFrame + DRAGON_SLIME_DRAW_BASE_FRAME], drawPos, scaleY, undefined, 0, this.mirror);
+      drawAsepriteFrame(this._frameInfoWing[currentFrame + DRAGON_SLIME_DRAW_BASE_FRAME], drawPos, scaleY, color, 0, this.mirror);
+      drawAsepriteFrame(this._frameInfoBody[currentFrame + DRAGON_SLIME_DRAW_BASE_FRAME], drawPos, scaleY, color, 0, this.mirror);
     } else {
-      drawAsepriteFrame(this._frameInfoBody[currentFrame + DRAGON_SLIME_DRAW_BASE_FRAME], drawPos, scaleY, undefined, 0, this.mirror);
-      drawAsepriteFrame(this._frameInfoWing[currentFrame + DRAGON_SLIME_DRAW_BASE_FRAME], drawPos, scaleY, undefined, 0, this.mirror);
+      drawAsepriteFrame(this._frameInfoBody[currentFrame + DRAGON_SLIME_DRAW_BASE_FRAME], drawPos, scaleY, color, 0, this.mirror);
+      drawAsepriteFrame(this._frameInfoWing[currentFrame + DRAGON_SLIME_DRAW_BASE_FRAME], drawPos, scaleY, color, 0, this.mirror);
     }
     if (this._hasHorn) {
       const hornPos = drawPos.add(DRAGON_SLIME_HORN_OFFSET.multiply(vec2(this._caughtSide, 1)));
@@ -139,6 +152,7 @@ class DragonSlime extends EngineObject {
   acceptDamage() {
     if (currentLevel == BOSS_LEVEL) {
       this._health -= 1;
+      this._flashTick = DRAGON_SLIME_DAMAGED_TICKS;
     }
   }
 
