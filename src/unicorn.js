@@ -188,7 +188,7 @@ class Unicorn extends EngineObject {
   collideWithTile(tileData, pos) {
     const data = tileLayer.getData(pos);
     if (data) {
-      if (data.tile == SPIKEWEED_TILE_ID) {
+      if (!DEBUG_MODE && data.tile == SPIKEWEED_TILE_ID) {
         resetPlayer(true);
       }
     }

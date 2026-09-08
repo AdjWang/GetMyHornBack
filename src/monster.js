@@ -265,7 +265,7 @@ class StupidSlime extends EngineObject {
       this._frameTimer.set(1.0 / STUPID_SLIME_ANIM_SPEED);
       this._currentFrame = (this._currentFrame + 1) % this._scaleOffsetY.length;
     }
-    if (player && this.pos.distanceSquared(player.pos) <= 0.1) {
+    if (!DEBUG_MODE && player && this.pos.distanceSquared(player.pos) <= 0.1) {
       resetPlayer(true);
     }
   }
