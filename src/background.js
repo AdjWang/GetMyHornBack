@@ -66,7 +66,7 @@ class Background extends EngineObject {
       ctx.fillStyle = this.bands[0];
       ctx.fillRect(0, 0, width, height);
       for (let x = 0; x < width; x += MOUNTAIN_PIXEL_STEP) {
-        const ratio = (x + MOUNTAIN_PIXEL_STEP / 2) / width;
+        const ratio = clamp((x + MOUNTAIN_PIXEL_STEP / 2) / width, 0, 1);
         for (let i = 0; i < 3; ++i) {
           const phase = lerp(0, MOUNTAIN_DENSITY[i], ratio) + scroll[i];
           const y = Math.floor(((Math.sin(phase) * MOUNTAIN_AMPLITUDE[i] + HEIGHT[i]) * height)

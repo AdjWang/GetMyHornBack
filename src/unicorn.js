@@ -195,6 +195,12 @@ class Unicorn extends EngineObject {
     return true;
   }
 
+  acceptDamage() {
+    if (!DEBUG_MODE) {
+      resetPlayer(true);
+    }
+  }
+
   setHasHorn(has) {
     this._hasHorn = has;
   }

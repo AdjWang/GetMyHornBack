@@ -69,15 +69,15 @@ const LEVEL3 = [
   0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0,
   0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0,
   0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0,
-  0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2147483649, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0,
+  0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2147483649, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0,
   0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0,
   0, 0, 0, 3, 2, 2147483649, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 0, 0, 0,
   0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0,
-  0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2147483649, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0,
+  0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2147483649, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0,
   0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0,
   0, 0, 0, 3, 2, 2147483649, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 0, 0, 0,
   0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0,
-  0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2147483649, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0,
+  0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2147483649, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0,
   0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0,
   0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0,
   0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0
@@ -241,18 +241,18 @@ function chargeTntCell(pos, color) {
   return true;
 }
 
-function explodeTntCellCluster(centerPos) {
+function explodeTntCellCluster(cellPos) {
   if (!tileLayer) {
     return false;
   }
   const visited = new Set;
-  explodeTntCellClusterRecursive(centerPos.copy(), visited);
+  explodeTntCellClusterRecursive(cellPos.copy(), visited);
   tileLayer.redraw();
   return true;
 }
 
-function explodeTntCellClusterRecursive(centerPos, visited) {
-  const key = `${centerPos.x}|${centerPos.y}`;
+function explodeTntCellClusterRecursive(cellPos, visited) {
+  const key = `${cellPos.x}|${cellPos.y}`;
   if (visited.has(key)) {
     return;
   }
@@ -261,19 +261,24 @@ function explodeTntCellClusterRecursive(centerPos, visited) {
   let colorIndex = 0;
   for (let y = -1; y <= 1; ++y) {
     for (let x = -1; x <= 1; ++x) {
-      const cell = centerPos.add(vec2(x, y));
-      new Explode(cell.add(vec2(0.5)), [colors[colorIndex++]]);
-      const data = tileLayer.getData(cell);
+      const neighborPos = cellPos.add(vec2(x, y));
+      new Explode(neighborPos.add(vec2(0.5)), [colors[colorIndex++]]);
+      const data = tileLayer.getData(neighborPos);
       if (!data || data.tile == undefined) {
         continue;
       }
-      tileLayer.setData(cell, new TileLayerData);
-      setTileCollisionData(cell, 0);
+      tileLayer.setData(neighborPos, new TileLayerData);
+      setTileCollisionData(neighborPos, 0);
       if (data.tile == TNT_TILE_ID) {
-        explodeTntCellClusterRecursive(cell, visited);
+        explodeTntCellClusterRecursive(neighborPos, visited);
       }
     }
   }
+  [player, ...levelObjInsts].forEach(o => {
+    if (cellPos.add(vec2(0.5)).distance(o.pos) <= 1.5 && o.acceptDamage) {
+      o.acceptDamage();
+    }
+  });
 }
 
 async function loadLevel() {
@@ -429,12 +434,21 @@ class BossLevel {
       }
       return false;
     }).length;
-    if (tntCount == 0) {
-      const pos = randomSelect(this._tntSlots);
-      tileLayer.setData(pos, new TileLayerData(TNT_TILE_ID, 0, false));
-      setTileCollisionData(pos, 1);
-      tileLayer.redraw();
-    }
+    // if (tntCount == 0) {
+    //   const pos = randomSelect(this._tntSlots);
+    //   tileLayer.setData(pos, new TileLayerData(TNT_TILE_ID, 0, false));
+    //   setTileCollisionData(pos, 1);
+    //   tileLayer.redraw();
+    // }
+    // DEBUG
+    this._tntSlots.filter(pos => {
+      const data = tileLayer.getData(pos);
+      if (data && data.tile != TNT_TILE_ID) {
+        tileLayer.setData(pos, new TileLayerData(TNT_TILE_ID, 0, false));
+        setTileCollisionData(pos, 1);
+        tileLayer.redraw();
+      }
+    });
   }
 
   destroy() {}

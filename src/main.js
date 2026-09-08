@@ -15,7 +15,7 @@
 // WebGL can be removed to save ~963 bytes - see "Disabling WebGL" in README.md
 
 // Never die.
-const DEBUG_MODE = false;
+const DEBUG_MODE = true;
 
 ///////////////////////////////////////////////////////////////////////////////
 async function gameInit() {

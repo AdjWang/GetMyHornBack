@@ -43,6 +43,7 @@ class DragonSlime extends EngineObject {
     this._bossSlot = this.pos;
     this._motionX = new Lowpass(1.0 - velocity.x);
     this._motionY = new Lowpass(1.0 - velocity.y);
+    this._health = 3;
     this.gravityScale = 0.0;
     this.mirror = true;
     this.mass = 0;
@@ -84,6 +85,11 @@ class DragonSlime extends EngineObject {
     if (this._hasHorn) {
       const hornPos = drawPos.add(DRAGON_SLIME_HORN_OFFSET.multiply(vec2(this._caughtSide, 1)));
       drawAsepriteFrame(this._frameInfoHorn[currentFrame], hornPos, scaleY, undefined, 0, this.mirror);
+    }
+    if (currentLevel == BOSS_LEVEL) {
+      for (let i = 0; i < this._health; i++) {
+        drawTextOverlay("💗", this.pos.add(vec2((i - 1) * 0.6, 1.4)), 0.5);
+      }
     }
   }
 
@@ -128,6 +134,12 @@ class DragonSlime extends EngineObject {
     // -1 to left, 1 to right.
     this._caughtSide = toLeft * 2 - 1;
     this.mirror = this._caughtSide > 0;
+  }
+
+  acceptDamage() {
+    if (currentLevel == BOSS_LEVEL) {
+      this._health -= 1;
+    }
   }
 
   fire(laserCount = 1, chargeTime = 1.0) {
