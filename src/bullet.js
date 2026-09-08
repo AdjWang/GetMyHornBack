@@ -76,34 +76,32 @@ class RainbowBeam extends EngineObject {
     if (this.destroyed) {
       return false;
     }
-    if (tileLayer instanceof TileLayer) {
-      const data = tileLayer.getData(pos);
-      if (data) {
-        if (data.tile == DESTROYABLE_TILE_ID) {
-          new Explode(pos, RAINBOW_COLORS);
-          // Destroy cell.
-          tileLayer.setData(pos, new TileLayerData);
-          setTileCollisionData(pos, 0);
-          tileLayer.redraw();
-        } else if (data.tile == PRISM_TILE_ID) {
-          if (data.direction != this._prismDirection) {
-            if (this._refractionCount < 0 || this._refractionCount < MAX_REFRACTION_COUNT) {
-              const speed = this.velocity.length();
-              const nextCount = this._refractionCount < 0 ? -1 : this._refractionCount + 1;
-              new RainbowBeam(pos.add(vec2(0.5)), this._attacker, speed, data.direction,
-                this._damage, this._range, nextCount);
-            }
-            this.destroy();
-          }
-        } else if (data.tile == TNT_TILE_ID) {
-          if (data.direction == 0) {
-            chargeTntCell(pos);
-          } else {
-            explodeTntCellCluster(pos);
+    const data = tileLayer.getData(pos);
+    if (data) {
+      if (data.tile == DESTROYABLE_TILE_ID) {
+        new Explode(pos, RAINBOW_COLORS);
+        // Destroy cell.
+        tileLayer.setData(pos, new TileLayerData);
+        setTileCollisionData(pos, 0);
+        tileLayer.redraw();
+      } else if (data.tile == PRISM_TILE_ID) {
+        if (data.direction != this._prismDirection) {
+          if (this._refractionCount < 0 || this._refractionCount < MAX_REFRACTION_COUNT) {
+            const speed = this.velocity.length();
+            const nextCount = this._refractionCount < 0 ? -1 : this._refractionCount + 1;
+            new RainbowBeam(pos.add(vec2(0.5)), this._attacker, speed, data.direction,
+              this._damage, this._range, nextCount);
           }
           this.destroy();
-          return true;
         }
+      } else if (data.tile == TNT_TILE_ID) {
+        if (data.direction == 0) {
+          chargeTntCell(pos);
+        } else {
+          explodeTntCellCluster(pos);
+        }
+        this.destroy();
+        return true;
       }
     }
     return false;

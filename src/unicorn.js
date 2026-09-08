@@ -185,6 +185,16 @@ class Unicorn extends EngineObject {
     drawAsepriteFrame(this._frameInfoBody[this._runFrame], drawPos.add(vec2(0, bodyRunBob)).add(drawOffset), runScaleY * this._getJumpScaleY(), undefined, runRotate, this.mirror);
   }
 
+  collideWithTile(tileData, pos) {
+    const data = tileLayer.getData(pos);
+    if (data) {
+      if (data.tile == SPIKEWEED_TILE_ID) {
+        resetPlayer();
+      }
+    }
+    return true;
+  }
+
   setHasHorn(has) {
     this._hasHorn = has;
   }
@@ -365,7 +375,7 @@ class Unicorn extends EngineObject {
     const groundObject = this.groundObject;
     if (this._lastGroundObject != groundObject) {
       this._lastGroundObject = groundObject;
-      if (!groundObject || !(tileLayer instanceof TileLayer)) {
+      if (!groundObject) {
         return;
       }
       const footY = (this.pos.y - this.size.y / 2 - 0.01) | 0;
