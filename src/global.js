@@ -76,6 +76,7 @@ const INPUT_KEY_DOWN = 'ArrowDown';
 const INPUT_KEY_LEFT = 'ArrowLeft';
 const INPUT_KEY_RIGHT = 'ArrowRight';
 const INPUT_KEY_RESET = 'KeyR';
+const INPUT_KEY_CLEAR_PROGRESS = 'KeyB';
 
 const BOSS_LEVEL = 3;
 

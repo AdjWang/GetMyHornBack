@@ -86,7 +86,7 @@ const LEVEL3 = [
 const START_POINT = [
   vec2(25.2, 6.5),
   vec2(1, 15),
-  vec2(2, 3),
+  vec2(1, 15),
   vec2(15, 13),
 ];
 
@@ -344,33 +344,27 @@ function clearProgress() {
   savePoints.forEach(sp => sp.setSaved(false));
 }
 
-// TODO: remove eventually
 function updateLevelEvent() {
   if (!player && currentLevel == 0 && keyWasPressed(INPUT_KEY_DOWN)) {
     player = new Unicorn(START_POINT[0]);
   }
-  if (mouseIsDown(0)) {
-    // switchLevel(0);
-    if (bossLevel) {
-      bossLevel.start();
-      // levelObjInsts[0].fire(6, 1.5);
-    }
-  }
   if (bossLevel) {
+    if (keyWasPressed(INPUT_KEY_UP)) {
+      bossLevel.start();
+    }
     bossLevel.update();
   }
   if (keyWasPressed(INPUT_KEY_RESET)) {
     resetPlayer(false);
   }
-  // DEBUG
-  if (keyWasPressed('KeyB')) {
+  if (keyWasPressed(INPUT_KEY_CLEAR_PROGRESS)) {
     clearProgress();
     window.alert('Progress cleared!');
   }
   if (player) {
     if (currentLevel == 0) {
       [30.5, 36.5, 42.5].forEach((x, i) => {
-        if (isOverlapping(player.pos, player.size, vec2(x, 0.5), vec2(3, 1))) {
+        if (isOverlapping(player.pos, player.size, vec2(x, -0.5), vec2(3, 1))) {
           switchLevel(i + 1);
         }
       });
@@ -378,9 +372,9 @@ function updateLevelEvent() {
       if (player.pos.x > getLevelSize(1).x) {
         switchLevel(currentLevel + 1);
       }
-      if (!DEBUG_MODE && player.pos.y < -0.2) {
-        resetPlayer(true);
-      }
+    }
+    if (!DEBUG_MODE && player.pos.y < -1) {
+      resetPlayer(true);
     }
   }
 }
@@ -402,12 +396,15 @@ class BossLevel {
     ];
     this._bossMoveTimer = new Timer;
     this._bossFireTimer = new Timer;
-    this._boss.setBossSlot(this._bossSlots[0]);
+    this._started = false;
   }
 
   start() {
-    this._bossMoveTimer.unset();
-    this._bossFireTimer.set(0.01);
+    if (!this._started) {
+      this._started = true;
+      this._bossMoveTimer.unset();
+      this._bossFireTimer.set(0.01);
+    }
   }
 
   update() {
