@@ -16,6 +16,8 @@
 
 // Never die.
 const DEBUG_MODE = false;
+const STORY_BASE_X = 0;
+const STORY_BASE_Y = 5;
 let comicUnicorns = []
 let comicDragons = []
 
@@ -41,17 +43,15 @@ async function gameInit() {
   // backgroundMusic.playMusic(backgroundMusicVolume, true);
   if (currentLevel == 0) {
     const alpha = 0.6;
-    const storyBaseX = 0;
-    const storyBaseY = 5;
     [2, 7, 16, 25.2].forEach(x => {
-      const unicorn = new Unicorn(vec2(storyBaseX + x, storyBaseY + 1.4), alpha);
+      const unicorn = new Unicorn(vec2(STORY_BASE_X + x, STORY_BASE_Y + 1.4), alpha);
       unicorn.setHasHorn(true);
       unicorn.setStatic(true);
       unicorn.mirror = false;
       comicUnicorns.push(unicorn);
     });
     [8.6, 19.4].forEach(x => {
-      comicDragons.push(new DragonSlime(vec2(storyBaseX + x, storyBaseY + 2.5), vec2(), 1, alpha));
+      comicDragons.push(new DragonSlime(vec2(STORY_BASE_X + x, STORY_BASE_Y + 2.5), vec2(), 1, alpha));
     });
     comicUnicorns[2].setHasHorn(false);
     comicUnicorns[3].setHasHorn(false);
@@ -105,38 +105,34 @@ function gameRenderPost() {
       });
     };
 
-    const storyBaseX = 0;
-    const storyBaseY = 5;
     // Comic cut lines.
-    [storyBaseX + 4, storyBaseX + 13, storyBaseX + 21.5].forEach(x => {
-      drawLine(vec2(x, storyBaseY), vec2(x, storyBaseY + 4), 0.1, new Color(0, 0, 0, 0.2));
+    [STORY_BASE_X + 4, STORY_BASE_X + 13, STORY_BASE_X + 21.5].forEach(x => {
+      drawLine(vec2(x, STORY_BASE_Y), vec2(x, STORY_BASE_Y + 4), 0.1, new Color(0, 0, 0, 0.2));
     });
     // Comic scene1.
-    let unicornPos1 = vec2(storyBaseX + 2, storyBaseY + 2);
+    let unicornPos1 = vec2(STORY_BASE_X + 2, STORY_BASE_Y + 2);
     drawSleepHint(unicornPos1);
     // Comic scene2.
-    const dragonPos2 = vec2(storyBaseX + 9, storyBaseY + 2.5);
-    const unicornPos2 = vec2(storyBaseX + 7, storyBaseY + 2);
+    const dragonPos2 = vec2(STORY_BASE_X + 9, STORY_BASE_Y + 2.5);
+    const unicornPos2 = vec2(STORY_BASE_X + 7, STORY_BASE_Y + 2);
     drawMoveHint(dragonPos2, false);
     drawSleepHint(unicornPos2);
     drawTextOverlay('Horn == Power!', dragonPos2.add(vec2(0.1, 1.2)), 0.5, textColor);
     // Comic scene3.
-    const dragonPos3 = vec2(storyBaseX + 19, storyBaseY + 2.5);
-    const unicornPos3 = vec2(storyBaseX + 16, storyBaseY + 2);
+    const dragonPos3 = vec2(STORY_BASE_X + 19, STORY_BASE_Y + 2.5);
+    const unicornPos3 = vec2(STORY_BASE_X + 16, STORY_BASE_Y + 2);
     drawMoveHint(dragonPos3, true);
     drawTextOverlay('What?!', unicornPos3.add(vec2(-0.9, 0.6)), 0.5, textColor);
     // Comic scene4.
-    const unicornPos4 = vec2(storyBaseX + 23, storyBaseY + 2);
+    const unicornPos4 = vec2(STORY_BASE_X + 23, STORY_BASE_Y + 2);
     drawMoveHint(unicornPos4.add(vec2(2.5, -0.3)), true);
     drawTextOverlay('Get my horn back!', unicornPos4.add(vec2(2.0, 0.6)), 0.5, textColor);
 
     const entryBaseX = 30.5;
     const entryBaseY = 4;
     const entryHintOffset = [0.0, 6.0, 12.0];
-    drawTextOverlay("LEVEL1", vec2(entryBaseX + entryHintOffset[0], entryBaseY), 0.7, textColor);
-    drawTextOverlay("LEVEL2", vec2(entryBaseX + entryHintOffset[1], entryBaseY), 0.7, textColor);
-    drawTextOverlay("LEVEL3", vec2(entryBaseX + entryHintOffset[2], entryBaseY), 0.7, textColor);
-    entryHintOffset.forEach(x => {
+    entryHintOffset.forEach((x, i) => {
+      drawTextOverlay(`LEVEL${i + 1}`, vec2(entryBaseX + x, entryBaseY), 0.7, textColor);
       drawTextOverlay("🔻", vec2(entryBaseX + x, entryBaseY - 0.7), 0.5, textColor);
     });
   }
