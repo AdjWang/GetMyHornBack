@@ -360,7 +360,7 @@ function updateLevelEvent() {
     bossLevel.update();
   }
   if (keyWasPressed(INPUT_KEY_RESET)) {
-    resetPlayer();
+    resetPlayer(false);
   }
   // DEBUG
   if (keyWasPressed('KeyB')) {
@@ -379,7 +379,7 @@ function updateLevelEvent() {
         switchLevel(2);
       }
       if (!DEBUG_MODE && player.pos.y < -0.2) {
-        resetPlayer();
+        resetPlayer(true);
       }
     }
   }
@@ -443,8 +443,21 @@ class BossLevel {
   destroy() {}
 }
 
-function resetPlayer() {
-  location.reload();
+function resetPlayer(withAnim) {
+  if (player && player.destroyed) {
+    return;
+  }
+  if (withAnim) {
+    if (player) {
+      player.destroy();
+      new Explode(player.pos, RAINBOW_COLORS);
+    }
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
+  } else {
+    location.reload();
+  }
 }
 
 function switchLevel(idx) {
@@ -453,7 +466,7 @@ function switchLevel(idx) {
     level: idx,
   };
   writeSaveData(`${STORAGE_PREFIX}save`, data);
-  resetPlayer();
+  resetPlayer(false);
 }
 
 function saveProgress(pos, idx) {

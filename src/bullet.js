@@ -69,6 +69,9 @@ class RainbowBeam extends EngineObject {
       return false;
     }
     this._explode();
+    if (o == player) {
+      resetPlayer(true);
+    }
     return true;
   }
 

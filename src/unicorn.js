@@ -189,7 +189,7 @@ class Unicorn extends EngineObject {
     const data = tileLayer.getData(pos);
     if (data) {
       if (data.tile == SPIKEWEED_TILE_ID) {
-        resetPlayer();
+        resetPlayer(true);
       }
     }
     return true;

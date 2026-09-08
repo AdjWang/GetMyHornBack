@@ -141,7 +141,7 @@ class DragonSlime extends EngineObject {
   }
 
   _updateNormalState() {
-    if (!this._caughtObject) {
+    if (!this._caughtObject || this._caughtObject.destroyed) {
       return;
     }
     if (this._stage == DRAGON_SLIME_STAGE_IDLE) {
@@ -266,7 +266,7 @@ class StupidSlime extends EngineObject {
       this._currentFrame = (this._currentFrame + 1) % this._scaleOffsetY.length;
     }
     if (player && this.pos.distanceSquared(player.pos) <= 0.1) {
-      resetPlayer();
+      resetPlayer(true);
     }
   }
 
