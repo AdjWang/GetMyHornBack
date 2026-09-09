@@ -45,33 +45,30 @@
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 2,
-            "selectedLayer": 0,
+            "scale": 1,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 2048,
-                "y": 127.75
+                "x": 2232,
+                "y": 136
             }
         },
         "level2.tmx": {
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 1.5,
-            "selectedLayer": 0,
+            "scale": 3,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 2047.9999999999998,
-                "y": 127.66666666666664
+                "x": 3809.6666666666665,
+                "y": 152.33333333333331
             }
         },
         "level3.tmx": {
-            "expandedObjectLayers": [
-                2
-            ],
             "scale": 2,
-            "selectedLayer": 1,
+            "selectedLayer": 0,
             "viewCenter": {
                 "x": 216,
-                "y": 127.75
+                "y": 127.5
             }
         },
         "test.tsx": {
@@ -99,10 +96,10 @@
     "project": "rd.tiled-project",
     "property.type": "string",
     "recentFiles": [
-        "tileset.tsx",
         "level0.tmx",
         "level1.tmx",
         "level2.tmx",
+        "tileset.tsx",
         "level3.tmx",
         "C:/JsProjects/archive/platformer/data/gameLevelData.tmx",
         "level.tmx",

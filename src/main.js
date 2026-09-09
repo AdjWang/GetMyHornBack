@@ -15,7 +15,7 @@
 // WebGL can be removed to save ~963 bytes - see "Disabling WebGL" in README.md
 
 // Never die.
-const DEBUG_MODE = false;
+const DEBUG_MODE = true;
 const STORY_BASE_X = 0;
 const STORY_BASE_Y = 5;
 let comicUnicorns = []
