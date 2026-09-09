@@ -349,7 +349,7 @@ async function loadLevel() {
 }
 
 function clearProgress() {
-  localStorage.clear();
+  localStorage.removeItem(STORAGE_PREFIX);
   savePoints.forEach(sp => sp.setSaved(false));
 }
 
@@ -512,7 +512,7 @@ function switchLevel(idx) {
   const data = {
     level: idx,
   };
-  writeSaveData(`${STORAGE_PREFIX}save`, data);
+  writeSaveData(STORAGE_PREFIX, data);
   resetPlayer(false);
 }
 
@@ -530,16 +530,16 @@ function saveProgress(pos, idx) {
     tile: tileLayer.data,
     tileCollision: tileCollision,
   };
-  writeSaveData(`${STORAGE_PREFIX}save`, data);
+  writeSaveData(STORAGE_PREFIX, data);
 }
 
 function loadCurrentLevel() {
-  const data = readSaveData(`${STORAGE_PREFIX}save`, undefined);
+  const data = readSaveData(STORAGE_PREFIX, undefined);
   return data.level ? data.level : 0;
 }
 
 function loadProgress() {
-  const data = readSaveData(`${STORAGE_PREFIX}save`, undefined);
+  const data = readSaveData(STORAGE_PREFIX, undefined);
   if (data.level != currentLevel) {
     return;
   }
