@@ -452,15 +452,15 @@ class BossLevel {
       const targetPos = randomSelect(this._bossSlots);
       this._boss.setBossSlot(targetPos);
     }
-    const tntCount = this._tntSlots.filter(pos => {
+    const tntEmptySlots = this._tntSlots.filter(pos => {
       const data = tileLayer.getData(pos);
       if (data) {
-        return data.tile == TNT_TILE_ID;
+        return data.tile != TNT_TILE_ID;
       }
       return false;
-    }).length;
-    if (tntCount == 0) {
-      const pos = randomSelect(this._tntSlots);
+    });
+    if (tntEmptySlots.length > 4) {
+      const pos = randomSelect(tntEmptySlots);
       tileLayer.setData(pos, new TileLayerData(TNT_TILE_ID, 0, false));
       setTileCollisionData(pos, 1);
       tileLayer.redraw();

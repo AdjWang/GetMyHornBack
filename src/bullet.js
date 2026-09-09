@@ -4,7 +4,7 @@
 // const SOUND_BEAM = new Sound([1.1, 0, 420, 0.02, 0.08, 0.18, 1, 1.9, 8, 0, 120, 0.04, 0.03]);
 const SOUND_BEAM = new Sound([1.6,,329,.03,.07,.01,,2.2,13,-10,,,,,,,.16,.8,.08]);
 const SOUND_BEAM_VOLUME = 0.7;
-const MAX_REFRACTION_COUNT = 100;
+const MAX_REFRACTION_COUNT = 20;
 const BULLET_TRAIL_POINT_COUNT = 8;
 const BULLET_TRAIL_THICKNESS = 0.05;
 const BULLET_TRAIL_TIME = 0.25;
