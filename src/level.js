@@ -360,7 +360,9 @@ function updateLevelEvent() {
     player.color.a = 1.0;
   }
   if (bossLevel) {
+    // For debugging. Test the end event.
     // if (mouseWasPressed(0)) {
+    //   levelObjInsts[0].destroy();
     //   bossLevel.theEnd(levelObjInsts[0].pos);
     // }
     if (keyWasPressed(INPUT_KEY_UP)) {
@@ -387,7 +389,7 @@ function updateLevelEvent() {
         switchLevel(currentLevel + 1);
       }
     }
-    if (!DEBUG_MODE && player.pos.y < -1) {
+    if (!DEBUG_MODE && !player.hasHorn() && player.pos.y < -1) {
       resetPlayer(true);
     }
   }

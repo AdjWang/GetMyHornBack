@@ -76,11 +76,12 @@ class DragonSlime extends EngineObject {
 
   render() {
     let color = this.color;
-    // Clear alpha when flash tick is 0.
-    color.a = 1.0 - this._flashTick;
     if (this._flashTick > 0) {
       this._flashTick -= 1;
       color.a = (Math.sin(PI * 2 * 3 * (this._flashTick / DRAGON_SLIME_DAMAGED_TICKS)) + 1) / 2;
+      if (this._flashTick == 0) {
+        color.a = 1.0;
+      }
     }
     const currentFrame = this._currentFrame;
     const nextFrame = (currentFrame + 1) % DRAGON_SLIME_FRAME_COUNT;
