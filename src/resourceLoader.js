@@ -12,14 +12,14 @@ function createAsepriteResource() {
       undefined,
       undefined,
       [
-        new TileInfo(vec2(1.5, 1.5), vec2(15, 15), textureInfo),
-        vec2(1, 1),
-        vec2(0.75, 1.125),
+        new TileInfo(vec2(1.5, 1.5), vec2(15, 13), textureInfo),
+        vec2(1, 0.875),
+        vec2(0.75, 1.0625),
       ],
       [
-        new TileInfo(vec2(1.5, 1.5), vec2(15, 15), textureInfo),
-        vec2(1, 1),
-        vec2(0.75, 1.125),
+        new TileInfo(vec2(1.5, 1.5), vec2(15, 13), textureInfo),
+        vec2(1, 0.875),
+        vec2(0.75, 1.0625),
       ],
     ],
     slime_wing: [
@@ -27,14 +27,14 @@ function createAsepriteResource() {
       undefined,
       undefined,
       [
-        new TileInfo(vec2(19.5, 1.5), vec2(30, 14), textureInfo),
-        vec2(1.9375, 0.9375),
-        vec2(1.03125, 1.34375),
+        new TileInfo(vec2(19.5, 1.5), vec2(30, 13), textureInfo),
+        vec2(1.9375, 0.875),
+        vec2(1.03125, 1.375),
       ],
       [
-        new TileInfo(vec2(52.5, 1.5), vec2(31, 15), textureInfo),
-        vec2(2, 1),
-        vec2(1, 0.9375),
+        new TileInfo(vec2(52.5, 1.5), vec2(31, 13), textureInfo),
+        vec2(2, 0.875),
+        vec2(1, 1),
       ],
     ],
     unicorn_body: [
@@ -56,19 +56,19 @@ function createAsepriteResource() {
     ],
     unicorn_head: [
       [
-        new TileInfo(vec2(116.5, 1.5), vec2(16, 14), textureInfo),
-        vec2(1.0625, 0.9375),
-        vec2(-1.15625, 0.96875),
+        new TileInfo(vec2(116.5, 1.5), vec2(16, 13), textureInfo),
+        vec2(1.0625, 0.875),
+        vec2(-1.15625, 1),
       ],
       [
-        new TileInfo(vec2(116.5, 1.5), vec2(16, 14), textureInfo),
-        vec2(1.0625, 0.9375),
-        vec2(-1.15625, 0.96875),
+        new TileInfo(vec2(116.5, 1.5), vec2(16, 13), textureInfo),
+        vec2(1.0625, 0.875),
+        vec2(-1.15625, 1),
       ],
       [
-        new TileInfo(vec2(116.5, 1.5), vec2(16, 14), textureInfo),
-        vec2(1.0625, 0.9375),
-        vec2(-1.15625, 0.96875),
+        new TileInfo(vec2(116.5, 1.5), vec2(16, 13), textureInfo),
+        vec2(1.0625, 0.875),
+        vec2(-1.15625, 1),
       ],
     ],
     unicorn_horn: [
