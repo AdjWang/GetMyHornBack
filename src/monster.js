@@ -1,5 +1,6 @@
 'use strict';
 
+// Gain when unicorn jump over slime.
 const SLIME_JUMP_GAIN = 1.2;
 
 const DRAGON_SLIME_HEALTH = 3;
@@ -20,8 +21,7 @@ const DRAGON_SLIME_STAGE_IDLE = 0;
 const DRAGON_SLIME_STAGE_LOCK = 1;
 const DRAGON_SLIME_STAGE_FIRE = 2;
 const DRAGON_SLIME_DAMAGED_TICKS = 90;
-// Gain when unicorn jump over slime.
-const STUPID_SLIME_ANIM_SPEED = 12;  // frame/sec
+const STUPID_SLIME_ANIM_SPEED = 8;  // frame/sec
 
 class DragonSlime extends EngineObject {
   constructor(pos, velocity, lockTime, alpha = 1.0) {
@@ -261,7 +261,7 @@ class StupidSlime extends EngineObject {
     this._frameTimer = new Timer(1.0 / STUPID_SLIME_ANIM_SPEED);
     this._currentFrame = 0;
     this._initY = pos.y;
-    this._scaleOffsetY = [1.0, 0.9, 0.8, 0.7, 0.7, 0.8, 0.9, 1.0];
+    this._scaleOffsetY = [1.0, 0.9, 0.8, 0.8, 0.9, 1.0];
     sight -= 1;  // fit tild object rect width
     this._sight = sight;
     this._step = speed / sight;
