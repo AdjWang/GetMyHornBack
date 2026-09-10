@@ -14,7 +14,7 @@
  *  @type {Boolean}
  *  @default
  *  @memberof Debug */
-const debug = true;
+const debug = false;
 
 /** True if asserts are enabled
  *  @type {Boolean}
@@ -32,19 +32,19 @@ const debugPointSize = .5;
  *  @type {Boolean}
  *  @default
  *  @memberof Debug */
-let showWatermark = true;
+const showWatermark = true;
 
 /** Key code used to toggle debug mode, Esc by default
  *  @type {String}
  *  @default
  *  @memberof Debug */
-let debugKey = 'Escape';
+const debugKey = 'Escape';
 
 /** True if the debug overlay is active, always false in release builds
  *  @type {Boolean}
  *  @default
  *  @memberof Debug */
-let debugOverlay = false;
+const debugOverlay = false;
 
 // Engine internal variables not exposed to documentation
 let debugPrimitives = [], debugPhysics = false, debugRaycast = false, debugParticles = false, debugGamepads = false, debugMedals = false, debugTakeScreenshot, downloadLink;
@@ -55,12 +55,12 @@ let debugPrimitives = [], debugPhysics = false, debugRaycast = false, debugParti
 /** Set if watermark with FPS should be shown
  *  @param {Boolean} show
  *  @memberof Debug */
-function setShowWatermark(show) { showWatermark = show; }
+// function setShowWatermark(show) { showWatermark = show; }
 
 /** Set key code used to toggle debug mode, Esc by default
  *  @param {String} key
  *  @memberof Debug */
-function setDebugKey(key) { debugKey = key; }
+// function setDebugKey(key) { debugKey = key; }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Debug helper functions
@@ -267,7 +267,7 @@ function debugRender()
     if (debugVideoCaptureIsActive())
         return; // don't show debug info when capturing video
 
-    glCopyToContext(mainContext);
+    // glCopyToContext(mainContext);
 
     if (debugTakeScreenshot)
     {

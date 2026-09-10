@@ -155,7 +155,7 @@ class TextureInfo
         /** @property {Vector2} - size of the image */
         this.size = vec2(image.width, image.height);
         /** @property {WebGLTexture} - webgl texture */
-        this.glTexture = glEnable && glCreateTexture(image);
+        // this.glTexture = glEnable && glCreateTexture(image);
         /** @property {Vector2} - inverse of the size for rendering */
         this.sizeInverse = vec2(1/image.width, 1/image.height);
     }

@@ -64,8 +64,8 @@ const sourceFiles =
     `engine/engineAudio.js`,
     `engine/engineTileLayer.js`,
     `engine/engineParticles.js`,
-    `engine/engineMedals.js`,
-    `engine/engineWebGL.js`,
+    // `engine/engineMedals.js`,
+    // `engine/engineWebGL.js`,
     `engine/engine.js`,
 
     // game files

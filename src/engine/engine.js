@@ -139,7 +139,7 @@ async function engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, game
             mainContext.imageSmoothingEnabled = !tilesPixelated;
 
         // setup gl rendering if enabled
-        glPreRender();
+        // glPreRender();
     }
 
     // internal update loop for engine
@@ -219,7 +219,7 @@ async function engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, game
             pluginRenderList.forEach(f=>f());
             touchGamepadRender();
             debugRender();
-            glCopyToContext(mainContext);
+            // glCopyToContext(mainContext);
 
             if (showWatermark)
             {
@@ -262,13 +262,13 @@ async function engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, game
             const styleHeight = mainCanvas.height + 'px';
             mainCanvas.style.width = overlayCanvas.style.width = styleWidth;
             mainCanvas.style.height = overlayCanvas.style.height = styleHeight;
-            if (glCanvas)
-            {
-                glCanvas.width = mainCanvas.width;
-                glCanvas.height = mainCanvas.height;
-                glCanvas.style.width = styleWidth;
-                glCanvas.style.height = styleHeight;
-            }
+            // if (glCanvas)
+            // {
+            //     glCanvas.width = mainCanvas.width;
+            //     glCanvas.height = mainCanvas.height;
+            //     glCanvas.style.width = styleWidth;
+            //     glCanvas.style.height = styleHeight;
+            // }
         }
         else
         {
@@ -313,7 +313,7 @@ async function engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, game
     inputInit();
     audioInit();
     debugInit();
-    glInit();
+    // glInit();
 
     // create overlay canvas for hud to appear above gl canvas
     rootElement.appendChild(overlayCanvas = document.createElement('canvas'));
@@ -323,8 +323,8 @@ async function engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, game
     const styleCanvas = 'position:absolute;'+ // allow canvases to overlap
         'top:50%;left:50%;transform:translate(-50%,-50%)'; // center on screen
     mainCanvas.style.cssText = overlayCanvas.style.cssText = styleCanvas;
-    if (glCanvas)
-        glCanvas.style.cssText = styleCanvas;
+    // if (glCanvas)
+    //     glCanvas.style.cssText = styleCanvas;
     updateCanvas();
     
     // create promises for loading images

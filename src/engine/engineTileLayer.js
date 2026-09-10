@@ -272,14 +272,14 @@ class TileLayer extends EngineObject
         this.context.imageSmoothingEnabled = !tilesPixelated;
 
         // setup gl rendering if enabled
-        glPreRender();
+        // glPreRender();
     }
 
     /** Call to end the redraw process */
     redrawEnd()
     {
         ASSERT(mainContext == this.context, 'must call redrawStart() before drawing tiles');
-        glCopyToContext(mainContext, true);
+        // glCopyToContext(mainContext, true);
         this.textureInfo = new TextureInfo(this.canvas);
         //debugSaveCanvas(this.canvas);
 
