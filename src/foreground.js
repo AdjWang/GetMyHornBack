@@ -38,6 +38,7 @@ class Foreground extends EngineObject {
         false,                // collideTiles
         false                 // additive
       );
+      leafEmitter.renderOrder = this.renderOrder;
       leafEmitter.particleCreateCallback = particle => {
         if (particle.sizeStart > FOREGROUND_LARGE_LEAF_SIZE_GATE) {
           particle.colorStart.a *= FOREGROUND_LARGE_LEAF_ALPHA;
@@ -74,6 +75,7 @@ class Foreground extends EngineObject {
         false,                // collideTiles
         false                 // additive
       );
+      fireflyEmitter.renderOrder = this.renderOrder;
       this.emitters.push(fireflyEmitter);
     }
   }

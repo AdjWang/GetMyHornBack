@@ -491,12 +491,10 @@ class Unicorn extends EngineObject {
   _emitDust() {
     const footPos = vec2(this.pos.x, this.pos.y - this.size.y / 2);
     this._jumpDustEmitter.pos = footPos;
-    const emitCount = 3;
+    const angle = this._jumpDustEmitter.angle;
+    const emitCount = 6;
     for (let i = 0; i < emitCount; i++) {
-      this._jumpDustEmitter.emitParticle();
-    }
-    this._jumpDustEmitter.angle = -this._jumpDustEmitter.angle;
-    for (let i = 0; i < emitCount; i++) {
+      this._jumpDustEmitter.angle = angle * ((i % 2 == 0) ? -1 : 1);
       this._jumpDustEmitter.emitParticle();
     }
   }
