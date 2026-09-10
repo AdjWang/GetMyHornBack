@@ -24,15 +24,9 @@ let comicDragons = []
 ///////////////////////////////////////////////////////////////////////////////
 async function gameInit() {
   setGLEnable(false);
+  // Set as const in engine.
   // setFontDefault('Lucida Console');
   characterRes = createAsepriteResource();
-  // Actually not remaping, just copy a unremaped image out to draw savepoint with
-  // original color later in map. Normal tile(...) would get the grey one in game.
-  const rainbowColored = await createRemappedTextureInfo(TEXTURE_INDEX_TILESET, 0, 0);
-  const rainbowGrey = await createRemappedTextureInfo(TEXTURE_INDEX_TILESET, 1, 0);
-  // Crop the rainbow body. Shrink a little gap to avoid float rounding glitch.
-  savePointEnableTileInfo = new TileInfo(vec2(96, 7), vec2(16 - 0.01, 9), rainbowColored);
-  savePointDisableTileInfo = new TileInfo(vec2(96, 7), vec2(16 - 0.01, 9), rainbowGrey);
   await loadLevel();
   initWorldCamera();
   background.updatePos(cameraPos);

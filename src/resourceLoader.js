@@ -133,7 +133,3 @@ async function createRemappedTextureInfo(textureIndex, toIdx, from_idx = THEME_I
   context.putImageData(imageData, 0, 0);
   return new TextureInfo(canvas);
 }
-
-async function remapTilesetColor(textureIndex, toIdx) {
-  textureInfos[textureIndex] = await createRemappedTextureInfo(textureIndex, toIdx);
-}

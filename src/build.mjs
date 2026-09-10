@@ -87,8 +87,7 @@ const sourceFiles =
 ];
 const dataFiles =
 [
-    'assets/tileset.png',
-    'assets/character.png',
+    'assets/merge.png',
 ];
 
 console.log(`Building ${PROGRAM_NAME}...`);

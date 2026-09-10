@@ -157,11 +157,13 @@ let savePoints = [];
 
 class SavePoint extends EngineObject {
   constructor(pos, idx) {
-    super(pos.add(vec2(0.5, 9/16/2)), vec2(1, 9/16), savePointDisableTileInfo);
+    const unsavedTileInfo = new TileInfo(vec2(112, 23), vec2(16 - 0.01, 9));
+    const savedTileInfo = new TileInfo(vec2(96, 23), vec2(16 - 0.01, 9));
+    super(pos.add(vec2(0.5, 9/16/2)), vec2(1, 9/16), unsavedTileInfo);
     this.gravityScale = 0.0;
     this.setCollision(false, false, false, false);
-    this._unsavedTileInfo = savePointDisableTileInfo;
-    this._savedTileInfo = savePointEnableTileInfo;
+    this._unsavedTileInfo = unsavedTileInfo;
+    this._savedTileInfo = savedTileInfo;
     this._saved = false;
     this._idx = idx;
   }
@@ -215,13 +217,13 @@ function decodeTiledTile(gid) {
   // }
   // return new TileLayerData(gid - 1);
   if (gid == 9) {
-    return new TileLayerData(0, 0, true);
+    return new TileLayerData(TILE_IDX_BASE, 0, true);
   } else if (gid >= 10 && gid < 13) {
-    return new TileLayerData(3, gid - 9);
+    return new TileLayerData(TILE_IDX_BASE + 3, gid - 9);
   } else if (gid >= 13 && gid < 16) {
-    return new TileLayerData(5, gid - 12);
+    return new TileLayerData(TILE_IDX_BASE + 5, gid - 12);
   } else {
-    return new TileLayerData(gid - 1);
+    return new TileLayerData(TILE_IDX_BASE + gid - 1);
   }
 }
 
@@ -290,7 +292,10 @@ async function loadLevel() {
   savePoints = [];
   // Remap scene theme.
   const sceneTheme = LEVEL_THEMES[idx];
-  await remapTilesetColor(0, sceneTheme);
+  // Used for characters, not remap color.
+  textureInfos[0] = await createRemappedTextureInfo(0, 0);
+  // Used for tilemap, remap color.
+  textureInfos[1] = await createRemappedTextureInfo(0, sceneTheme);
   foreground = new Foreground(sceneTheme);
   background = new Background(sceneTheme);
   const levelSize = LEVELS_SIZE[idx];

@@ -5,9 +5,10 @@ const TILE_SIZE = 16;  // pixels
 const VIEW_WIDTH = 28;  // cells
 const VIEW_HEIGHT = 16;  // cells
 
+const IMAGE = 'assets/merge.png';
 const IMAGE_SOURCES = [
-  'assets/tileset.png',
-  'assets/character.png',
+  IMAGE,
+  IMAGE,
 ];
 
 const STORAGE_PREFIX = 'gmhb_0_0_0_';
@@ -16,23 +17,24 @@ const THEME_INDEX_ROCK = 0;
 const THEME_INDEX_GRASS = 1;
 const THEME_INDEX_CLOUD = 2;
 
-const TEXTURE_INDEX_TILESET = 0;
-const TEXTURE_INDEX_CLOUD = 0;
-const TEXTURE_INDEX_RAINBOW = 0;
-const TEXTURE_INDEX_LEAF = 0;
-const TEXTURE_INDEX_UNICORN = 1;
-const TEXTURE_INDEX_SLIME = 1;
+const TILE_IDX_BASE = 9;
+const TEXTURE_INDEX_TILESET = 1;
+const TEXTURE_INDEX_CLOUD = 1;
+const TEXTURE_INDEX_RAINBOW = 1;
+const TEXTURE_INDEX_LEAF = 1;
+const TEXTURE_INDEX_UNICORN = 0;
+const TEXTURE_INDEX_SLIME = 0;
 
-const SPIKEWEED_TILE_ID = 5;
-const DESTROYABLE_TILE_ID = SPIKEWEED_TILE_ID;
-const SAVEPOINT_TILE_ID = 6;
-const PRISM_TILE_ID = 3;
+const SPIKEWEED_TILE_ID = 5 + TILE_IDX_BASE;
+const DESTROYABLE_TILE_ID = SPIKEWEED_TILE_ID + TILE_IDX_BASE;
+const SAVEPOINT_TILE_ID = 6 + TILE_IDX_BASE;
+const PRISM_TILE_ID = 3 + TILE_IDX_BASE;
 const PRISM_TILE_DIR_UP = 0;
 const PRISM_TILE_DIR_DOWN = 2;
 const PRISM_TILE_DIR_LEFT = 3;
 const PRISM_TILE_DIR_RIGHT = 1;
 const PRISM_TILE_DIR_COUNT = 4;
-const TNT_TILE_ID = 4;
+const TNT_TILE_ID = 4 + TILE_IDX_BASE;
 
 const RENDER_ORDER_BACKGROUND = -1e4;
 const RENDER_ORDER_TILE_LAYER = 0;
@@ -47,14 +49,6 @@ const TILE_COLOR_REMAP = [
   [0x4a5462, 0x14a02e, 0xffffff],
   [0x333941, 0x1a7a3e, 0xffffff],
   [0x221c1a, 0x24523b, 0x249fde],
-  // Rainbow.
-  [0xb4202a, 0x4d4d4d, 0x4d4d4d],
-  [0xfa6a0a, 0x8a8a8a, 0x8a8a8a],
-  [0xfffc40, 0xe7e7e7, 0xe7e7e7],
-  [0x59c135, 0x929292, 0x929292],
-  [0x20d6c7, 0x9e9e9e, 0x9e9e9e],
-  [0x285cc4, 0x585858, 0x585858],
-  [0x143464, 0x303030, 0x303030],
   // Clouds.
   [0x793a80, 0xffffff, 0xffffff],
   [0x403353, 0xdae0ea, 0xdae0ea],
@@ -87,5 +81,3 @@ let foreground = undefined;
 let background = undefined;
 let tileLayer = undefined;
 let characterRes = undefined;
-let savePointEnableTileInfo = undefined;
-let savePointDisableTileInfo = undefined;
