@@ -27,9 +27,6 @@ class DragonSlime extends EngineObject {
   constructor(pos, velocity, lockTime, alpha = 1.0) {
     const colliderSize = vec2(0.9, 0.9);
     super(pos, colliderSize, undefined, 0, new Color(1, 1, 1, alpha), RENDER_ORDER_CHARACTER);
-    this._frameInfoWing = characterRes.slime_wing;
-    this._frameInfoBody = characterRes.slime_body;
-    this._frameInfoHorn = characterRes.unicorn_horn;
     this._hasHorn = true;
     this._currentFrame = 0;
     this._offsetFrame = 0;
@@ -92,15 +89,15 @@ class DragonSlime extends EngineObject {
     const scaleY = 1;
     const drawPos = this.pos.add(vec2(drawXOffset, drawYOffset));
     if (currentFrame == 0) {
-      drawAsepriteFrame(this._frameInfoWing[currentFrame + DRAGON_SLIME_DRAW_BASE_FRAME], drawPos, scaleY, color, 0, this.mirror);
-      drawAsepriteFrame(this._frameInfoBody[currentFrame + DRAGON_SLIME_DRAW_BASE_FRAME], drawPos, scaleY, color, 0, this.mirror);
+      drawAsepriteFrame(characterRes.slime_wing[currentFrame + DRAGON_SLIME_DRAW_BASE_FRAME], drawPos, scaleY, color, 0, this.mirror);
+      drawAsepriteFrame(characterRes.slime_body[currentFrame + DRAGON_SLIME_DRAW_BASE_FRAME], drawPos, scaleY, color, 0, this.mirror);
     } else {
-      drawAsepriteFrame(this._frameInfoBody[currentFrame + DRAGON_SLIME_DRAW_BASE_FRAME], drawPos, scaleY, color, 0, this.mirror);
-      drawAsepriteFrame(this._frameInfoWing[currentFrame + DRAGON_SLIME_DRAW_BASE_FRAME], drawPos, scaleY, color, 0, this.mirror);
+      drawAsepriteFrame(characterRes.slime_body[currentFrame + DRAGON_SLIME_DRAW_BASE_FRAME], drawPos, scaleY, color, 0, this.mirror);
+      drawAsepriteFrame(characterRes.slime_wing[currentFrame + DRAGON_SLIME_DRAW_BASE_FRAME], drawPos, scaleY, color, 0, this.mirror);
     }
     if (this._hasHorn) {
       const hornPos = drawPos.add(DRAGON_SLIME_HORN_OFFSET.multiply(vec2(this._caughtSide, 1)));
-      drawAsepriteFrame(this._frameInfoHorn[currentFrame], hornPos, scaleY, undefined, 0, this.mirror);
+      drawAsepriteFrame(characterRes.unicorn_horn[currentFrame], hornPos, scaleY, undefined, 0, this.mirror);
     }
     if (currentLevel == BOSS_LEVEL) {
       for (let i = 0; i < this._health; i++) {
@@ -121,10 +118,6 @@ class DragonSlime extends EngineObject {
       }
     }
     return true;
-  }
-
-  get_jump_gain() {
-    return SLIME_JUMP_GAIN;
   }
 
   hasTarget() {
@@ -173,23 +166,20 @@ class DragonSlime extends EngineObject {
     if (!this._caughtObject || this._caughtObject.destroyed) {
       return;
     }
+    let motionTargetPos = this.pos;
     if (this._stage == DRAGON_SLIME_STAGE_IDLE) {
       this._stage = DRAGON_SLIME_STAGE_LOCK;
-      this.pos.x = this._motionX.update(this.pos.x);
-      this.pos.y = this._motionY.update(this.pos.y);
     } else if (this._stage == DRAGON_SLIME_STAGE_LOCK) {
       const targetPos = this._getTargetPos();
-      const motionTargetPos = targetPos;
-      this.pos.x = this._motionX.update(motionTargetPos.x);
-      this.pos.y = this._motionY.update(motionTargetPos.y);
+      motionTargetPos = targetPos;
       this._handleLock(targetPos);
     } else if (this._stage == DRAGON_SLIME_STAGE_FIRE) {
       const targetPos = this._getTargetPos();
-      const motionTargetPos = vec2(targetPos.x, this._fireLockY);
-      this.pos.x = this._motionX.update(motionTargetPos.x);
-      this.pos.y = this._motionY.update(motionTargetPos.y);
+      motionTargetPos = vec2(targetPos.x, this._fireLockY);
       this._handleFire();
     }
+    this.pos.x = this._motionX.update(motionTargetPos.x);
+    this.pos.y = this._motionY.update(motionTargetPos.y);
   }
 
   _updateBossState() {
@@ -310,10 +300,6 @@ class StupidSlime extends EngineObject {
       o.groundObject = this;
     }
     return true;
-  }
-
-  get_jump_gain() {
-    return SLIME_JUMP_GAIN;
   }
 
   _updatePatrol() {

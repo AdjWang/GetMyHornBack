@@ -7,7 +7,9 @@ const VIEW_HEIGHT = 16;  // cells
 
 const IMAGE = 'assets/merge.png';
 const IMAGE_SOURCES = [
+  // Used for characters, not remap color.
   IMAGE,
+  // Used for tilemap, remap color.
   IMAGE,
 ];
 

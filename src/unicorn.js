@@ -74,9 +74,6 @@ class Unicorn extends EngineObject {
   constructor(pos, alpha = 1.0) {
     const colliderSize = vec2(0.9, 0.9);
     super(pos, colliderSize, undefined, 0, new Color(1, 1, 1, alpha), RENDER_ORDER_CHARACTER);
-    this._frameInfoHead = characterRes.unicorn_head;
-    this._frameInfoBody = characterRes.unicorn_body;
-    this._frameInfoHorn = characterRes.unicorn_horn;
     this._hasHorn = false;
     this._gettingHorn = false;
     this._moveX = 0;
@@ -102,6 +99,8 @@ class Unicorn extends EngineObject {
     this.setStatic(false);
 
     const dustGrey = 0.8;
+    const colorStart = new Color(1, 1, 1);
+    const colorEnd = new Color(dustGrey, dustGrey, dustGrey);
     this._jumpDustEmitter = new ParticleEmitter(
       vec2(),               // position
       70 * PI / 180,        // angle
@@ -110,10 +109,10 @@ class Unicorn extends EngineObject {
       24,                   // emitRate
       15 * PI / 180,        // emitConeAngle
       undefined,            // tileInfo
-      new Color(1, 1, 1),   // colorStartA
-      new Color(1, 1, 1),   // colorStartB
-      new Color(dustGrey, dustGrey, dustGrey),     // colorEndA
-      new Color(dustGrey, dustGrey, dustGrey),     // colorEndB
+      colorStart,   // colorStartA
+      colorStart,   // colorStartB
+      colorEnd,     // colorEndA
+      colorEnd,     // colorEndB
       0.28,                 // particleTime
       0.12,                 // sizeStart
       0.08,                 // sizeEnd
@@ -193,11 +192,11 @@ class Unicorn extends EngineObject {
     if (!this._gettingHorn) {
       this._hornDrawPos = headPos;
     }
-    drawAsepriteFrame(this._frameInfoHead[this._runFrame], headPos.add(scaleAnchorOffset).add(drawOffset), runScaleY * this._getJumpScaleY(), this.color, runRotate, this.mirror);
+    drawAsepriteFrame(characterRes.unicorn_head[this._runFrame], headPos.add(scaleAnchorOffset).add(drawOffset), runScaleY * this._getJumpScaleY(), this.color, runRotate, this.mirror);
     if (this._hasHorn) {
-      drawAsepriteFrame(this._frameInfoHorn[this._runFrame], this._hornDrawPos.add(scaleAnchorOffset).add(drawOffset), runScaleY * this._getJumpScaleY(), this.color, runRotate, this.mirror);
+      drawAsepriteFrame(characterRes.unicorn_horn[this._runFrame], this._hornDrawPos.add(scaleAnchorOffset).add(drawOffset), runScaleY * this._getJumpScaleY(), this.color, runRotate, this.mirror);
     }
-    drawAsepriteFrame(this._frameInfoBody[this._runFrame], drawPos.add(vec2(0, bodyRunBob)).add(drawOffset), runScaleY * this._getJumpScaleY(), this.color, runRotate, this.mirror);
+    drawAsepriteFrame(characterRes.unicorn_body[this._runFrame], drawPos.add(vec2(0, bodyRunBob)).add(drawOffset), runScaleY * this._getJumpScaleY(), this.color, runRotate, this.mirror);
   }
 
   gettingHorn(pos) {
@@ -390,7 +389,8 @@ class Unicorn extends EngineObject {
 
   _startJump(clearGroundObject) {
     const groundObject = this.groundObject;
-    const jumpGain = groundObject && groundObject.get_jump_gain ? groundObject.get_jump_gain() : 1;
+    const useGain = groundObject instanceof DragonSlime || groundObject instanceof StupidSlime;
+    const jumpGain = (groundObject && useGain) ? SLIME_JUMP_GAIN : 1;
     if (clearGroundObject) {
       this.groundObject = 0;
     }
