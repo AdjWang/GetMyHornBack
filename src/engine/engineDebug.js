@@ -32,19 +32,19 @@ const debugPointSize = .5;
  *  @type {Boolean}
  *  @default
  *  @memberof Debug */
-const showWatermark = true;
+let showWatermark = true;
 
 /** Key code used to toggle debug mode, Esc by default
  *  @type {String}
  *  @default
  *  @memberof Debug */
-const debugKey = 'Escape';
+let debugKey = 'Escape';
 
 /** True if the debug overlay is active, always false in release builds
  *  @type {Boolean}
  *  @default
  *  @memberof Debug */
-const debugOverlay = false;
+let debugOverlay = false;
 
 // Engine internal variables not exposed to documentation
 let debugPrimitives = [], debugPhysics = false, debugRaycast = false, debugParticles = false, debugGamepads = false, debugMedals = false, debugTakeScreenshot, downloadLink;
@@ -55,12 +55,12 @@ let debugPrimitives = [], debugPhysics = false, debugRaycast = false, debugParti
 /** Set if watermark with FPS should be shown
  *  @param {Boolean} show
  *  @memberof Debug */
-// function setShowWatermark(show) { showWatermark = show; }
+function setShowWatermark(show) { showWatermark = show; }
 
 /** Set key code used to toggle debug mode, Esc by default
  *  @param {String} key
  *  @memberof Debug */
-// function setDebugKey(key) { debugKey = key; }
+function setDebugKey(key) { debugKey = key; }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Debug helper functions
