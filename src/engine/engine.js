@@ -90,6 +90,18 @@ let frameTimeLastMS = 0, frameTimeBufferMS = 1e3 / frameRate;
 ///////////////////////////////////////////////////////////////////////////////
 // Main engine functions
 
+function loadImage(source, onload = (img) => { }) {
+  return new Promise(resolve => {
+    const image = new Image;
+    image.crossOrigin = 'anonymous';
+    image.onerror = image.onload = () => {
+        onload(image);
+        resolve(image);
+    }
+    image.src = source;
+  });
+}
+
 /** Startup LittleJS engine with your callback functions
  *  @param {Function|function():Promise} gameInit - Called once after the engine starts up
  *  @param {Function} gameUpdate - Called every frame before objects are updated
@@ -245,19 +257,11 @@ async function engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, game
     updateCanvas();
     
     // create promises for loading images
-    const promises = imageSources.map((src, textureIndex)=>
-        new Promise(resolve => 
-        {
-            const image = new Image;
-            image.crossOrigin = 'anonymous';
-            image.onerror = image.onload = ()=> 
-            {
-                textureInfos[textureIndex] = new TextureInfo(image);
-                resolve();
-            }
-            image.src = src;
-        })
-    );
+    const promises = imageSources.map((src, textureIndex) => {
+        return loadImage(src, image => {
+            textureInfos[textureIndex] = new TextureInfo(image);
+        });
+    });
 
     if (!imageSources.length)
     {

@@ -140,11 +140,3 @@ async function createRemappedTextureInfo(textureIndex, toIdx, from_idx = THEME_I
 async function remapTilesetColor(textureIndex, toIdx) {
   textureInfos[textureIndex] = await createRemappedTextureInfo(textureIndex, toIdx);
 }
-
-function loadImage(source) {
-  return new Promise(resolve => {
-    const image = new Image;
-    image.onload = () => resolve(image);
-    image.src = source;
-  });
-}
