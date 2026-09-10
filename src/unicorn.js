@@ -291,7 +291,8 @@ class Unicorn extends EngineObject {
       return;
     }
     this._updateMoveCornerCorrection();
-    this._updateJumpCornerCorrection();
+    // Occupies large space and not so helpful in this game.
+    // this._updateJumpCornerCorrection();
   }
 
   _isTileBlockedAt(pos) {
