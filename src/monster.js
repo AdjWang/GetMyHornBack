@@ -226,24 +226,23 @@ class DragonSlime extends EngineObject {
     return this._charge && !this._charge.destroyed;
   }
 
+  _addChargeBeam(y, length, time) {
+    const offset = vec2(0, y);
+    const pos = this.pos.copy().add(offset);
+    const charge = new ChargeLaser(pos, length, time,
+      () => this._shootRainbowBeam(offset));
+    this.addChild(charge, offset);
+    return charge;
+  }
+
   _startCharge(laserCount = 1, chargeTime = 1.0) {
     const length = DRAGON_SLIME_CHARGE_LENGTH * this._caughtSide;
     this.children.forEach(o => o.destroy());
     this.children = [];
-    this._charge = new ChargeLaser(this.pos.copy(), length, chargeTime,
-      () => this._shootRainbowBeam(vec2()));
-    this.addChild(this._charge, vec2());
+    this._charge = this._addChargeBeam(0, length, chargeTime);
     for (let i = 1; i < laserCount; i++) {
-      const offset1 = vec2(0, -i);
-      const pos1 = this.pos.copy().add(offset1);
-      const charge1 = new ChargeLaser(pos1, length, chargeTime,
-        () => this._shootRainbowBeam(offset1));
-      this.addChild(charge1, offset1);
-      const offset2 = vec2(0, i);
-      const pos2 = this.pos.copy().add(offset2);
-      const charge2 = new ChargeLaser(pos2, length, chargeTime,
-        () => this._shootRainbowBeam(offset2));
-      this.addChild(charge2, offset2);
+      this._addChargeBeam(-i, length, chargeTime);
+      this._addChargeBeam(i, length, chargeTime);
     }
   }
 
