@@ -85,24 +85,7 @@ function getPaused() { return paused; }
 // function setPaused(isPaused=true) { paused = isPaused; }
 
 // Frame time tracking
-let frameTimeLastMS = 0, frameTimeBufferMS = 0, averageFPS = 0;
-
-///////////////////////////////////////////////////////////////////////////////
-// plugin hooks
-
-const pluginUpdateList = [], pluginRenderList = [];
-
-/** Add a new update function for a plugin
- *  @param {Function} [updateFunction]
- *  @param {Function} [renderFunction]
- *  @memberof Engine */
-function engineAddPlugin(updateFunction, renderFunction)
-{
-    ASSERT(!pluginUpdateList.includes(updateFunction));
-    ASSERT(!pluginRenderList.includes(renderFunction));
-    updateFunction && pluginUpdateList.push(updateFunction);
-    renderFunction && pluginRenderList.push(renderFunction);
-}
+let frameTimeLastMS = 0, frameTimeBufferMS = 1e3 / frameRate;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Main engine functions
@@ -142,103 +125,37 @@ async function engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, game
         // glPreRender();
     }
 
-    // internal update loop for engine
+    // Internal fixed-step update and render loop.
     function engineUpdate(frameTimeMS=0)
     {
-        // update time keeping
-        let frameTimeDeltaMS = frameTimeMS - frameTimeLastMS;
+        const frameTimeDeltaMS = frameTimeMS - frameTimeLastMS;
         frameTimeLastMS = frameTimeMS;
-        if (debug || showWatermark)
-            averageFPS = lerp(averageFPS, 1e3/(frameTimeDeltaMS||1), .05);
-        const debugSpeedUp   = debug && keyIsDown('Equal'); // +
-        const debugSpeedDown = debug && keyIsDown('Minus'); // -
-        if (debug) // +/- to speed/slow time
-            frameTimeDeltaMS *= debugSpeedUp ? 10 : debugSpeedDown ? .1 : 1;
         timeReal += frameTimeDeltaMS / 1e3;
-        frameTimeBufferMS += paused ? 0 : frameTimeDeltaMS;
-        if (!debugSpeedUp)
-            frameTimeBufferMS = min(frameTimeBufferMS, 50); // clamp min framerate
-        if (debug && debugVideoCaptureIsActive())
-            frameTimeBufferMS = 0; // disable time smoothing when capturing video
+        frameTimeBufferMS = min(frameTimeBufferMS + frameTimeDeltaMS, 50);
 
         updateCanvas();
-
-        if (paused)
+        for (; frameTimeBufferMS >= 0; frameTimeBufferMS -= 1e3 / frameRate)
         {
-            // update object transforms even when paused
-            for (const o of engineObjects)
-                o.parent || o.updateTransforms();
+            time = frame++ / frameRate;
             inputUpdate();
-            pluginUpdateList.forEach(f=>f());
-            debugUpdate();
+            gameUpdate();
+            engineObjectsUpdate();
             gameUpdatePost();
             inputUpdatePost();
-        }
-        else
-        {
-            // apply time delta smoothing, improves smoothness of framerate in some browsers
-            let deltaSmooth = 0;
-            if (frameTimeBufferMS < 0 && frameTimeBufferMS > -9)
-            {
-                // force at least one update each frame since it is waiting for refresh
-                deltaSmooth = frameTimeBufferMS;
-                frameTimeBufferMS = 0;
-            }
-            
-            // update multiple frames if necessary in case of slow framerate
-            for (;frameTimeBufferMS >= 0; frameTimeBufferMS -= 1e3 / frameRate)
-            {
-                // increment frame and update time
-                time = frame++ / frameRate;
-
-                // update game and objects
-                inputUpdate();
-                gameUpdate();
-                pluginUpdateList.forEach(f=>f());
-                engineObjectsUpdate();
-
-                // do post update
-                debugUpdate();
-                gameUpdatePost();
-                inputUpdatePost();
-            }
-
-            // add the time smoothing back in
-            frameTimeBufferMS += deltaSmooth;
         }
 
         if (!headlessMode)
         {
-            // render sort then render while removing destroyed objects
             enginePreRender();
             gameRender();
             engineObjects.sort((a,b)=> a.renderOrder - b.renderOrder);
             for (const o of engineObjects)
                 o.destroyed || o.render();
             gameRenderPost();
-            pluginRenderList.forEach(f=>f());
             touchGamepadRender();
             debugRender();
-            // glCopyToContext(mainContext);
-
-            if (showWatermark)
-            {
-                // update fps
-                overlayContext.textAlign = 'right';
-                overlayContext.textBaseline = 'top';
-                overlayContext.font = '1em monospace';
-                overlayContext.fillStyle = '#000';
-                const text = engineName + ' ' + 'v' + engineVersion + ' / ' 
-                    + drawCount + ' / ' + engineObjects.length + ' / ' + averageFPS.toFixed(1)
-                    + (glEnable ? ' GL' : ' 2D') ;
-                overlayContext.fillText(text, mainCanvas.width-3, 3);
-                overlayContext.fillStyle = '#fff';
-                overlayContext.fillText(text, mainCanvas.width-2, 2);
-                drawCount = 0;
-            }
         }
 
-        debugVideoCaptureUpdate();
         requestAnimationFrame(engineUpdate);
     }
 
