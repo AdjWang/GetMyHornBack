@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "level3.tmx",
+    "activeFile": "level1.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -45,22 +45,22 @@
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 1,
-            "selectedLayer": 1,
+            "scale": 0.25,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 2232,
-                "y": 136
+                "x": 2132,
+                "y": 196
             }
         },
         "level2.tmx": {
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 3,
-            "selectedLayer": 1,
+            "scale": 0.25,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 3809.6666666666665,
-                "y": 152.33333333333331
+                "x": 2076,
+                "y": 272
             }
         },
         "level3.tmx": {
@@ -97,10 +97,10 @@
     "property.type": "string",
     "recentFiles": [
         "level0.tmx",
-        "level1.tmx",
-        "level2.tmx",
-        "tileset.tsx",
         "level3.tmx",
+        "tileset.tsx",
+        "level2.tmx",
+        "level1.tmx",
         "C:/JsProjects/archive/platformer/data/gameLevelData.tmx",
         "level.tmx",
         "test.tsx"
