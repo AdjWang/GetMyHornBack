@@ -81,13 +81,12 @@ function gameRenderPost() {
     drawRect(vec2(42.5, 0.5), vec2(3, 1), new Color(0, 0, 0));
   }
   // Draw level 0 story.
-  const spriteColor = new Color(1, 1, 1, 0.6);
   const textColor = new Color(0, 0, 0, 0.5);
   if (currentLevel == 0) {
     const drawSleepHint = function (basePos) {
-      drawTextOverlay('z', basePos.add(vec2(-0.9, 0.5)), 0.5, textColor);
-      drawTextOverlay('z', basePos.add(vec2(-1.2, 0.8)), 0.6, textColor);
-      drawTextOverlay('z', basePos.add(vec2(-1.5, 1.1)), 0.7, textColor);
+      [vec2(-0.9, 0.5), vec2(-1.2, 0.8), vec2(-1.5, 1.1)].forEach((offset, i) => {
+        drawTextOverlay('z', basePos.add(offset), 0.5 + 0.1 * i, textColor);
+      });
     };
     const drawMoveHint = function (basePos, mirror) {
       const offsets = [1.5, 1.8, 2.1];

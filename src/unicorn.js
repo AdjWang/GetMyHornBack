@@ -168,8 +168,9 @@ class Unicorn extends EngineObject {
       this._drawGhostTrailTicks -= 1;
       new GhostTrail(this.pos.copy(), 0.1, (ratio, drawPos) => {
         const drawOffset = vec2(UNICORN_DRAW_OFFSET.x * (this.mirror ? -1.0 : 1.0), UNICORN_DRAW_OFFSET.y);
-        drawAsepriteFrame(characterRes.unicorn_head[0], drawPos.add(drawOffset), 1, new Color(1, 1, 1, ratio / 1.8), 0, this.mirror);
-        drawAsepriteFrame(characterRes.unicorn_body[0], drawPos.add(drawOffset), 1, new Color(1, 1, 1, ratio / 1.8), 0, this.mirror);
+        [characterRes.unicorn_head, characterRes.unicorn_body].forEach(res => {
+          drawAsepriteFrame(res[0], drawPos.add(drawOffset), 1, new Color(1, 1, 1, ratio / 1.8), 0, this.mirror);
+        });
       });
     }
     const runBobTime = time * UNICORN_RUN_HEAD_BOB_SPEED;
