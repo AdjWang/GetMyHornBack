@@ -109,9 +109,6 @@ function remapImageDataColors(imageData, from_idx, toIdx) {
     for (const remap of TILE_COLOR_REMAP) {
       const fromColor = remap[from_idx];
       const toColor = remap[toIdx];
-      if (fromColor === undefined || toColor === undefined) {
-        continue;
-      }
       if ((data[i] << 16 | data[i + 1] << 8 | data[i + 2]) == fromColor) {
         data[i] = toColor >> 16 & 255;
         data[i + 1] = toColor >> 8 & 255;
