@@ -24,7 +24,7 @@ let comicDragons = []
 ///////////////////////////////////////////////////////////////////////////////
 async function gameInit() {
   setGLEnable(false);
-  setFontDefault('Lucida Console');
+  // setFontDefault('Lucida Console');
   characterRes = createAsepriteResource();
   // Actually not remaping, just copy a unremaped image out to draw savepoint with
   // original color later in map. Normal tile(...) would get the grey one in game.

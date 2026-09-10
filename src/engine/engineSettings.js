@@ -59,13 +59,13 @@ let tilesPixelated = true;
  *  @type {String}
  *  @default
  *  @memberof Settings */
-let fontDefault = 'arial';
+const fontDefault = 'Lucida Console';
 
 /** Enable to show the LittleJS splash screen be shown on startup
  *  @type {Boolean}
  *  @default
  *  @memberof Settings */
-let showSplashScreen = false;
+const showSplashScreen = false;
 
 /** Disables all rendering, audio, and input for servers
  *  @type {Boolean}
@@ -309,12 +309,12 @@ function setTilesPixelated(pixelated) { tilesPixelated = pixelated; }
 /** Set default font used for text rendering
  *  @param {String} font
  *  @memberof Settings */
-function setFontDefault(font) { fontDefault = font; }
+// function setFontDefault(font) { fontDefault = font; }
 
 /** Set if the LittleJS splash screen be shown on startup
  *  @param {Boolean} show
  *  @memberof Settings */
-function setShowSplashScreen(show) { showSplashScreen = show; }
+// function setShowSplashScreen(show) { showSplashScreen = show; }
 
 /** Set to disable rendering, audio, and input for servers
  *  @param {Boolean} headless
