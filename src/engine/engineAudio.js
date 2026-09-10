@@ -1,10 +1,11 @@
 'use strict';
 
-let audioContext = new AudioContext;
+let audioContext;
 let audioMasterGain;
 
 function audioInit()
 {
+    audioContext = new AudioContext;
     if (!soundEnable || headlessMode) return;
     audioMasterGain = audioContext.createGain();
     audioMasterGain.connect(audioContext.destination);
