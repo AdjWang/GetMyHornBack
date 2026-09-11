@@ -5,7 +5,7 @@ const TILE_SIZE = 16;  // pixels
 const VIEW_WIDTH = 28;  // cells
 const VIEW_HEIGHT = 16;  // cells
 
-const IMAGE = 'assets/merge.png';
+const IMAGE = 'merge.png';
 const IMAGE_SOURCES = [
   // Used for characters, not remap color.
   IMAGE,

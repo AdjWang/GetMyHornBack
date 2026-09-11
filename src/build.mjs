@@ -87,7 +87,7 @@ const sourceFiles =
 ];
 const dataFiles =
 [
-    'assets/merge.png',
+    'merge.png',
 ];
 
 console.log(`Building ${PROGRAM_NAME}...`);
