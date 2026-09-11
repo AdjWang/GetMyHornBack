@@ -384,6 +384,7 @@ function updateLevelEvent() {
   if (keyWasPressed(INPUT_KEY_CLEAR_PROGRESS)) {
     clearProgress();
     window.alert('Progress cleared!');
+    resetPlayer(false);
   }
   if (player) {
     if (currentLevel == 0) {
