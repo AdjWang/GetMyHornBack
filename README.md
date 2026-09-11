@@ -11,6 +11,6 @@ Embark on an adventure to take the horn back. Becareful, the evil dragon now is 
 ## Controls
 
 - <kbd>S</kbd>: Start game.
-- <kbd>W</kbd>/<kbd>A</kbd>/<kbd>D</kbd> or <kbd>ArrowUp</kbd>/<kbd>ArrowUp</kbd>/<kbd>ArrowUp</kbd>: Jump and move.
+- <kbd>W</kbd>/<kbd>A</kbd>/<kbd>D</kbd> or <kbd>ArrowUp</kbd>/<kbd>ArrowLeft</kbd>/<kbd>ArrowRight</kbd>: Jump and move.
 - <kbd>R</kbd>: Reset to last savepoint.
 - <kbd>B</kbd>: Clear all savepoints.
