@@ -199,21 +199,21 @@ function getShuffledRainbowColors(count) {
 function decodeTiledTile(gid) {
   // switch(gid) {
   //   case 9:
-  //     return new TileLayerData(0, 0, true);
+  //     return new TileLayerData(TILE_IDX_BASE, 0, true);
   //   case 10:
-  //     return new TileLayerData(3, 1);
+  //     return new TileLayerData(TILE_IDX_BASE + 3, 1);
   //   case 11:
-  //     return new TileLayerData(3, 2);
+  //     return new TileLayerData(TILE_IDX_BASE + 3, 2);
   //   case 12:
-  //     return new TileLayerData(3, 3);
+  //     return new TileLayerData(TILE_IDX_BASE + 3, 3);
   //   case 13:
-  //     return new TileLayerData(5, 1);
+  //     return new TileLayerData(TILE_IDX_BASE + 5, 1);
   //   case 14:
-  //     return new TileLayerData(5, 2);
+  //     return new TileLayerData(TILE_IDX_BASE + 5, 2);
   //   case 15:
-  //     return new TileLayerData(5, 3);
+  //     return new TileLayerData(TILE_IDX_BASE + 5, 3);
   // }
-  // return new TileLayerData(gid - 1);
+  // return new TileLayerData(TILE_IDX_BASE + gid - 1);
   if (gid == 9) {
     return new TileLayerData(TILE_IDX_BASE, 0, true);
   } else if (gid >= 10 && gid < 13) {
