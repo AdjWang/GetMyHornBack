@@ -407,12 +407,13 @@ class BossLevel {
   constructor() {
     this._boss = levelObjInsts[0];
     this._bossSlots = [
-      levelObjInsts[1].pos,
-      levelObjInsts[2].pos,
-      levelObjInsts[3].pos,
-      levelObjInsts[4].pos,
-      levelObjInsts[5].pos,
-      levelObjInsts[6].pos,
+      // levelObjInsts[1].pos,
+      // levelObjInsts[2].pos,
+      // levelObjInsts[3].pos,
+      // levelObjInsts[4].pos,
+      // levelObjInsts[5].pos,
+      // levelObjInsts[6].pos,
+      ...[1, 2, 3, 4, 5, 6].map(i => levelObjInsts[i].pos),
     ];
     this._tntSlots = [
       ...this._bossSlots.slice(0, 3).map(pos => pos.add(vec2(-1, 0))),

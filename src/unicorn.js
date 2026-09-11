@@ -317,19 +317,17 @@ class Unicorn extends EngineObject {
     if (!topBlocked && !bottomBlocked || topBlocked && bottomBlocked) {
       return;
     }
-    const verticalCorrectionDirections = topBlocked ? [-1] : [1];
+    const verticalDirection = topBlocked ? -1 : 1;
     for (let offset = UNICORN_AIR_CORNER_VERTICAL_CORRECTION_STEP;
       offset <= UNICORN_AIR_CORNER_VERTICAL_CORRECTION_MAX;
       offset += UNICORN_AIR_CORNER_VERTICAL_CORRECTION_STEP) {
-      for (const verticalDirection of verticalCorrectionDirections) {
-        const correctedY = this.pos.y + offset * verticalDirection;
-        const correctedPos = vec2(this.pos.x, correctedY);
-        const correctedNextPos = vec2(this.pos.x + horizontalMove, correctedY);
-        if (!tileCollisionTest(correctedPos, this.size, this) &&
-          !tileCollisionTest(correctedNextPos, this.size, this)) {
-          this.pos.y = correctedY;
-          return;
-        }
+      const correctedY = this.pos.y + offset * verticalDirection;
+      const correctedPos = vec2(this.pos.x, correctedY);
+      const correctedNextPos = vec2(this.pos.x + horizontalMove, correctedY);
+      if (!tileCollisionTest(correctedPos, this.size, this) &&
+        !tileCollisionTest(correctedNextPos, this.size, this)) {
+        this.pos.y = correctedY;
+        return;
       }
     }
   }
@@ -351,24 +349,22 @@ class Unicorn extends EngineObject {
     if (!leftBlocked && !rightBlocked || leftBlocked && rightBlocked) {
       return;
     }
-    const horizontalCorrectionDirections = leftBlocked ? [1] : [-1];
+    const horizontalDirection = leftBlocked ? 1 : -1;
     for (let offset = UNICORN_AIR_CORNER_HORIZONTAL_CORRECTION_STEP;
       offset <= UNICORN_AIR_CORNER_HORIZONTAL_CORRECTION_MAX;
       offset += UNICORN_AIR_CORNER_HORIZONTAL_CORRECTION_STEP) {
-      for (const horizontalDirection of horizontalCorrectionDirections) {
-        const correctedX = this.pos.x + offset * horizontalDirection;
-        const correctedPos = vec2(correctedX, this.pos.y);
-        const correctedNextPos = vec2(correctedX, this.pos.y + verticalMove);
-        if (!tileCollisionTest(correctedPos, this.size, this) &&
-          !tileCollisionTest(correctedNextPos, this.size, this)) {
-          this.pos.x = correctedX;
-          const restoreJump = verticalMoveDirection > 0 && this.velocity.y <= 0 &&
-            (this._jumpBufferTimer.active() || this._jumpNeedsCornerRestore);
-          if (restoreJump) {
-            this._startJump(false);
-          }
-          return;
+      const correctedX = this.pos.x + offset * horizontalDirection;
+      const correctedPos = vec2(correctedX, this.pos.y);
+      const correctedNextPos = vec2(correctedX, this.pos.y + verticalMove);
+      if (!tileCollisionTest(correctedPos, this.size, this) &&
+        !tileCollisionTest(correctedNextPos, this.size, this)) {
+        this.pos.x = correctedX;
+        const restoreJump = verticalMoveDirection > 0 && this.velocity.y <= 0 &&
+          (this._jumpBufferTimer.active() || this._jumpNeedsCornerRestore);
+        if (restoreJump) {
+          this._startJump(false);
         }
+        return;
       }
     }
   }
