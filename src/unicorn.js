@@ -85,7 +85,8 @@ class Unicorn extends EngineObject {
     // When jump with 0 initial speed with corner correction, the correction
     // stops object after correcting instead of perform jumping. Use this flag
     // to restore jump.
-    this._jumpNeedsCornerRestore = false;
+    // Useless since jump corner correction is trimmed.
+    // this._jumpNeedsCornerRestore = false;
     this._animState = UNICORN_ANIM_STATE_IDLE;
     this._runFrame = UNICORN_FRAME_INDEX_IDLE;
     this._runFrameTimer = new Timer(1.0 / UNICORN_ANIM_RUN_SPEED);
@@ -157,7 +158,8 @@ class Unicorn extends EngineObject {
     this._updateAirCornerCorrection();
     this._updateFootPrism();
     super.update();
-    this._updateJumpCornerRestoreState();
+    // Useless since jump corner correction is trimmed.
+    // this._updateJumpCornerRestoreState();
     this._updateBufferedJump();
     this._updateAnim();
   }
@@ -181,10 +183,8 @@ class Unicorn extends EngineObject {
     const bodyRunBob = this._getRunBob(runBobTime, UNICORN_RUN_BODY_BOB_OFFSET);
     const headBob = idleHeadBob + headRunBob;
     const headPos = this.pos.add(vec2(0, headBob));
-    const runRotate = this._animState == UNICORN_ANIM_STATE_RUN ?
-      this._getRunRotate() : 0;
-    const runScaleY = this._animState == UNICORN_ANIM_STATE_RUN ?
-      1 + runCycle * UNICORN_RUN_SCALE_Y_AMPLIFY : 1;
+    const runRotate = this._animState == UNICORN_ANIM_STATE_RUN ? this._getRunRotate() : 0;
+    const runScaleY = this._animState == UNICORN_ANIM_STATE_RUN ? 1 + runCycle * UNICORN_RUN_SCALE_Y_AMPLIFY : 1;
     const drawOffset = vec2(UNICORN_DRAW_OFFSET.x * (this.mirror ? -1.0 : 1.0), UNICORN_DRAW_OFFSET.y);
     const drawSize = vec2(UNICORN_WIDTH / TILE_SIZE, UNICORN_HEIGHT / TILE_SIZE);
     const drawSizeStretch = vec2(drawSize.x, drawSize.y * runScaleY * this._getJumpScaleY());
@@ -403,7 +403,8 @@ class Unicorn extends EngineObject {
     } else {
       SOUND_JUMP.play(this.pos, SOUND_JUMP_VOLUME);
     }
-    this._jumpNeedsCornerRestore = true;
+    // Useless since jump corner correction is trimmed.
+    // this._jumpNeedsCornerRestore = true;
     this._jumpBufferTimer.unset();
     this._coyoteTimer.unset();
     this._emitDust();
