@@ -1,10 +1,10 @@
 {
-  "name": "RainbowDefense",
+  "name": "GetMyHornBack",
   "version": "0.0.0",
-  "description": "Rainbow defense.",
+  "description": "A game for js13k 2026",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AdjWang/RainbowDefense.git"
+    "url": "git+https://github.com/AdjWang/GetMyHornBack.git"
   },
   "keywords": [
     "LittleJS",
@@ -19,9 +19,9 @@
   "author": "AdjWang",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/AdjWang/RainbowDefense/issues"
+    "url": "https://github.com/AdjWang/GetMyHornBack/issues"
   },
-  "homepage": "https://github.com/AdjWang/RainbowDefense",
+  "homepage": "https://github.com/AdjWang/GetMyHornBack",
   "scripts": {
     "start": "npx http-server -p 8000 src",
     "build:res": "node src/convertAseprite.mjs",
