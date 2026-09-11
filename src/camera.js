@@ -6,12 +6,14 @@ const CAMERA_MASS = 1.0;
 const CAMERA_SPRING = 0.04;
 const CAMERA_DAMPING = 0.4;
 const CAMERA_MAX_VELOCITY = vec2(10, 10);
+const CAMERA_SHAKE_RANGE = 0.05;
 const cameraSpringObject = {
   get pos() { return cameraPos; },
   set pos(value) { cameraPos = value; },
 };
 
 let cameraMotion;
+let cameraShakeTicks = 0;
 
 function initWorldCamera() {
   const targetPos = vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2);
@@ -40,5 +42,17 @@ function updateWorldCamera() {
   } else {
     cameraPos = vec2(VIEW_WIDTH / 2, VIEW_HEIGHT / 2).add(vec2(-0.5, 0));
   }
+  if (cameraShakeTicks > 0) {
+    cameraShakeTicks -= 1;
+    const randShake = randomRange(-CAMERA_SHAKE_RANGE, CAMERA_SHAKE_RANGE);
+    cameraPos = cameraPos.add(vec2(randShake));
+  }
+  if (cameraShakeTicks == 0) {
+    cameraPos.y = VIEW_HEIGHT / 2;
+  }
   cameraScale = worldScale;
+}
+
+function shakeCamera() {
+  cameraShakeTicks = 9;
 }

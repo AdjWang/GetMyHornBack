@@ -251,6 +251,7 @@ function explodeTntCellCluster(cellPos) {
   const visited = new Set;
   explodeTntCellClusterRecursive(cellPos.copy(), visited);
   tileLayer.redraw();
+  shakeCamera();
   return true;
 }
 
@@ -362,6 +363,10 @@ function updateLevelEvent() {
     player.setStatic(false);
     player.color.a = 1.0;
   }
+  // For debugging.
+  // if (mouseWasPressed(0)) {
+  //   shakeCamera();
+  // }
   if (bossLevel) {
     // For debugging. Test the end event.
     // if (mouseWasPressed(0)) {
