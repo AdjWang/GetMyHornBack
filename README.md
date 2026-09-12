@@ -98,3 +98,13 @@ npm run watch:level
 There's a `convertLevelData.mjs` that automatically scan and convert all `.tmx` files under `assets/tiled` to arrays in `level.js`. Run this command in background to enable level data auto-reload when saving `tmx` file.
 
 > To reload only once, run `npm run build:level`
+
+## Tools
+
+Thanks to tools powered up this game:
+
+- [LittleJS Engine - Special JS13k Branch](https://github.com/KilledByAPixel/LittleJS/tree/js13k)
+
+- [Tiled](https://www.mapeditor.org/)
+
+- [Aseprite](https://www.aseprite.org/)
