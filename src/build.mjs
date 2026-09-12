@@ -17,7 +17,7 @@ import ectLocation from 'ect-bin';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const PROGRAM_TITLE = 'LittleJS JS13K Project';
+const PROGRAM_TITLE = 'Get My Horn Back';
 const PROGRAM_NAME = 'game';
 const BUILD_FOLDER = 'build';
 const SIZE_LIMIT = 13312; // JS13K limit in bytes
@@ -71,8 +71,6 @@ const sourceFiles =
     // game files
     'rdmath.js',
     'global.js',
-    // Space seems not enough to put music in.
-    // 'assets/music.js',
     'resourceLoader.js',
     'physic.js',
     'camera.js',
@@ -98,8 +96,6 @@ process.chdir(__dirname);
 
 try
 {
-    execSync('node convertAseprite.mjs', {stdio: 'inherit'});
-
     // remove old files and setup build folder
     fs.rmSync(BUILD_FOLDER, { recursive: true, force: true });
     fs.rmSync(`${PROGRAM_NAME}.zip`, { force: true });

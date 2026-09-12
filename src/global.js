@@ -45,7 +45,7 @@ const RENDER_ORDER_BULLET = 11;
 const RENDER_ORDER_FOREGROUND = 110;
 
 // Remap colors to change theme.
-const TILE_COLOR_REMAP = [
+const COLOR_REMAP = [
   // Tiles.
   [0x322b28, 0x59c135, 0xb9bffb],
   [0x4a5462, 0x14a02e, 0xffffff],

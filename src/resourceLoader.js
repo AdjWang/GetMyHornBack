@@ -4,6 +4,7 @@ const ASEPRITE_ENTRY_TILEINFO = 0;
 const ASEPRITE_ENTRY_SIZE = 1;
 const ASEPRITE_ENTRY_OFFSET = 2;
 
+// From assets/character.json
 function createAsepriteResource() {
   const textureInfo = textureInfos[TEXTURE_INDEX_UNICORN];
   return {
@@ -106,7 +107,7 @@ function remapImageDataColors(imageData, from_idx, toIdx) {
   }
   const data = imageData.data;
   for (let i = 0; i < data.length; i += 4) {
-    for (const remap of TILE_COLOR_REMAP) {
+    for (const remap of COLOR_REMAP) {
       const fromColor = remap[from_idx];
       const toColor = remap[toIdx];
       if ((data[i] << 16 | data[i + 1] << 8 | data[i + 2]) == fromColor) {
@@ -120,6 +121,7 @@ function remapImageDataColors(imageData, from_idx, toIdx) {
   return imageData;
 }
 
+// Load image with color remapping.
 async function createRemappedTextureInfo(textureIndex, toIdx, from_idx = THEME_INDEX_ROCK) {
   const imageSource = IMAGE_SOURCES[textureIndex];
   const image = await loadImage(imageSource);
