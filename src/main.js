@@ -1,18 +1,8 @@
-/*
-    LittleJS JS13K Starter Game
-    - For size limited projects
-    - Includes all core engine features
-    - Builds to 7kb zip file
-*/
-
 'use strict';
 
-// game variables
 // Space seems not enough to put music in.
 // let backgroundMusic;
 // let backgroundMusicVolume = 0.0;
-
-// WebGL can be removed to save ~963 bytes - see "Disabling WebGL" in README.md
 
 // Never die.
 const DEBUG_MODE = false;
@@ -21,7 +11,6 @@ const STORY_BASE_Y = 5;
 let comicUnicorns = []
 let comicDragons = []
 
-///////////////////////////////////////////////////////////////////////////////
 async function gameInit() {
   setGLEnable(false);
   // Set as const in engine.
@@ -55,7 +44,6 @@ async function gameInit() {
   }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 function gameUpdate() {
   worldScale = min(mainCanvasSize.x / VIEW_WIDTH, mainCanvasSize.y / VIEW_HEIGHT);
   updateWorldCamera();
@@ -128,8 +116,7 @@ function gameRenderPost() {
       drawTextOverlay(`LEVEL${i + 1}`, vec2(entryBaseX + x, entryBaseY), 0.7, textColor);
       drawTextOverlay("🔻", vec2(entryBaseX + x, entryBaseY - 0.7), 0.5, textColor);
     });
-  }
-  if (currentLevel == 0) {
+    // Title.
     drawTextOverlay('GET MY HORN BACK', vec2(14, 13), 2.5, textColor);
     if (!player) {
       drawTextOverlay('Press S to start', vec2(14, 11), 0.8, textColor);
@@ -141,7 +128,6 @@ function gameRenderPost() {
   }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 // Startup LittleJS Engine
 setCanvasFixedSize(vec2(VIEW_WIDTH, VIEW_HEIGHT));
 engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost, IMAGE_SOURCES);

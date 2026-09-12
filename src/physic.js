@@ -1,5 +1,6 @@
 'use strict';
 
+// Similar to spring-damping simulation, occupies less space.
 class Lowpass {
   constructor(ratio) {
     this._ratio = ratio;
