@@ -1,7 +1,7 @@
 {
   "name": "GetMyHornBack",
   "version": "0.0.0",
-  "description": "A game for js13k 2026",
+  "description": "An action-puzzle game for js13k 2026.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AdjWang/GetMyHornBack.git"
@@ -27,7 +27,7 @@
     "build:level": "node src/assets/tiled/convertLevelData.mjs",
     "watch:level": "node src/assets/tiled/convertLevelData.mjs --watch",
     "build": "node src/build.mjs",
-    "build:engine": "node src/engine/engineBuild.mjs",
+    "build:engine": "node src/engine/engineBuild.mjs"
   },
   "devDependencies": {
     "ect-bin": "~1.4.1",
