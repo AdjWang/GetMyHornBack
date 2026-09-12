@@ -397,7 +397,7 @@ function updateLevelEvent() {
         }
       });
     } else if (currentLevel == 1 || currentLevel == 2) {
-      if (player.pos.x > getLevelSize(1).x) {
+      if (player.pos.x > getLevelSize(currentLevel).x) {
         switchLevel(currentLevel + 1);
       }
     }
