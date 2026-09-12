@@ -515,7 +515,7 @@ function restartGame() {
   comicDragons = [];
   // gameInit re-runs the exact same boot path, which loads the level from the
   // save data, just like a page reload used to do.
-  gameInit();
+  (async () => { await gameInit(); })();
 }
 
 function resetPlayer(withAnim) {
