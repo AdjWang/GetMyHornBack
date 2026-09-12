@@ -28,7 +28,9 @@
     "build:level": "node src/assets/tiled/convertLevelData.mjs",
     "watch:level": "node src/assets/tiled/convertLevelData.mjs --watch",
     "build": "node src/build.mjs",
-    "build:engine": "node src/engine/engineBuild.mjs"
+    "build:engine": "node src/engine/engineBuild.mjs",
+    "test": "node tools/test/run.mjs src",
+    "test:build": "npm run build && node tools/test/run.mjs build"
   },
   "devDependencies": {
     "ect-bin": "~1.4.1",

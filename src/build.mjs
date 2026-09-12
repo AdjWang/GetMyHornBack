@@ -49,7 +49,7 @@ const DEBUG_BUILD = false;
 // Roadroller shrinks the code a lot but is the slowest step
 const USE_ROADROLLER = true;
 // Extreme mode takes over a minute and usually saves only a few bytes
-const ROADROLLER_EXTREME = false;
+const ROADROLLER_EXTREME = true;
 
 const sourceFiles =
 [

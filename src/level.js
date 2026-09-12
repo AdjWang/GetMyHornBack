@@ -358,8 +358,9 @@ function clearProgress() {
 }
 
 function updateLevelEvent() {
-  if (!player && currentLevel == 0 && keyWasPressed(INPUT_KEY_DOWN)) {
-    player = comicUnicorns[3];
+  // Comic unicorns only exist in level 0, so the lookup doubles as the level
+  // test and stays safe while a level is being torn down.
+  if (!player && keyWasPressed(INPUT_KEY_DOWN) && (player = comicUnicorns[3])) {
     player.setStatic(false);
     player.color.a = 1.0;
   }
@@ -389,7 +390,9 @@ function updateLevelEvent() {
   if (player) {
     if (currentLevel == 0) {
       [30.5, 36.5, 42.5].forEach((x, i) => {
-        if (isOverlapping(player.pos, player.size, vec2(x, -0.5), vec2(3, 1))) {
+        // switchLevel restarts the game right away and clears the player, so
+        // the remaining doorways must not be checked against it.
+        if (player && isOverlapping(player.pos, player.size, vec2(x, -0.5), vec2(3, 1))) {
           switchLevel(i + 1);
         }
       });
@@ -398,7 +401,7 @@ function updateLevelEvent() {
         switchLevel(currentLevel + 1);
       }
     }
-    if (!DEBUG_MODE && !player.hasHorn() && player.pos.y < -1) {
+    if (!DEBUG_MODE && player && !player.hasHorn() && player.pos.y < -1) {
       resetPlayer(true);
     }
   }
@@ -500,6 +503,21 @@ function theEnd(pos) {
   }
 }
 
+// Rebuild the current level in place. A page reload cannot be used because the
+// game may run from a blob:/srcdoc/sandboxed host where reload blanks the page,
+// and reloading also re-downloads the bundle and drops the audio unlock.
+function restartGame() {
+  // Tear down every object of the level being left behind.
+  engineObjectsDestroy();
+  player = dragon = bossLevel = undefined;
+  // Rebuilt by gameInit, clear them so they do not stack up.
+  comicUnicorns = [];
+  comicDragons = [];
+  // gameInit re-runs the exact same boot path, which loads the level from the
+  // save data, just like a page reload used to do.
+  gameInit();
+}
+
 function resetPlayer(withAnim) {
   if (player && player.destroyed) {
     return;
@@ -509,11 +527,9 @@ function resetPlayer(withAnim) {
       player.destroy();
       new Explode(player.pos, RAINBOW_COLORS);
     }
-    setTimeout(() => {
-      location.reload();
-    }, 1000);
+    setTimeout(restartGame, 1e3);
   } else {
-    location.reload();
+    restartGame();
   }
 }
 
