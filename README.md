@@ -99,7 +99,7 @@ There's a `convertLevelData.mjs` that automatically scan and convert all `.tmx` 
 
 > To reload only once, run `npm run build:level`
 
-## Tools
+## Credits
 
 Thanks to tools powered up this game:
 
